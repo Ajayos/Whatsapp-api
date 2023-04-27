@@ -8,7 +8,7 @@ import { GroupMetadata, ParticipantAction } from './GroupMetadata'
 import { MessageUpsertType, MessageUserReceiptUpdate, WAMessage, WAMessageKey, WAMessageUpdate } from './Message'
 import { ConnectionState } from './State'
 
-export type BaileysEventMap = {
+export type KeerthanaEventMap = {
     /** connection state has been updated -- WS closed, opened, connecting etc. */
 	'connection.update': Partial<ConnectionState>
     /** ON QR UPDATE  */
@@ -171,11 +171,11 @@ export type BufferedEventData = {
     }
 }
 
-export type BaileysEvent = keyof BaileysEventMap
+export type KeerthanaEvent = keyof KeerthanaEventMap
 
-export interface BaileysEventEmitter {
-	on<T extends keyof BaileysEventMap>(event: T, listener: (arg: BaileysEventMap[T]) => void): void
-    off<T extends keyof BaileysEventMap>(event: T, listener: (arg: BaileysEventMap[T]) => void): void
-    removeAllListeners<T extends keyof BaileysEventMap>(event: T): void
-	emit<T extends keyof BaileysEventMap>(event: T, arg: BaileysEventMap[T]): boolean
+export interface KeerthanaEventEmitter {
+	on<T extends keyof KeerthanaEventMap>(event: T, listener: (arg: KeerthanaEventMap[T]) => void): void
+    off<T extends keyof KeerthanaEventMap>(event: T, listener: (arg: KeerthanaEventMap[T]) => void): void
+    removeAllListeners<T extends keyof KeerthanaEventMap>(event: T): void
+	emit<T extends keyof KeerthanaEventMap>(event: T, arg: KeerthanaEventMap[T]): boolean
 }
