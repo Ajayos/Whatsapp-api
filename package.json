@@ -1,0 +1,41 @@
+{
+    "name": "whatsapp-api",
+    "version": "15.0.0",
+    "description": "WhatsApp API",
+    "homepage": "https://github.com/Ajayos/whatsapp-api",
+    "keywords": [
+        "whatsapp",
+        "js-whatsapp",
+        "whatsapp-api",
+        "whatsapp-web",
+        "whatsapp",
+        "whatsapp-chat",
+        "whatsapp-group",
+        "automation"
+    ],
+    "scripts": {
+        "test": "jest",
+        "prepare": "tsc",
+        "build:all": "tsc && typedoc",
+        "build:docs": "typedoc",
+        "build:tsc": "tsc",
+        "example": "node --inspect -r ts-node/register Example/example.ts",
+        "gen:protobuf": "sh WAProto/GenerateStatics.sh",
+        "lint": "eslint . --ext .js,.ts,.jsx,.tsx",
+        "lint:fix": "eslint . --fix --ext .js,.ts,.jsx,.tsx"
+    },
+    "author": "Ajay o s",
+    "license": "Apache-2.0",
+    "repository": {
+        "url": "git@github.com:Ajayos/whatsapp-api.git"
+    },
+    "dependencies": {
+        "acorn": "^8.8.2",
+        "acorn-walk": "^8.2.0",
+        "Buffer": "^0.0.0",
+        "fs": "^0.0.1-security",
+        "pino": "^8.11.0",
+        "protobufjs": "^7.2.3",
+        "request-promise-native": "^1.0.9"
+    }
+}
