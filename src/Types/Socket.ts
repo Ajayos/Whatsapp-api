@@ -48,9 +48,9 @@ export type SocketConfig = {
     callOfferCache?: CacheStore
     /** width for link preview images */
     linkPreviewImageThumbnailWidth: number
-    /** Should Baileys ask the phone for full history, will be received async */
+    /** Should Keerthana ask the phone for full history, will be received async */
     syncFullHistory: boolean
-    /** Should baileys fire init queries automatically, default true */
+    /** Should Keerthana fire init queries automatically, default true */
     fireInitQueries: boolean
     /**
      * generate a high quality link preview,
