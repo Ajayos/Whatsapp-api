@@ -1,8 +1,13 @@
 import Pino from 'pino'
 
+import { Sequelize, DataTypes } from 'sequelize';
 import { proto } from '../Proto'
 import { makeLibSignalRepository } from '../Signal/libsignal'
 import type { AuthenticationState, MediaType, SocketConfig } from '../Types'
+
+export const DATABASE = new Sequelize({ dialect: "sqlite", storage: './keerthana.sql', logging: false })
+
+export const DBTypes = DataTypes;
 
 export const UNAUTHORIZED_CODES = [401, 403, 419]
 

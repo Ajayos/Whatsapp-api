@@ -1,12 +1,17 @@
 "use strict";
 
-const {useMultiFileAuthState,default: makeWASocket,DisconnectReason,fetchLatestBaileysVersion,makeCacheableSignalKeyStore,MessageRetryMap,downloadContentFromMessage,makeInMemoryStore } = require('../../lib');
+const {useMultiFileAuthState, useDBAuthState, default: makeWASocket,DisconnectReason,fetchLatestBaileysVersion,makeCacheableSignalKeyStore,MessageRetryMap,downloadContentFromMessage,makeInMemoryStore } = require('../../lib');
 let Ammu;
+function log(data) {
+  console.log(data);
+}
+const sqlite3 = require('sqlite3').verbose();
+const DB = new sqlite3.Database('./keerthana.sql', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {if (err) return console.error(err.message)});
 
 async function Start(options) {
   try {
     const path_ = options.path || process.cwd();
-    const { state, saveCreds} = await useMultiFileAuthState(`${path_}/Authentication/Auth`);
+    const { state, saveCreds} = await  useDBAuthState(DB);
     Ammu = makeWASocket({
       printQRInTerminal: true,
       auth: {
@@ -48,7 +53,7 @@ async function Start(options) {
     });
     Ammu.ev.on('new', async(is) => {
       if (is) {
-        Start(this.options)
+        Start(options)
       }
     });
     Ammu.ev.process(
@@ -70,6 +75,7 @@ async function Start(options) {
           }
           if (connection === 'close') {
             log('Disconnected', "d");
+            
           }
         }
       }

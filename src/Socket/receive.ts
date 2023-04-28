@@ -292,7 +292,7 @@ export const makeMessagesRecvSocket = (config: SocketConfig) => {
 			break
 		case 'description':
 	      		msg.messageStubType = WAMessageStubType.GROUP_CHANGE_DESCRIPTION
-     			msg.messageStubParameters = [ child.content === undefined ? '' : child.content?.[0].content ]
+     			msg.messageStubParameters = [ child.content === undefined ? '' : child.content?.[0]?.content ]
       			break
 		case 'announcement':
 		case 'not_announcement':
