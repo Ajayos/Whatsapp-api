@@ -39,4 +39,4 @@ export declare const makeSocket: ({ waWebSocketUrl, connectTimeoutMs, logger, ag
     /** Waits for the connection to WA to reach a state */
     waitForConnectionUpdate: (check: (u: Partial<import("../Types").ConnectionState>) => boolean | undefined, timeoutMs?: number | undefined) => Promise<void>;
 };
-export type Socket = ReturnType<typeof makeSocket>;
+export declare type Socket = ReturnType<typeof makeSocket>;

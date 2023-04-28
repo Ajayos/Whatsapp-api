@@ -1,5 +1,5 @@
 import { WAMediaUpload } from './Message';
-export type CatalogResult = {
+export declare type CatalogResult = {
     data: {
         paging: {
             cursors: {
@@ -10,23 +10,23 @@ export type CatalogResult = {
         data: any[];
     };
 };
-export type ProductCreateResult = {
+export declare type ProductCreateResult = {
     data: {
         product: {};
     };
 };
-export type CatalogStatus = {
+export declare type CatalogStatus = {
     status: string;
     canAppeal: boolean;
 };
-export type CatalogCollection = {
+export declare type CatalogCollection = {
     id: string;
     name: string;
     products: Product[];
     status: CatalogStatus;
 };
-export type ProductAvailability = 'in stock';
-export type ProductBase = {
+export declare type ProductAvailability = 'in stock';
+export declare type ProductBase = {
     name: string;
     retailerId?: string;
     url?: string;
@@ -35,12 +35,12 @@ export type ProductBase = {
     currency: string;
     isHidden?: boolean;
 };
-export type ProductCreate = ProductBase & {
+export declare type ProductCreate = ProductBase & {
     originCountryCode: string | undefined;
     images: WAMediaUpload[];
 };
-export type ProductUpdate = Omit<ProductCreate, 'originCountryCode'>;
-export type Product = ProductBase & {
+export declare type ProductUpdate = Omit<ProductCreate, 'originCountryCode'>;
+export declare type Product = ProductBase & {
     id: string;
     imageUrls: {
         [_: string]: string;
@@ -50,11 +50,11 @@ export type Product = ProductBase & {
     };
     availability: ProductAvailability;
 };
-export type OrderPrice = {
+export declare type OrderPrice = {
     currency: string;
     total: number;
 };
-export type OrderProduct = {
+export declare type OrderProduct = {
     id: string;
     imageUrl: string;
     name: string;
@@ -62,12 +62,12 @@ export type OrderProduct = {
     currency: string;
     price: number;
 };
-export type OrderDetails = {
+export declare type OrderDetails = {
     price: OrderPrice;
     products: OrderProduct[];
 };
-export type CatalogCursor = string;
-export type GetCatalogOptions = {
+export declare type CatalogCursor = string;
+export declare type GetCatalogOptions = {
     cursor?: CatalogCursor;
     limit?: number;
     jid?: string;

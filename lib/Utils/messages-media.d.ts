@@ -54,7 +54,7 @@ export declare function generateThumbnail(file: string, mediaType: 'video' | 'im
 export declare const getHttpStream: (url: string | URL, options?: AxiosRequestConfig & {
     isStream?: true;
 }) => Promise<Readable>;
-type EncryptedStreamOptions = {
+declare type EncryptedStreamOptions = {
     saveOriginalFileIfRequired?: boolean;
     logger?: Logger;
     opts?: AxiosRequestConfig;
@@ -69,7 +69,7 @@ export declare const encryptedStream: (media: WAMediaUpload, mediaType: MediaTyp
     fileLength: number;
     didSaveToTmpPath: boolean;
 }>;
-export type MediaDownloadOptions = {
+export declare type MediaDownloadOptions = {
     startByte?: number;
     endByte?: number;
     options?: AxiosRequestConfig<any>;

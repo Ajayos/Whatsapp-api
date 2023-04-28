@@ -1,45 +1,45 @@
 import { proto } from '../Proto';
-type DecryptGroupSignalOpts = {
+declare type DecryptGroupSignalOpts = {
     group: string;
     authorJid: string;
     msg: Uint8Array;
 };
-type ProcessSenderKeyDistributionMessageOpts = {
+declare type ProcessSenderKeyDistributionMessageOpts = {
     item: proto.Message.ISenderKeyDistributionMessage;
     authorJid: string;
 };
-type DecryptSignalProtoOpts = {
+declare type DecryptSignalProtoOpts = {
     jid: string;
     type: 'pkmsg' | 'msg';
     ciphertext: Uint8Array;
 };
-type EncryptMessageOpts = {
+declare type EncryptMessageOpts = {
     jid: string;
     data: Uint8Array;
 };
-type EncryptGroupMessageOpts = {
+declare type EncryptGroupMessageOpts = {
     group: string;
     data: Uint8Array;
     meId: string;
 };
-type PreKey = {
+declare type PreKey = {
     keyId: number;
     publicKey: Uint8Array;
 };
-type SignedPreKey = PreKey & {
+declare type SignedPreKey = PreKey & {
     signature: Uint8Array;
 };
-type E2ESession = {
+declare type E2ESession = {
     registrationId: number;
     identityKey: Uint8Array;
     signedPreKey: SignedPreKey;
     preKey: PreKey;
 };
-type E2ESessionOpts = {
+declare type E2ESessionOpts = {
     jid: string;
     session: E2ESession;
 };
-export type SignalRepository = {
+export declare type SignalRepository = {
     decryptGroupMessage(opts: DecryptGroupSignalOpts): Promise<Uint8Array>;
     processSenderKeyDistributionMessage(opts: ProcessSenderKeyDistributionMessageOpts): Promise<void>;
     decryptMessage(opts: DecryptSignalProtoOpts): Promise<Uint8Array>;
