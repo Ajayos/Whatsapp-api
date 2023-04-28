@@ -1,4 +1,4 @@
-import { DEFAULT_CONNECTION_CONFIG } from '../Base'
+import { DEFAULT_CONNECTION_CONFIG } from '../Defaults'
 import { UserFacingSocketConfig } from '../Types'
 import { makeBusinessSocket as _makeSocket } from './business'
 

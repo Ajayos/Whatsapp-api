@@ -1,52 +1,14 @@
 
 import NodeCache from 'node-cache'
 import { proto } from '../Proto'
-import {
-	DEFAULT_CACHE_TTLS,
-	KEY_BUNDLE_TYPE,
-	MIN_PREKEY_COUNT
-} from '../Base'
-import {
-	MessageReceiptType,
-	MessageRelayOptions,
-	MessageUserReceipt,
-	SocketConfig,
-	WACallEvent,
-	WAMessageKey,
-	WAMessageStatus,
-	WAMessageStubType,
-	WAPatchName
-} from '../Types'
-import {
-	decodeMediaRetryNode,
-	decryptMessageNode,
-	delay,
-	encodeBigEndian,
-	encodeSignedDeviceIdentity,
-	getCallStatusFromNode,
-	getHistoryMsg,
-	getNextPreKeys,
-	getStatusFromReceiptType,
-	unixTimestampSeconds,
-	xmppPreKey,
-	xmppSignedPreKey
-} from '../Utils'
+import { DEFAULT_CACHE_TTLS, KEY_BUNDLE_TYPE, MIN_PREKEY_COUNT } from '../Defaults'
+import { MessageReceiptType, MessageRelayOptions, MessageUserReceipt, SocketConfig, WACallEvent, WAMessageKey, WAMessageStatus, WAMessageStubType, WAPatchName } from '../Types'
+import { decodeMediaRetryNode, decryptMessageNode, delay, encodeBigEndian, encodeSignedDeviceIdentity, getCallStatusFromNode, getHistoryMsg, getNextPreKeys, getStatusFromReceiptType, unixTimestampSeconds, xmppPreKey, xmppSignedPreKey } from '../Utils'
 import { makeMutex } from '../Utils/make-mutex'
 import { cleanMessage } from '../Utils/process-message'
-import {
-	areJidsSameUser,
-	BinaryNode,
-	getAllBinaryNodeChildren,
-	getBinaryNodeChild,
-	getBinaryNodeChildren,
-	isJidGroup,
-	isJidUser,
-	jidDecode,
-	jidNormalizedUser,
-	S_WHATSAPP_NET
-} from '../Binary'
+import { areJidsSameUser, BinaryNode, getAllBinaryNodeChildren, getBinaryNodeChild, getBinaryNodeChildren, isJidGroup, isJidUser, jidDecode, jidNormalizedUser, S_WHATSAPP_NET } from '../Binary'
 import { extractGroupMetadata } from './groups'
-import { makeMessagesSocket } from './send'
+import { makeMessagesSocket } from './messages-send'
 
 export const makeMessagesRecvSocket = (config: SocketConfig) => {
 	const {

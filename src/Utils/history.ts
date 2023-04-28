@@ -2,11 +2,7 @@ import { AxiosRequestConfig } from 'axios'
 import { promisify } from 'util'
 import { inflate } from 'zlib'
 import { proto } from '../Proto'
-import {
-	Chat,
-	Contact,
-	WAMessageStubType
-} from '../Types'
+import { Chat, Contact, WAMessageStubType } from '../Types'
 import { isJidUser } from '../Binary'
 import { toNumber } from './generics'
 import { normalizeMessageContent } from './messages'

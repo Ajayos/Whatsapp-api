@@ -1,41 +1,18 @@
 import { AxiosRequestConfig } from 'axios'
 import type { Logger } from 'pino'
 import { proto } from '../Proto'
-import {
-	AuthenticationCreds,
-	KeerthanaEventEmitter,
-	Chat,
-	GroupMetadata,
-	ParticipantAction,
-	SignalKeyStoreWithTransaction,
-	SocketConfig,
-	WAMessageStubType
-} from '../Types'
-import {
-	getContentType,
-	normalizeMessageContent
-} from '../Utils/messages'
-import {
-	areJidsSameUser,
-	isJidBroadcast,
-	isJidStatusBroadcast,
-	jidNormalizedUser
-} from '../Binary'
-import {
-	aesDecryptGCM,
-	hmacSign
-} from './crypto'
-import {
-	getKeyAuthor,
-	toNumber
-} from './generics'
+import { AuthenticationCreds, BaileysEventEmitter, Chat, GroupMetadata, ParticipantAction, SignalKeyStoreWithTransaction, SocketConfig, WAMessageStubType } from '../Types'
+import { getContentType, normalizeMessageContent } from '../Utils/messages'
+import { areJidsSameUser, isJidBroadcast, isJidStatusBroadcast, jidNormalizedUser } from '../Binary'
+import { aesDecryptGCM, hmacSign } from './crypto'
+import { getKeyAuthor, toNumber } from './generics'
 import { downloadAndProcessHistorySyncNotification } from './history'
 
 type ProcessMessageContext = {
 	shouldProcessHistoryMsg: boolean
 	creds: AuthenticationCreds
 	keyStore: SignalKeyStoreWithTransaction
-	ev: KeerthanaEventEmitter
+	ev: BaileysEventEmitter
 	getMessage: SocketConfig['getMessage']
 	logger?: Logger
 	options: AxiosRequestConfig<{}>

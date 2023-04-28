@@ -1,10 +1,8 @@
 export const S_WHATSAPP_NET = '@s.whatsapp.net'
 export const OFFICIAL_BIZ_JID = '16505361212@c.us'
-export const OFFICIAL_DEV_JID = '919188346721@s.whatsapp.net'
 export const SERVER_JID = 'server@c.us'
 export const PSA_WID = '0@c.us'
 export const STORIES_JID = 'status@broadcast'
-
 
 export type JidServer = 'c.us' | 'g.us' | 'broadcast' | 's.whatsapp.net' | 'call'
 

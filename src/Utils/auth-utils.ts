@@ -1,24 +1,10 @@
 import { randomBytes } from 'crypto'
 import NodeCache from 'node-cache'
 import type { Logger } from 'pino'
-import { DEFAULT_CACHE_TTLS } from '../Base'
-import type {
-	AuthenticationCreds,
-	CacheStore,
-	SignalDataSet,
-	SignalDataTypeMap,
-	SignalKeyStore,
-	SignalKeyStoreWithTransaction,
-	TransactionCapabilityOptions
-} from '../Types'
-import {
-	Curve,
-	signedKeyPair
-} from './crypto'
-import {
-	delay,
-	generateRegistrationId
-} from './generics'
+import { DEFAULT_CACHE_TTLS } from '../Defaults'
+import type { AuthenticationCreds, CacheStore, SignalDataSet, SignalDataTypeMap, SignalKeyStore, SignalKeyStoreWithTransaction, TransactionCapabilityOptions } from '../Types'
+import { Curve, signedKeyPair } from './crypto'
+import { delay, generateRegistrationId } from './generics'
 
 /**
  * Adds caching capability to a SignalKeyStore

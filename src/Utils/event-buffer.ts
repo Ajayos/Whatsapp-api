@@ -1,26 +1,10 @@
 import EventEmitter from 'events'
 import { Logger } from 'pino'
 import { proto } from '../Proto'
-import {
-	KeerthanaEvent,
-	KeerthanaEventEmitter,
-	KeerthanaEventMap,
-	BufferedEventData,
-	Chat,
-	ChatUpdate,
-	Contact,
-	WAMessage,
-	WAMessageStatus
-} from '../Types'
+import { BaileysEvent, BaileysEventEmitter, BaileysEventMap, BufferedEventData, Chat, ChatUpdate, Contact, WAMessage, WAMessageStatus } from '../Types'
 import { trimUndefineds } from './generics'
-import {
-	updateMessageWithReaction,
-	updateMessageWithReceipt
-} from './messages'
-import {
-	isRealMessage,
-	shouldIncrementChatUnread
-} from './process-message'
+import { updateMessageWithReaction, updateMessageWithReceipt } from './messages'
+import { isRealMessage, shouldIncrementChatUnread } from './process-message'
 
 const BUFFERABLE_EVENT = [
 	'messaging-history.set',
@@ -46,13 +30,13 @@ type BufferableEvent = typeof BUFFERABLE_EVENT[number]
  * this can make processing events extremely efficient -- since everything
  * can be done in a single transaction
  */
-type KeerthanaEventData = Partial<KeerthanaEventMap>
+type BaileysEventData = Partial<BaileysEventMap>
 
-const BUFFERABLE_EVENT_SET = new Set<KeerthanaEvent>(BUFFERABLE_EVENT)
+const BUFFERABLE_EVENT_SET = new Set<BaileysEvent>(BUFFERABLE_EVENT)
 
-type KeerthanaBufferableEventEmitter = KeerthanaEventEmitter & {
+type BaileysBufferableEventEmitter = BaileysEventEmitter & {
 	/** Use to process events in a batch */
-	process(handler: (events: KeerthanaEventData) => void | Promise<void>): (() => void)
+	process(handler: (events: BaileysEventData) => void | Promise<void>): (() => void)
 	/**
 	 * starts buffering events, call flush() to release them
 	 * */
@@ -72,17 +56,17 @@ type KeerthanaBufferableEventEmitter = KeerthanaEventEmitter & {
 /**
  * The event buffer logically consolidates different events into a single event
  * making the data processing more efficient.
- * @param ev the Keerthana event emitter
+ * @param ev the baileys event emitter
  */
-export const makeEventBuffer = (logger: Logger): KeerthanaBufferableEventEmitter => {
+export const makeEventBuffer = (logger: Logger): BaileysBufferableEventEmitter => {
 	const ev = new EventEmitter()
 	const historyCache = new Set<string>()
 
 	let data = makeBufferData()
 	let buffersInProgress = 0
 
-	// take the generic event and fire it as a Keerthana event
-	ev.on('event', (map: KeerthanaEventData) => {
+	// take the generic event and fire it as a baileys event
+	ev.on('event', (map: BaileysEventData) => {
 		for(const event in map) {
 			ev.emit(event, map[event])
 		}
@@ -137,7 +121,7 @@ export const makeEventBuffer = (logger: Logger): KeerthanaBufferableEventEmitter
 
 	return {
 		process(handler) {
-			const listener = (map: KeerthanaEventData) => {
+			const listener = (map: BaileysEventData) => {
 				handler(map)
 			}
 
@@ -146,7 +130,7 @@ export const makeEventBuffer = (logger: Logger): KeerthanaBufferableEventEmitter
 				ev.off('event', listener)
 			}
 		},
-		emit<T extends KeerthanaEvent>(event: KeerthanaEvent, evData: KeerthanaEventMap[T]) {
+		emit<T extends BaileysEvent>(event: BaileysEvent, evData: BaileysEventMap[T]) {
 			if(buffersInProgress && BUFFERABLE_EVENT_SET.has(event)) {
 				append(data, historyCache, event as any, evData, logger)
 				return true
@@ -351,7 +335,7 @@ function append<E extends BufferableEvent>(
 
 		break
 	case 'contacts.update':
-		const contactUpdates = eventData as KeerthanaEventMap['contacts.update']
+		const contactUpdates = eventData as BaileysEventMap['contacts.update']
 		for(const update of contactUpdates) {
 			const id = update.id!
 			// merge into prior upsert
@@ -367,7 +351,7 @@ function append<E extends BufferableEvent>(
 
 		break
 	case 'messages.upsert':
-		const { messages, type } = eventData as KeerthanaEventMap['messages.upsert']
+		const { messages, type } = eventData as BaileysEventMap['messages.upsert']
 		for(const message of messages) {
 			const key = stringifyMessageKey(message.key)
 			let existing = data.messageUpserts[key]?.message
@@ -402,7 +386,7 @@ function append<E extends BufferableEvent>(
 
 		break
 	case 'messages.update':
-		const msgUpdates = eventData as KeerthanaEventMap['messages.update']
+		const msgUpdates = eventData as BaileysEventMap['messages.update']
 		for(const { key, update } of msgUpdates) {
 			const keyStr = stringifyMessageKey(key)
 			const existing = data.historySets.messages[keyStr] || data.messageUpserts[keyStr]?.message
@@ -423,7 +407,7 @@ function append<E extends BufferableEvent>(
 
 		break
 	case 'messages.delete':
-		const deleteData = eventData as KeerthanaEventMap['messages.delete']
+		const deleteData = eventData as BaileysEventMap['messages.delete']
 		if('keys' in deleteData) {
 			const { keys } = deleteData
 			for(const key of keys) {
@@ -447,7 +431,7 @@ function append<E extends BufferableEvent>(
 
 		break
 	case 'messages.reaction':
-		const reactions = eventData as KeerthanaEventMap['messages.reaction']
+		const reactions = eventData as BaileysEventMap['messages.reaction']
 		for(const { key, reaction } of reactions) {
 			const keyStr = stringifyMessageKey(key)
 			const existing = data.messageUpserts[keyStr]
@@ -462,7 +446,7 @@ function append<E extends BufferableEvent>(
 
 		break
 	case 'message-receipt.update':
-		const receipts = eventData as KeerthanaEventMap['message-receipt.update']
+		const receipts = eventData as BaileysEventMap['message-receipt.update']
 		for(const { key, receipt } of receipts) {
 			const keyStr = stringifyMessageKey(key)
 			const existing = data.messageUpserts[keyStr]
@@ -477,7 +461,7 @@ function append<E extends BufferableEvent>(
 
 		break
 	case 'groups.update':
-		const groupUpdates = eventData as KeerthanaEventMap['groups.update']
+		const groupUpdates = eventData as BaileysEventMap['groups.update']
 		for(const update of groupUpdates) {
 			const id = update.id!
 			const groupUpdate = data.groupUpdates[id] || { }
@@ -530,7 +514,7 @@ function append<E extends BufferableEvent>(
 }
 
 function consolidateEvents(data: BufferedEventData) {
-	const map: KeerthanaEventData = { }
+	const map: BaileysEventData = { }
 
 	if(!data.historySets.empty) {
 		map['messaging-history.set'] = {

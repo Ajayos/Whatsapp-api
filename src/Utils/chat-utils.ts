@@ -2,35 +2,12 @@ import { Boom } from '@hapi/boom'
 import { AxiosRequestConfig } from 'axios'
 import type { Logger } from 'pino'
 import { proto } from '../Proto'
-import {
-	KeerthanaEventEmitter,
-	Chat,
-	ChatModification,
-	ChatMutation,
-	ChatUpdate,
-	Contact,
-	InitialAppStateSyncOptions,
-	LastMessageList,
-	LTHashState,
-	WAPatchCreate,
-	WAPatchName
-} from '../Types'
-import {
-	BinaryNode,
-	getBinaryNodeChild,
-	getBinaryNodeChildren,
-	isJidGroup,
-	jidNormalizedUser
-} from '../Binary'
-import {
-	aesDecrypt,
-	aesEncrypt,
-	hkdf,
-	hmacSign
-} from './crypto'
+import { BaileysEventEmitter, Chat, ChatModification, ChatMutation, ChatUpdate, Contact, InitialAppStateSyncOptions, LastMessageList, LTHashState, WAPatchCreate, WAPatchName } from '../Types'
+import { BinaryNode, getBinaryNodeChild, getBinaryNodeChildren, isJidGroup, jidNormalizedUser } from '../Binary'
+import { aesDecrypt, aesEncrypt, hkdf, hmacSign } from './crypto'
 import { toNumber } from './generics'
 import { LT_HASH_ANTI_TAMPERING } from './lt-hash'
-import { downloadContentFromMessage } from './messages-media'
+import { downloadContentFromMessage, } from './messages-media'
 
 type FetchAppStateSyncKey = (keyId: string) => Promise<proto.Message.IAppStateSyncKeyData | null | undefined>
 
@@ -640,7 +617,7 @@ export const chatModificationToAppPatch = (
 
 export const processSyncAction = (
 	syncAction: ChatMutation,
-	ev: KeerthanaEventEmitter,
+	ev: BaileysEventEmitter,
 	me: Contact,
 	initialSyncOpts?: InitialAppStateSyncOptions,
 	logger?: Logger,

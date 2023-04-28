@@ -1,17 +1,7 @@
-import {
-	mkdir,
-	readFile,
-	stat,
-	unlink,
-	writeFile
-} from 'fs/promises'
+import { mkdir, readFile, stat, unlink, writeFile } from 'fs/promises'
 import { join } from 'path'
 import { proto } from '../Proto'
-import {
-	AuthenticationCreds,
-	AuthenticationState,
-	SignalDataTypeMap
-} from '../Types'
+import { AuthenticationCreds, AuthenticationState, SignalDataTypeMap } from '../Types'
 import { initAuthCreds } from './auth-utils'
 import { BufferJSON } from './generics'
 
