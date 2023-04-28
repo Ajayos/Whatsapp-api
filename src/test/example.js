@@ -1,6 +1,6 @@
 "use strict";
 
-const {useMultiFileAuthState,default: makeWASocket,DisconnectReason,fetchLatestBaileysVersion,makeCacheableSignalKeyStore,MessageRetryMap,downloadContentFromMessage,makeInMemoryStore } = require('../lib');
+const {useMultiFileAuthState,default: makeWASocket,DisconnectReason,fetchLatestBaileysVersion,makeCacheableSignalKeyStore,MessageRetryMap,downloadContentFromMessage,makeInMemoryStore } = require('../../lib');
 let Ammu;
 
 async function Start(options) {

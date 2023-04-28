@@ -1,6 +1,6 @@
 import { Boom } from '@hapi/boom'
 import NodeCache from 'node-cache'
-import makeWASocket, { AnyMessageContent, delay, DisconnectReason,  getAggregateVotesInPollMessage, makeCacheableSignalKeyStore, proto, useMultiFileAuthState, WAMessageContent, WAMessageKey } from '../src'
+import makeWASocket, { AnyMessageContent, delay, DisconnectReason,  getAggregateVotesInPollMessage, makeCacheableSignalKeyStore, proto, useMultiFileAuthState, WAMessageContent, WAMessageKey } from '..'
 import { pino } from 'pino'
 const useStore = !process.argv.includes('--no-store')
 const doReplies = !process.argv.includes('--no-reply')
