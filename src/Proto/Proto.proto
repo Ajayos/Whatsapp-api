@@ -284,9 +284,7 @@ message ClientPayload {
             optional string documentTypes = 10;
             optional bytes features = 11;
         }
-        
     }
-    
 }
 
 message ContextInfo {
@@ -329,7 +327,7 @@ message ContextInfo {
             VIDEO = 2;
         }
     }
-    
+
     message ExternalAdReplyInfo {
         optional string title = 1;
         optional string body = 2;
@@ -350,12 +348,12 @@ message ContextInfo {
             VIDEO = 2;
         }
     }
-    
+
     message UTMInfo {
         optional string utmSource = 1;
         optional string utmCampaign = 2;
     }
-    
+
 }
 
 message Conversation {
@@ -429,13 +427,13 @@ message DeviceProps {
         optional uint32 quaternary = 4;
         optional uint32 quinary = 5;
     }
-    
+
     message HistorySyncConfig {
         optional uint32 fullSyncDaysLimit = 1;
         optional uint32 fullSyncSizeMbLimit = 2;
         optional uint32 storageQuotaMb = 3;
     }
-    
+
     enum PlatformType {
         UNKNOWN = 0;
         CHROME = 1;
@@ -523,19 +521,18 @@ message HandshakeMessage {
         optional bytes static = 1;
         optional bytes payload = 2;
     }
-    
+
     message ClientHello {
         optional bytes ephemeral = 1;
         optional bytes static = 2;
         optional bytes payload = 3;
     }
-    
+
     message ServerHello {
         optional bytes ephemeral = 1;
         optional bytes static = 2;
         optional bytes payload = 3;
     }
-    
 }
 
 message HistorySync {
@@ -577,17 +574,17 @@ message HydratedTemplateButton {
         optional string displayText = 1;
         optional string phoneNumber = 2;
     }
-    
+
     message HydratedQuickReplyButton {
         optional string displayText = 1;
         optional string id = 2;
     }
-    
+
     message HydratedURLButton {
         optional string displayText = 1;
         optional string url = 2;
     }
-    
+
 }
 
 message IdentityKeyPairStructure {
@@ -714,36 +711,36 @@ message Message {
         repeated string collectionNames = 1;
         optional int64 timestamp = 2;
     }
-    
+
     message AppStateSyncKey {
         optional Message.AppStateSyncKeyId keyId = 1;
         optional Message.AppStateSyncKeyData keyData = 2;
     }
-    
+
     message AppStateSyncKeyData {
         optional bytes keyData = 1;
         optional Message.AppStateSyncKeyFingerprint fingerprint = 2;
         optional int64 timestamp = 3;
     }
-    
+
     message AppStateSyncKeyFingerprint {
         optional uint32 rawId = 1;
         optional uint32 currentIndex = 2;
         repeated uint32 deviceIndexes = 3 [packed=true];
     }
-    
+
     message AppStateSyncKeyId {
         optional bytes keyId = 1;
     }
-    
+
     message AppStateSyncKeyRequest {
         repeated Message.AppStateSyncKeyId keyIds = 1;
     }
-    
+
     message AppStateSyncKeyShare {
         repeated Message.AppStateSyncKey keys = 1;
     }
-    
+
     message AudioMessage {
         optional string url = 1;
         optional string mimetype = 2;
@@ -761,7 +758,7 @@ message Message {
         optional fixed32 backgroundArgb = 20;
         optional bool viewOnce = 21;
     }
-    
+
     message ButtonsMessage {
         optional string contentText = 6;
         optional string footerText = 7;
@@ -783,19 +780,19 @@ message Message {
             message ButtonText {
                 optional string displayText = 1;
             }
-            
+
             message NativeFlowInfo {
                 optional string name = 1;
                 optional string paramsJson = 2;
             }
-            
+
             enum Type {
                 UNKNOWN = 0;
                 RESPONSE = 1;
                 NATIVE_FLOW = 2;
             }
         }
-        
+
         enum HeaderType {
             UNKNOWN = 0;
             EMPTY = 1;
@@ -806,7 +803,7 @@ message Message {
             LOCATION = 6;
         }
     }
-    
+
     message ButtonsResponseMessage {
         optional string selectedButtonId = 1;
         optional ContextInfo contextInfo = 3;
@@ -819,39 +816,39 @@ message Message {
             DISPLAY_TEXT = 1;
         }
     }
-    
+
     message Call {
         optional bytes callKey = 1;
         optional string conversionSource = 2;
         optional bytes conversionData = 3;
         optional uint32 conversionDelaySeconds = 4;
     }
-    
+
     message CancelPaymentRequestMessage {
         optional MessageKey key = 1;
     }
-    
+
     message Chat {
         optional string displayName = 1;
         optional string id = 2;
     }
-    
+
     message ContactMessage {
         optional string displayName = 1;
         optional string vcard = 16;
         optional ContextInfo contextInfo = 17;
     }
-    
+
     message ContactsArrayMessage {
         optional string displayName = 1;
         repeated Message.ContactMessage contacts = 2;
         optional ContextInfo contextInfo = 17;
     }
-    
+
     message DeclinePaymentRequestMessage {
         optional MessageKey key = 1;
     }
-    
+
     message DeviceSentMessage {
         optional string destinationJid = 1;
         optional Message message = 2;
@@ -1004,17 +1001,17 @@ message Message {
                         SUNDAY = 7;
                     }
                 }
-                
+
                 message HSMDateTimeUnixEpoch {
                     optional int64 timestamp = 1;
                 }
-                
+
             }
-            
+
         }
-        
+
     }
-    
+
     message HistorySyncNotification {
         optional bytes fileSha256 = 1;
         optional uint64 fileLength = 2;
@@ -1036,7 +1033,7 @@ message Message {
             ON_DEMAND = 6;
         }
     }
-    
+
     message ImageMessage {
         optional string url = 1;
         optional string mimetype = 2;
@@ -1065,11 +1062,11 @@ message Message {
         optional bytes thumbnailEncSha256 = 28;
         optional string staticUrl = 29;
     }
-    
+
     message InitialSecurityNotificationSettingSync {
         optional bool securityNotificationEnabled = 1;
     }
-    
+
     message InteractiveMessage {
         optional Header header = 1;
         optional Body body = 2;
@@ -1083,17 +1080,17 @@ message Message {
         message Body {
             optional string text = 1;
         }
-        
+
         message CollectionMessage {
             optional string bizJid = 1;
             optional string id = 2;
             optional int32 messageVersion = 3;
         }
-        
+
         message Footer {
             optional string text = 1;
         }
-        
+
         message Header {
             optional string title = 1;
             optional string subtitle = 2;
@@ -1105,7 +1102,7 @@ message Message {
                 Message.VideoMessage videoMessage = 7;
             }
         }
-        
+
         message NativeFlowMessage {
             repeated NativeFlowButton buttons = 1;
             optional string messageParamsJson = 2;
@@ -1114,9 +1111,9 @@ message Message {
                 optional string name = 1;
                 optional string buttonParamsJson = 2;
             }
-            
+
         }
-        
+
         message ShopMessage {
             optional string id = 1;
             optional Surface surface = 2;
@@ -1128,9 +1125,9 @@ message Message {
                 WA = 3;
             }
         }
-        
+
     }
-    
+
     message InteractiveResponseMessage {
         optional Body body = 1;
         optional ContextInfo contextInfo = 15;

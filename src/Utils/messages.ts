@@ -4,7 +4,12 @@ import { randomBytes } from 'crypto'
 import { promises as fs } from 'fs'
 import { Logger } from 'pino'
 import { proto } from '../Proto'
-import { MEDIA_KEYS, URL_EXCLUDE_REGEX, URL_REGEX, WA_DEFAULT_EPHEMERAL } from '../Defaults'
+import {
+	MEDIA_KEYS,
+	URL_EXCLUDE_REGEX,
+	URL_REGEX,
+	WA_DEFAULT_EPHEMERAL
+} from '../Base'
 import {
 	AnyMediaMessageContent,
 	AnyMessageContent,
@@ -24,10 +29,23 @@ import {
 	WAProto,
 	WATextMessage,
 } from '../Types'
-import { isJidGroup, jidNormalizedUser } from '../Binary'
+import {
+	isJidGroup,
+	jidNormalizedUser
+} from '../Binary'
 import { sha256 } from './crypto'
-import { generateMessageID, getKeyAuthor, unixTimestampSeconds } from './generics'
-import { downloadContentFromMessage, encryptedStream, generateThumbnail, getAudioDuration, MediaDownloadOptions } from './messages-media'
+import {
+	generateMessageID,
+	getKeyAuthor,
+	unixTimestampSeconds
+} from './generics'
+import {
+	downloadContentFromMessage,
+	encryptedStream,
+	generateThumbnail,
+	getAudioDuration,
+	MediaDownloadOptions
+} from './messages-media'
 
 type MediaUploadData = {
 	media: WAMediaUpload

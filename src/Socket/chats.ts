@@ -1,11 +1,47 @@
 import { Boom } from '@hapi/boom'
 import { proto } from '../Proto'
-import { PROCESSABLE_HISTORY_TYPES } from '../Defaults'
-import { ALL_WA_PATCH_NAMES, ChatModification, ChatMutation, LTHashState, MessageUpsertType, PresenceData, SocketConfig, WABusinessHoursConfig, WABusinessProfile, WAMediaUpload, WAMessage, WAPatchCreate, WAPatchName, WAPresence, WAPrivacyOnlineValue, WAPrivacyValue, WAReadReceiptsValue } from '../Types'
-import { chatModificationToAppPatch, ChatMutationMap, decodePatches, decodeSyncdSnapshot, encodeSyncdPatch, extractSyncdPatches, generateProfilePicture, getHistoryMsg, newLTHashState, processSyncAction } from '../Utils'
+import { PROCESSABLE_HISTORY_TYPES } from '../Base'
+import {
+	ALL_WA_PATCH_NAMES,
+	ChatModification,
+	ChatMutation,
+	LTHashState,
+	MessageUpsertType,
+	PresenceData,
+	SocketConfig,
+	WABusinessHoursConfig,
+	WABusinessProfile,
+	WAMediaUpload,
+	WAMessage,
+	WAPatchCreate,
+	WAPatchName,
+	WAPresence,
+	WAPrivacyOnlineValue,
+	WAPrivacyValue,
+	WAReadReceiptsValue
+} from '../Types'
+import {
+	chatModificationToAppPatch,
+	ChatMutationMap,
+	decodePatches,
+	decodeSyncdSnapshot,
+	encodeSyncdPatch,
+	extractSyncdPatches,
+	generateProfilePicture,
+	getHistoryMsg,
+	newLTHashState,
+	processSyncAction
+} from '../Utils'
 import { makeMutex } from '../Utils/make-mutex'
 import processMessage from '../Utils/process-message'
-import { BinaryNode, getBinaryNodeChild, getBinaryNodeChildren, jidNormalizedUser, reduceBinaryNodeToDictionary, S_WHATSAPP_NET } from '../Binary'
+import {
+	BinaryNode,
+	getBinaryNodeChild,
+	getBinaryNodeChildren,
+	jidNormalizedUser,
+	reduceBinaryNodeToDictionary,
+	S_WHATSAPP_NET
+} from '../Binary'
 import { makeSocket } from './socket'
 
 const MAX_SYNC_ATTEMPTS = 2
@@ -52,7 +88,10 @@ export const makeChatsSocket = (config: SocketConfig) => {
 					type: 'get'
 				},
 				content: [
-					{ tag: 'privacy', attrs: { } }
+					{
+						tag: 'privacy',
+						attrs: { }
+					}
 				]
 			})
 			privacySettings = reduceBinaryNodeToDictionary(content?.[0] as BinaryNode, 'category')
@@ -76,33 +115,36 @@ export const makeChatsSocket = (config: SocketConfig) => {
 					content: [
 						{
 							tag: 'category',
-							attrs: { name, value }
+							attrs: {
+								name,
+								value
+							}
 						}
 					]
 				}]
 			})
 		}
-	
+
 		const updateLastSeenPrivacy = async(value: WAPrivacyValue) => {
 			await privacyQuery('last', value)
 		}
-	
+
 		const updateOnlinePrivacy = async(value: WAPrivacyOnlineValue) => {
 			await privacyQuery('online', value)
 		}
-	
+
 		const updateProfilePicturePrivacy = async(value: WAPrivacyValue) => {
 			await privacyQuery('profile', value)
 		}
-	
+
 		const updateReadReceiptsPrivacy = async(value: WAReadReceiptsValue) => {
 			await privacyQuery('readreceipts', value)
 		}
-	
+
 		const updateGroupsAddPrivacy = async(value: WAPrivacyValue) => {
 			await privacyQuery('groupadd', value)
 		}
-	
+
 		const updateDefaultDisappearingMode = async(duration: number) => {
 			await query({
 				tag: 'iq',

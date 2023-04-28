@@ -1,6 +1,10 @@
 import type { Logger } from 'pino'
 import { proto } from '../Proto'
-import type { AuthenticationCreds, AuthenticationState, SignalDataTypeMap } from '../Types'
+import type {
+	AuthenticationCreds,
+	AuthenticationState,
+	SignalDataTypeMap
+} from '../Types'
 import { initAuthCreds } from './auth-utils'
 import { BufferJSON } from './generics'
 

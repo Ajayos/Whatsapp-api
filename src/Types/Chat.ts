@@ -3,9 +3,8 @@ import type { AccountSettings } from './Auth'
 import type { BufferedEventData } from './Events'
 import type { MinimalMessage } from './Message'
 
-/** set of statuses visible to other people; see updatePresence() in WhatsAppWeb.Send */
 export type WAPresence = 'unavailable' | 'available' | 'composing' | 'recording' | 'paused'
-/** privacy settings in WhatsApp Web */
+
 export type WAPrivacyValue = 'all' | 'contacts' | 'contact_blacklist' | 'none'
 
 export type WAPrivacyOnlineValue = 'all' | 'match_last_seen'
@@ -41,7 +40,6 @@ export type WAPatchCreate = {
 }
 
 export type Chat = proto.IConversation & {
-    /** unix timestamp of when the last message was received in the chat */
     lastMessageRecvTimestamp?: number
 }
 
@@ -69,32 +67,39 @@ export type ChatModification =
         archive: boolean
         lastMessages: LastMessageList
     }
-    | { pushNameSetting: string }
-    | { pin: boolean }
     | {
-        /** mute for duration, or provide timestamp of mute to remove*/
+        pushNameSetting: string
+    } | {
+        pin: boolean
+    } | {
         mute: number | null
-    }
-    | {
-        clear: 'all' | { messages: {id: string, fromMe?: boolean, timestamp: number}[] }
-    }
-    | {
+    } | {
+        clear: 'all' | {
+            messages: {
+                id: string,
+                fromMe?: boolean,
+                timestamp: number
+            }[]
+        }
+    } | {
         star: {
-            messages: { id: string, fromMe?: boolean }[]
+            messages: {
+                id: string,
+                fromMe?: boolean
+            }[]
             star: boolean
         }
-    }
-    | {
+    } | {
         markRead: boolean
         lastMessages: LastMessageList
+    } | {
+        delete: true,
+        lastMessages: LastMessageList
     }
-    | { delete: true, lastMessages: LastMessageList }
 
 export type InitialReceivedChatsState = {
     [jid: string]: {
-        /** the last message received from the other party */
         lastMsgRecvTimestamp?: number
-        /** the absolute last message in the chat */
         lastMsgTimestamp: number
     }
 }

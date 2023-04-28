@@ -1,8 +1,25 @@
-import { GetCatalogOptions, ProductCreate, ProductUpdate, SocketConfig } from '../Types'
-import { parseCatalogNode, parseCollectionsNode, parseOrderDetailsNode, parseProductNode, toProductNode, uploadingNecessaryImagesOfProduct } from '../Utils/business'
-import { BinaryNode, jidNormalizedUser, S_WHATSAPP_NET } from '../Binary'
+import {
+	GetCatalogOptions,
+	ProductCreate,
+	ProductUpdate,
+	SocketConfig
+} from '../Types'
+import {
+	parseCatalogNode,
+	parseCollectionsNode,
+	parseOrderDetailsNode,
+	parseProductNode,
+	toProductNode,
+	uploadingNecessaryImagesOfProduct
+} from '../Utils/business'
+import {
+	BinaryNode,
+	jidNormalizedUser,
+	S_WHATSAPP_NET
+} from '../Binary'
 import { getBinaryNodeChild } from '../Binary/generic-utils'
-import { makeMessagesRecvSocket } from './messages-recv'
+import { makeMessagesRecvSocket } from './receive'
+
 
 export const makeBusinessSocket = (config: SocketConfig) => {
 	const sock = makeMessagesRecvSocket(config)

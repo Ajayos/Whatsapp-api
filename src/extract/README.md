@@ -5,4 +5,4 @@ Derived initially from `whatseow`'s proto extract, this version generates a pred
 ## Usage
 1. Install dependencies with `yarn` (or `npm install`)
 2. `yarn start`
-3. The script will update `../WAProto/WAProto.proto` (except if something is broken)
+3. The script will update `../Proto/Proto.proto` (except if something is broken)

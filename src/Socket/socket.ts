@@ -2,11 +2,41 @@ import { Boom } from '@hapi/boom'
 import { promisify } from 'util'
 import WebSocket from 'ws'
 import { proto } from '../Proto'
-import { DEF_CALLBACK_PREFIX, DEF_TAG_PREFIX, DEFAULT_ORIGIN, INITIAL_PREKEY_COUNT, MIN_PREKEY_COUNT } from '../Defaults'
-import { DisconnectReason, SocketConfig } from '../Types'
-import { addTransactionCapability, bindWaitForConnectionUpdate, configureSuccessfulPairing, Curve, generateLoginNode, generateMdTagPrefix, generateRegistrationNode, getCodeFromWSError, getErrorCodeFromStreamError, getNextPreKeysNode, makeNoiseHandler, printQRIfNecessaryListener, promiseTimeout } from '../Utils'
+import {
+	DEF_CALLBACK_PREFIX,
+	DEF_TAG_PREFIX,
+	DEFAULT_ORIGIN,
+	INITIAL_PREKEY_COUNT,
+	MIN_PREKEY_COUNT
+} from '../Base'
+import {
+	DisconnectReason,
+	SocketConfig
+} from '../Types'
+import {
+	addTransactionCapability,
+	bindWaitForConnectionUpdate,
+	configureSuccessfulPairing,
+	Curve,
+	generateLoginNode,
+	generateMdTagPrefix,
+	generateRegistrationNode,
+	getCodeFromWSError,
+	getErrorCodeFromStreamError,
+	getNextPreKeysNode,
+	makeNoiseHandler,
+	printQRIfNecessaryListener,
+	promiseTimeout
+} from '../Utils'
 import { makeEventBuffer } from '../Utils/event-buffer'
-import { assertNodeErrorFree, BinaryNode, encodeBinaryNode, getBinaryNodeChild, getBinaryNodeChildren, S_WHATSAPP_NET } from '../Binary'
+import {
+	assertNodeErrorFree,
+	BinaryNode,
+	encodeBinaryNode,
+	getBinaryNodeChild,
+	getBinaryNodeChildren,
+	S_WHATSAPP_NET
+} from '../Binary'
 
 /**
  * Connects to WA servers and performs:
@@ -84,7 +114,14 @@ export const makeSocket = ({
 	/** send a binary node */
 	const sendNode = (frame: BinaryNode) => {
 		if(logger.level === 'trace') {
-			logger.trace({ msgId: frame.attrs.id, fromMe: true, frame }, 'communication')
+			logger.trace(
+				{
+					msgId: frame.attrs.id,
+					fromMe: true,
+					frame
+				},
+				'communication'
+			)
 		}
 
 		const buff = encodeBinaryNode(frame)

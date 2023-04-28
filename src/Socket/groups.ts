@@ -1,12 +1,34 @@
 import { proto } from '../Proto'
-import { GroupMetadata, GroupParticipant, ParticipantAction, SocketConfig, WAMessageKey, WAMessageStubType } from '../Types'
-import { generateMessageID, unixTimestampSeconds } from '../Utils'
-import { BinaryNode, getBinaryNodeChild, getBinaryNodeChildren, getBinaryNodeChildString, jidEncode, jidNormalizedUser } from '../Binary'
+import {
+	GroupMetadata,
+	GroupParticipant,
+	ParticipantAction,
+	SocketConfig,
+	WAMessageKey,
+	WAMessageStubType
+} from '../Types'
+import {
+	generateMessageID,
+	unixTimestampSeconds
+} from '../Utils'
+import {
+	BinaryNode,
+	getBinaryNodeChild,
+	getBinaryNodeChildren,
+	getBinaryNodeChildString,
+	jidEncode,
+	jidNormalizedUser
+} from '../Binary'
 import { makeChatsSocket } from './chats'
 
 export const makeGroupsSocket = (config: SocketConfig) => {
 	const sock = makeChatsSocket(config)
-	const { authState, ev, query, upsertMessage } = sock
+	const {
+		authState,
+		ev,
+		query,
+		upsertMessage
+	} = sock
 
 	const groupQuery = async(jid: string, type: 'get' | 'set', content: BinaryNode[]) => (
 		query({

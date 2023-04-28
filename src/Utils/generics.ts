@@ -2,8 +2,16 @@ import { Boom } from '@hapi/boom'
 import { randomBytes } from 'crypto'
 import { Logger } from 'pino'
 import { proto } from '../Proto'
-import { BaileysEventEmitter, BaileysEventMap, DisconnectReason, WACallUpdateType } from '../Types'
-import { BinaryNode, getAllBinaryNodeChildren } from '../Binary'
+import {
+	KeerthanaEventEmitter,
+	KeerthanaEventMap,
+	DisconnectReason,
+	WACallUpdateType
+} from '../Types'
+import {
+	BinaryNode,
+	getAllBinaryNodeChildren
+} from '../Binary'
 
 
 
@@ -156,9 +164,9 @@ export async function promiseTimeout<T>(ms: number | undefined, promise: (resolv
 // generate a random ID to attach to a message
 export const generateMessageID = () => 'BAE5' + randomBytes(6).toString('hex').toUpperCase()
 
-export function bindWaitForEvent<T extends keyof BaileysEventMap>(ev: BaileysEventEmitter, event: T) {
-	return async(check: (u: BaileysEventMap[T]) => boolean | undefined, timeoutMs?: number) => {
-		let listener: (item: BaileysEventMap[T]) => void
+export function bindWaitForEvent<T extends keyof KeerthanaEventMap>(ev: KeerthanaEventEmitter, event: T) {
+	return async(check: (u: KeerthanaEventMap[T]) => boolean | undefined, timeoutMs?: number) => {
+		let listener: (item: KeerthanaEventMap[T]) => void
 		let closeListener: any
 		await (
 			promiseTimeout<void>(
@@ -191,9 +199,9 @@ export function bindWaitForEvent<T extends keyof BaileysEventMap>(ev: BaileysEve
 	}
 }
 
-export const bindWaitForConnectionUpdate = (ev: BaileysEventEmitter) => bindWaitForEvent(ev, 'connection.update')
+export const bindWaitForConnectionUpdate = (ev: KeerthanaEventEmitter) => bindWaitForEvent(ev, 'connection.update')
 
-export const printQRIfNecessaryListener = (ev: BaileysEventEmitter, logger: Logger) => {
+export const printQRIfNecessaryListener = (ev: KeerthanaEventEmitter, logger: Logger) => {
 	ev.on('connection.update', async({ qr }) => {
 		if(qr) {
 			const QR = await import('qrcode-terminal')
@@ -236,7 +244,7 @@ const CODE_MAP: { [_: string]: DisconnectReason } = {
 }
 
 /**
- * Stream errors generally provide a reason, map that to a baileys DisconnectReason
+ * Stream errors generally provide a reason, map that to a Keerthana DisconnectReason
  * @param reason the string reason given, eg. "conflict"
  */
 export const getErrorCodeFromStreamError = (node: BinaryNode) => {

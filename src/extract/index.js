@@ -361,7 +361,7 @@ async function findAppModules() {
 	const sortedStr = decodedProto.map(d => decodedProtoMap[d]).join('\n')
 
 	const decodedProtoStr = `syntax = "proto2";\npackage proto;\n\n${sortedStr}`
-	const destinationPath = '../WAProto/WAProto.proto'
+	const destinationPath = '../Proto/Proto.proto'
 	await fs.writeFile(destinationPath, decodedProtoStr)
 
 	console.log(`Extracted protobuf schema to "${destinationPath}"`)

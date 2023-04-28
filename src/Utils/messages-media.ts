@@ -3,18 +3,49 @@ import { AxiosRequestConfig } from 'axios'
 import { exec } from 'child_process'
 import * as Crypto from 'crypto'
 import { once } from 'events'
-import { createReadStream, createWriteStream, promises as fs, WriteStream } from 'fs'
+import {
+	createReadStream,
+	createWriteStream,
+	promises as fs,
+	WriteStream
+} from 'fs'
 import type { IAudioMetadata } from 'music-metadata'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import type { Logger } from 'pino'
-import { Readable, Transform } from 'stream'
+import { Readable,
+	Transform } from 'stream'
 import { URL } from 'url'
 import { proto } from '../Proto'
-import { DEFAULT_ORIGIN, MEDIA_HKDF_KEY_MAPPING, MEDIA_PATH_MAP } from '../Defaults'
-import { BaileysEventMap, DownloadableMessage, MediaConnInfo, MediaDecryptionKeyInfo, MediaType, MessageType, SocketConfig, WAGenericMediaMessage, WAMediaUpload, WAMediaUploadFunction, WAMessageContent } from '../Types'
-import { BinaryNode, getBinaryNodeChild, getBinaryNodeChildBuffer, jidNormalizedUser } from '../Binary'
-import { aesDecryptGCM, aesEncryptGCM, hkdf } from './crypto'
+import {
+	DEFAULT_ORIGIN,
+	MEDIA_HKDF_KEY_MAPPING,
+	MEDIA_PATH_MAP
+} from '../Base'
+import {
+	KeerthanaEventMap,
+	DownloadableMessage,
+	MediaConnInfo,
+	MediaDecryptionKeyInfo,
+	MediaType,
+	MessageType,
+	SocketConfig,
+	WAGenericMediaMessage,
+	WAMediaUpload,
+	WAMediaUploadFunction,
+	WAMessageContent
+} from '../Types'
+import {
+	BinaryNode,
+	getBinaryNodeChild,
+	getBinaryNodeChildBuffer,
+	jidNormalizedUser
+} from '../Binary'
+import {
+	aesDecryptGCM,
+	aesEncryptGCM,
+	hkdf
+} from './crypto'
 import { generateMessageID } from './generics'
 
 const getTmpFilesDirectory = () => tmpdir()
@@ -686,7 +717,7 @@ export const encryptMediaRetryRequest = (
 export const decodeMediaRetryNode = (node: BinaryNode) => {
 	const rmrNode = getBinaryNodeChild(node, 'rmr')!
 
-	const event: BaileysEventMap['messages.media-update'][number] = {
+	const event: KeerthanaEventMap['messages.media-update'][number] = {
 		key: {
 			id: node.attrs.id,
 			remoteJid: rmrNode.attrs.jid,

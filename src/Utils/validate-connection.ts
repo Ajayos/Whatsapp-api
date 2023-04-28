@@ -1,10 +1,22 @@
 import { Boom } from '@hapi/boom'
 import { createHash } from 'crypto'
 import { proto } from '../Proto'
-import { KEY_BUNDLE_TYPE } from '../Defaults'
-import type { AuthenticationCreds, SignalCreds, SocketConfig } from '../Types'
-import { BinaryNode, getBinaryNodeChild, jidDecode, S_WHATSAPP_NET } from '../Binary'
-import { Curve, hmacSign } from './crypto'
+import { KEY_BUNDLE_TYPE } from '../Base'
+import type {
+	AuthenticationCreds,
+	SignalCreds,
+	SocketConfig
+} from '../Types'
+import {
+	BinaryNode,
+	getBinaryNodeChild,
+	jidDecode,
+	S_WHATSAPP_NET
+} from '../Binary'
+import {
+	Curve,
+	hmacSign
+} from './crypto'
 import { encodeBigEndian } from './generics'
 import { createSignalIdentity } from './signal'
 
