@@ -1,14 +1,19 @@
 import Pino from 'pino'
 
-import { Sequelize, DataTypes } from 'sequelize';
+import sqlite3  from 'sqlite3';
+
 import { proto } from '../Proto'
 import { makeLibSignalRepository } from '../Signal/libsignal'
 import type { AuthenticationState, MediaType, SocketConfig } from '../Types'
 
-export const DATABASE = new Sequelize({ dialect: "sqlite", storage: './keerthana.sql', logging: false })
-
-export const DBTypes = DataTypes;
-
+const sqlite = sqlite3.verbose();
+const DATABASE = new sqlite.Database('./DB/keerthana.sql', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {if (err) return console.error(err.message)});
+export  {DATABASE};
+/**
+ * @ignore
+ * loger
+ */
+export const logger = Pino({ level: 'info' })
 export const UNAUTHORIZED_CODES = [401, 403, 419]
 
 export const DEFAULT_ORIGIN = 'https://web.whatsapp.com'
@@ -37,7 +42,7 @@ export const PROCESSABLE_HISTORY_TYPES = [
 ]
 
 export const DEFAULT_CONNECTION_CONFIG: SocketConfig = {
-	version: [2, 2308, 7],
+	version: [2, 2317, 10],
 	browser: ['KEERTHANA', 'Safari', '109.0.5414.74'],
 	waWebSocketUrl: 'wss://web.whatsapp.com/ws/chat',
 	connectTimeoutMs: 20_000,

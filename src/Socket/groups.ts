@@ -220,6 +220,26 @@ export const makeGroupsSocket = (config: SocketConfig) => {
 
 			return results.attrs.from
 		}),
+		groupToggleMembershipApprovalMode: async(jid: string, value: 'on' | 'off') => {
+			await groupQuery(
+				jid,
+				'set',
+				[
+					{
+						tag: 'membership_approval_mode',
+						attrs: { },
+						content: [
+							{
+								tag: 'group_join',
+								attrs: {
+									'state': value
+								}
+							}
+						]
+					}
+				]
+			)
+		},
 		groupGetInviteInfo: async(code: string) => {
 			const results = await groupQuery('@g.us', 'get', [{ tag: 'invite', attrs: { code } }])
 			return extractGroupMetadata(results)
@@ -252,6 +272,7 @@ export const makeGroupsSocket = (config: SocketConfig) => {
 					}
 				]
 			})
+			
 			const data: { [_: string]: GroupMetadata } = { }
 			const groupsChild = getBinaryNodeChild(result, 'groups')
 			if(groupsChild) {
@@ -281,7 +302,9 @@ export const extractGroupMetadata = (result: BinaryNode) => {
 		desc = getBinaryNodeChildString(descChild, 'body')
 		descId = descChild.attrs.id
 	}
-
+	const approvalMode = getBinaryNodeChild(
+		getBinaryNodeChild(group, 'membership_approval_mode'), 'group_join'
+	)?.attrs?.state
 	const groupId = group.attrs.id.includes('@') ? group.attrs.id : jidEncode(group.attrs.id, 'g.us')
 	const eph = getBinaryNodeChild(group, 'ephemeral')?.attrs.expiration
 	const metadata: GroupMetadata = {
@@ -296,6 +319,7 @@ export const extractGroupMetadata = (result: BinaryNode) => {
 		descId,
 		restrict: !!getBinaryNodeChild(group, 'locked'),
 		announce: !!getBinaryNodeChild(group, 'announcement'),
+		membershipApprovalMode: approvalMode === 'on',
 		participants: getBinaryNodeChildren(group, 'participant').map(
 			({ attrs }) => {
 				return {

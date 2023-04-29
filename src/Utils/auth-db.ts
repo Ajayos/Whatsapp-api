@@ -6,16 +6,10 @@ import {
 } from '../Types'
 import { initAuthCreds } from './auth-utils'
 import { BufferJSON } from './generics'
+import { DATABASE } from '../Base'
 
 
-/**
- * stores the full authentication state in a single folder.
- * Far more efficient than singlefileauthstate
- *
- * Again, I wouldn't endorse this for any production level use other than perhaps a bot.
- * Would recommend writing an auth state for use with a proper SQL or No-SQL DB
- * */
-export const useDBAuthState = async(DB: any): Promise<{ state: AuthenticationState, saveCreds: () => Promise<void> }> => {
+export const useDBAuthState = async(): Promise<{ state: AuthenticationState, saveCreds: () => Promise<void> }> => {
 	const createTable = async(): Promise<void> => {
         const sql = `
           CREATE TABLE IF NOT EXISTS Authentication (
@@ -23,7 +17,7 @@ export const useDBAuthState = async(DB: any): Promise<{ state: AuthenticationSta
             DATA JSON not null
           )`;
         return new Promise((resolve, reject) => {
-          DB.run(sql, [], (err) => {
+          DATABASE.run(sql, [], (err) => {
             if (err) {
               reject(err);
             } else {
@@ -38,7 +32,7 @@ export const useDBAuthState = async(DB: any): Promise<{ state: AuthenticationSta
           await createTable();
           const sql = `SELECT * FROM Authentication WHERE FileName = ?`;
           return new Promise((resolve, reject) => {
-            DB.get(sql, [name], (err, row) => {
+            DATABASE.get(sql, [name], (err, row) => {
               if (err) {
                 reject(err);
               } else {
@@ -56,7 +50,7 @@ export const useDBAuthState = async(DB: any): Promise<{ state: AuthenticationSta
                 await createTable();
                 const sql = `INSERT OR REPLACE INTO Authentication(FileName, DATA) VALUES (?, ?)`;
                 return new Promise<any>((resolve, reject) => {
-                  DB.run(sql, [name, data], function (this: import("sqlite3").RunResult, err) {
+                  DATABASE.run(sql, [name, data], function (this: import("sqlite3").RunResult, err) {
                     if (err) {
                       reject(err);
                     } else {
@@ -67,7 +61,6 @@ export const useDBAuthState = async(DB: any): Promise<{ state: AuthenticationSta
               } catch (err) {
                 throw err;
               }
-              
     };
     async function deleteAllAuth() {
         try {
@@ -75,7 +68,7 @@ export const useDBAuthState = async(DB: any): Promise<{ state: AuthenticationSta
           const sql = `DELETE FROM Authentication`;
           return new Promise((resolve, reject) => {
             return new Promise<number>((resolve, reject) => {
-                DB.run(sql, [], function (this: import("sqlite3").RunResult, err) {
+                DATABASE.run(sql, [], function (this: import("sqlite3").RunResult, err) {
                   if (err) {
                     reject(err);
                   } else {
@@ -94,7 +87,7 @@ export const useDBAuthState = async(DB: any): Promise<{ state: AuthenticationSta
           const sql = `DELETE FROM Authentication WHERE FileName = ?`;
           return new Promise((resolve, reject) => {
             return new Promise<number>((resolve, reject) => {
-                DB.run(sql, [name], function (this: import("sqlite3").RunResult, err) {
+                DATABASE.run(sql, [name], function (this: import("sqlite3").RunResult, err) {
                   if (err) {
                     reject(err);
                   } else {

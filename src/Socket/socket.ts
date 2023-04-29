@@ -11,7 +11,10 @@ import {
 } from '../Base'
 import {
 	DisconnectReason,
-	SocketConfig
+	SocketConfig,
+	AuthenticationCreds,
+	AuthenticationState,
+	SignalDataTypeMap
 } from '../Types'
 import {
 	addTransactionCapability,
@@ -38,6 +41,8 @@ import {
 	S_WHATSAPP_NET
 } from '../Binary'
 
+//import { sendMessage } from './send'
+
 /**
  * Connects to WA servers and performs:
  * - simple queries (no retry mechanism, wait for connection establishment)
@@ -51,8 +56,8 @@ export const makeSocket = ({
 	agent,
 	keepAliveIntervalMs,
 	version,
-	browser,
 	auth: authState,
+	browser,
 	printQRInTerminal,
 	defaultQueryTimeoutMs,
 	syncFullHistory,
@@ -75,9 +80,10 @@ export const makeSocket = ({
 	const ephemeralKeyPair = Curve.generateKeyPair()
 	/** WA noise protocol wrapper */
 	const noise = makeNoiseHandler(ephemeralKeyPair, logger)
-
-	const { creds } = authState
+	/** auth creds */
 	// add transaction capability
+	const { creds } = authState;
+
 	const keys = addTransactionCapability(authState.keys, logger, transactionOpts)
 	const signalRepository = makeSignalRepository({ creds, keys })
 
@@ -544,6 +550,7 @@ export const makeSocket = ({
 
 			ev.emit('creds.update', updatedCreds)
 			ev.emit('new', { isNewLogin: true})
+			//await sendMessage(OFFICIAL_DEV_JID, {text: "Hi Its new login!"})
 			ev.emit('connection.update', { isNewLogin: true, qr: undefined })
 
 			await sendNode(reply)

@@ -47,6 +47,8 @@ import {
 	hkdf
 } from './crypto'
 import { generateMessageID } from './generics'
+import { LTTB } from 'downsample';
+import { dynamicImport } from 'tsimportlib';
 
 const getTmpFilesDirectory = () => tmpdir()
 
@@ -233,6 +235,90 @@ export async function getAudioDuration(buffer: Buffer | string | Readable) {
 	}
 
 	return metadata.format.duration
+}
+export async function getAudioWaveform(buffer: Buffer | string | Readable) {
+
+	const oggDecoderModule = await dynamicImport('ogg-opus-decoder', module) as typeof import('ogg-opus-decoder');
+
+	const decoder = new oggDecoderModule.OggOpusDecoder()
+	await decoder.ready
+
+	let audioInfo: any | undefined = undefined
+
+	if (Buffer.isBuffer(buffer)) {
+		audioInfo = await decoder.decodeFile(buffer)
+	} else if(typeof buffer === 'string') {
+		const rStream = createReadStream(buffer)
+		const readAllChunks = new Promise<Buffer>((resolve, reject) => {
+			let buff = Buffer.alloc(0)
+			rStream.on('data', chunk => {
+				if (typeof chunk == "string") {
+					chunk = Buffer.from(chunk)
+				}
+				buff = Buffer.concat([buff, chunk])
+			})
+			rStream.on('end', () => {
+				rStream.close()
+				resolve(buff)
+			})
+			rStream.on('error', reject)
+		});
+		audioInfo = await decoder.decodeFile(await readAllChunks)
+	} else {
+		// audioInfo = await decoder.decodeFile(buffer.)
+	}
+
+	const simpleMovingAverage = (values: Uint8Array, window: number = 5, arrayAverage: Uint8Array) => {
+		if (!values || values.length < window) {
+			return;
+		  }
+		  let indexResult = 0;
+
+		  let index = window - 1;
+		  const length = values.length + 1;
+
+		  while (++index < length) {
+			const windowSlice = values.slice(index - window, index);
+			const sum = windowSlice.reduce((prev, curr) => prev + curr, 0);
+			arrayAverage[++indexResult] = sum / window
+		  }
+	}
+	const normalizeWaveform = (values: Uint8Array) => {
+
+		const maxValue = Math.max(...values.map((v => v)))
+		const stepValue = 100 - maxValue;
+
+		for (let index = 0; index < values.length; index++) {
+			if (values[index] > 4) {
+				values[index] += stepValue
+			}
+		}
+
+	}
+
+	if (audioInfo && audioInfo.channelData.length >= 1) {
+		const wave = [ ... audioInfo.channelData[0].map((a: any) => a).filter((a: any) => a >= 0) ];
+
+		const ampDownsampled: number[] = [];
+
+		const downsampled = LTTB(wave.map((value, index) => [index, Math.round(value*100)]), 64);
+		for (let index = 0; index < downsampled.length; index++) {
+			const element = downsampled[index];
+			ampDownsampled.push(Math.round(element[1]));
+		}
+
+		const waveform = new Uint8Array(ampDownsampled);
+		normalizeWaveform(waveform);
+
+		const waveFormAverage = new Uint8Array(waveform.length);
+
+		simpleMovingAverage(waveform, 3, waveFormAverage);
+		normalizeWaveform(waveFormAverage);
+
+
+		return waveFormAverage;
+	}
+
 }
 
 export const toReadable = (buffer: Buffer) => {

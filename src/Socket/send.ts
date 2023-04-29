@@ -731,6 +731,7 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 			options: MiscMessageGenerationOptions = {}
 		) => {
 			const userJid = authState.creds.me!.id
+			console.log(userJid)
 			if (
 				typeof content === 'object' &&
 				'disappearingMessagesInChat' in content &&

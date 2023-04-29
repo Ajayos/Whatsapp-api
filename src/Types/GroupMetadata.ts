@@ -23,6 +23,7 @@ export interface GroupMetadata {
     descId?: string
     restrict?: boolean
     announce?: boolean
+    membershipApprovalMode?: boolean
     size?: number
     participants: GroupParticipant[]
     ephemeralDuration?: number
