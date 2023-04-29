@@ -1,6 +1,6 @@
 {
     "name": "@ajayos/whatsapp",
-    "version": "15.0.0",
+    "version": "15.0.5",
     "description": "WhatsApp API",
     "homepage": "https://github.com/Ajayos/whatsapp-api",
     "keywords": [
@@ -30,7 +30,8 @@
         "url": "git@github.com:Ajayos/whatsapp-api.git"
     },
     "dependencies": {
-        "@ajayos/nodedb": "^1.0.3",
+        "@ajayos/libsignal": "^2.0.1",
+        "@ajayos/nodedb": "^1.0.4",
         "@hapi/boom": "^9.1.4",
         "acorn": "^8.8.2",
         "acorn-walk": "^8.2.0",
@@ -40,7 +41,6 @@
         "fs": "^0.0.1-security",
         "futoin-hkdf": "^1.5.1",
         "jimp": "^0.16.1",
-        "@ajayos/libsignal": "^2.0.1",
         "link-preview-js": "^3.0.0",
         "music-metadata": "^7.12.3",
         "node-cache": "^5.1.2",

@@ -6,17 +6,17 @@ import {
 } from '../Types'
 import { initAuthCreds } from './auth-utils'
 import { BufferJSON } from './generics'
-import { setDB, getDB, deleteDB } from '@ajayos/nodedb'
+import { setDATA, getDATA, deleteDATA } from '@ajayos/nodedb'
 
 export const useDBAuthState = async(): Promise<{ state: AuthenticationState, saveCreds: () => Promise<void> }> => {
 
   const writeData = (data: any, file: string) => {
-    return setDB('Authentication', file, JSON.stringify(data, BufferJSON.replacer));
+    return setDATA('Authentication', file, JSON.stringify(data, BufferJSON.replacer));
   };
 
 	const readData = async(file: string) => {
 		try {
-      const data_ = await getDB('Authentication', file);
+      const data_ = await getDATA('Authentication', file);
       const data = JSON.parse(data_, BufferJSON.reviver);
       return data;
 		} catch(error) {
@@ -26,7 +26,7 @@ export const useDBAuthState = async(): Promise<{ state: AuthenticationState, sav
 
 	const removeData = async(file: string) => {
 		try {
-      return await deleteDB('Authentication', file);
+      return await deleteDATA('Authentication', file);
 		} catch{
       return  false;
 		}
