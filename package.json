@@ -31,7 +31,7 @@
     },
     "dependencies": {
         "@ajayos/libsignal": "^2.0.1",
-        "@ajayos/nodedb": "^1.0.4",
+        "@ajayos/nodedb": "^1.0.5",
         "@hapi/boom": "^9.1.4",
         "acorn": "^8.8.2",
         "acorn-walk": "^8.2.0",
