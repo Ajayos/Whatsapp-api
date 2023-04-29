@@ -1,5 +1,5 @@
 const SenderKeyMessage = require('./sender_key_message');
-const crypto = require('libsignal/src/crypto');
+const crypto = require('@ajayos/libsignal/src/crypto');
 
 class GroupCipher {
   constructor(senderKeyStore, senderKeyName) {
