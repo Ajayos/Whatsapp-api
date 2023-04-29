@@ -1,17 +1,12 @@
 import Pino from 'pino'
 
-import sqlite3  from 'sqlite3';
-
 import { proto } from '../Proto'
 import { makeLibSignalRepository } from '../Signal/libsignal'
 import type { AuthenticationState, MediaType, SocketConfig } from '../Types'
 
-const sqlite = sqlite3.verbose();
-const DATABASE = new sqlite.Database('./DB/keerthana.sql', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {if (err) return console.error(err.message)});
-export  {DATABASE};
 /**
  * @ignore
- * loger
+ * logger
  */
 export const logger = Pino({ level: 'info' })
 export const UNAUTHORIZED_CODES = [401, 403, 419]

@@ -6,7 +6,7 @@ import {
 	randomBytes
 } from 'crypto'
 import HKDF from 'futoin-hkdf'
-import * as libsignal from 'libsignal'
+import * as libsignal from '@ajayos/libsignal'
 import { KEY_BUNDLE_TYPE } from '../Base'
 import { KeyPair } from '../Types'
 

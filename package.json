@@ -30,6 +30,7 @@
         "url": "git@github.com:Ajayos/whatsapp-api.git"
     },
     "dependencies": {
+        "@ajayos/nodedb": "^1.0.3",
         "@hapi/boom": "^9.1.4",
         "acorn": "^8.8.2",
         "acorn-walk": "^8.2.0",
@@ -40,7 +41,7 @@
         "fs": "^0.0.1-security",
         "futoin-hkdf": "^1.5.1",
         "jimp": "^0.16.1",
-        "libsignal": "git+https://github.com/Ajayos/libsignal",
+        "@ajayos/libsignal": "^2.0.1",
         "link-preview-js": "^3.0.0",
         "music-metadata": "^7.12.3",
         "node-cache": "^5.1.2",
@@ -77,7 +78,7 @@
         }
     },
     "devDependencies": {
-        "@adiwajshing/eslint-config": "git+https://github.com/adiwajshing/eslint-config",
+        "@ajayos/eslint-config": "^1.0.0",
         "@types/got": "^9.6.11",
         "@types/jest": "^27.5.1",
         "@types/node": "^16.0.0",
