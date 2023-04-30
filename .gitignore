@@ -8,3 +8,4 @@ lib/
 package-lock.json
 .npmrc
 .sql
+src/
