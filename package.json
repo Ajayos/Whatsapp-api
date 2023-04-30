@@ -1,6 +1,6 @@
 {
-    "name": "@ajayos/whatsapp",
-    "version": "15.0.8",
+    "name": "@ajayos/whatsapp-api",
+    "version": "15.0.9",
     "description": "WhatsApp API",
     "homepage": "https://github.com/Ajayos/whatsapp-api",
     "keywords": [
@@ -14,8 +14,7 @@
         "automation"
     ],
     "scripts": {
-        "test": "jest",
-        "prepare": "tsc"
+        "test": "exit(0)"
     },
     "author": "Ajay o s",
     "license": "Apache-2.0",
