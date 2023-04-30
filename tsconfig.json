@@ -3,9 +3,9 @@
     "target": "es2018",
     "module": "commonjs",
     "experimentalDecorators": true,
-    "allowJs": false,
+    "allowJs": true,
     "checkJs": false,
-    "outDir": "lib",
+    "outDir": "./",
     "strict": false,
     "strictNullChecks": true,
     "skipLibCheck": true,
@@ -16,6 +16,6 @@
     "declaration": true,
     "lib": ["es2020", "esnext.array", "DOM"]
   },
-  "include": ["./src/**/*.ts"],
+  "include": ["./src/**/*"],
   "exclude": ["node_modules", "src/Tests/*", "src/Binary/GenerateStatics.ts"]
 }

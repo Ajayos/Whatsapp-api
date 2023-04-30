@@ -1,5 +1,5 @@
 import * as libsignal from '@ajayos/libsignal'
-import { GroupCipher, GroupSessionBuilder, SenderKeyDistributionMessage, SenderKeyName, SenderKeyRecord } from '../SignalGroup'
+import { GroupCipher, GroupSessionBuilder, SenderKeyDistributionMessage, SenderKeyName, SenderKeyRecord } from './'
 import { SignalAuthState } from '../Types'
 import { SignalRepository } from '../Types/Signal'
 import { generateSignalPubKey } from '../Utils'

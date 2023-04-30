@@ -3,5 +3,8 @@
 
 node_modules/
 jspm_packages/
+logs/
+lib/
+package-lock.json
 .npmrc
 .sql

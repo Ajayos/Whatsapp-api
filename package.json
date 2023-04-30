@@ -1,6 +1,6 @@
 {
     "name": "@ajayos/whatsapp",
-    "version": "15.0.5",
+    "version": "15.0.8",
     "description": "WhatsApp API",
     "homepage": "https://github.com/Ajayos/whatsapp-api",
     "keywords": [
@@ -15,14 +15,7 @@
     ],
     "scripts": {
         "test": "jest",
-        "prepare": "tsc",
-        "build:all": "tsc && typedoc",
-        "build:docs": "typedoc",
-        "build:tsc": "tsc",
-        "example": "node --inspect -r ts-node/register Example/example.ts",
-        "gen:protobuf": "sh src/Proto/GenerateStatics.sh",
-        "lint": "eslint . --ext .js,.ts,.jsx,.tsx",
-        "lint:fix": "eslint . --fix --ext .js,.ts,.jsx,.tsx"
+        "prepare": "tsc"
     },
     "author": "Ajay o s",
     "license": "Apache-2.0",
@@ -31,7 +24,8 @@
     },
     "dependencies": {
         "@ajayos/libsignal": "^2.0.1",
-        "@ajayos/nodedb": "^1.0.5",
+        "@ajayos/nodedb": "^1.0.7",
+        "@ajayos/nodelogger": "^1.0.3",
         "@hapi/boom": "^9.1.4",
         "acorn": "^8.8.2",
         "acorn-walk": "^8.2.0",
