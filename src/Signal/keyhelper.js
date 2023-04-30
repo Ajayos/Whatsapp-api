@@ -1,4 +1,4 @@
-const curve = require('libsignal/src/curve');
+const curve = require('@ajayos/libsignal/src/curve');
 const nodeCrypto = require('crypto');
 
 exports.generateSenderKey = function() {
