@@ -622,7 +622,7 @@ export const makeMessagesRecvSocket = (config: SocketConfig) => {
 					if(msg.messageStubType === proto.WebMessageInfo.StubType.CIPHERTEXT) {
 						retryMutex.mutex(
 							async() => {
-								if(ws.readyState === ws.OPEN) {
+								if(ws.isOpen) {
 									const encNode = getBinaryNodeChild(node, 'enc')
 									await sendRetryRequest(node, !encNode)
 									if(retryRequestDelayMs) {

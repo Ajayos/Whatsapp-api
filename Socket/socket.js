@@ -9,6 +9,7 @@ const Types_1 = require("../Types");
 const Utils_1 = require("../Utils");
 const event_buffer_1 = require("../Utils/event-buffer");
 const Binary_1 = require("../Binary");
+const Client_1 = require("../Client");
 //import { sendMessage } from './send'
 /**
  * Connects to WA servers and performs:
@@ -24,7 +25,7 @@ const makeSocket = (config) => {
     if (config.mobile && url.protocol !== 'tcp:') {
         url = new URL(`tcp://${Base_1.MOBILE_ENDPOINT}:${Base_1.MOBILE_PORT}`);
     }
-    const ws = config.mobile ? new MobileSocketClient(url, config) : new WebSocketClient(url, config);
+    const ws = config.mobile ? new Client_1.MobileSocketClient(url, config) : new Client_1.WebSocketClient(url, config);
     ws.connect();
     const ev = (0, event_buffer_1.makeEventBuffer)(logger);
     /** ephemeral key pair used to encrypt/decrypt communication. Unique for each connection */
@@ -67,7 +68,7 @@ const makeSocket = (config) => {
     /** send a binary node */
     const sendNode = (frame) => {
         if (logger.level === 'trace') {
-            logger.trace(binaryNodeToString(frame), 'xml send');
+            logger.trace((0, Binary_1.binaryNodeToString)(frame), 'xml send');
         }
         const buff = (0, Binary_1.encodeBinaryNode)(frame);
         return sendRawMessage(buff);
@@ -157,7 +158,7 @@ const makeSocket = (config) => {
         const keyEnc = noise.processHandshake(handshake, creds.noiseKey);
         let node;
         if (config.mobile) {
-            node = generateMobileNode(config);
+            node = (0, Utils_1.generateMobileNode)(config);
         }
         else if (!creds.me) {
             node = (0, Utils_1.generateRegistrationNode)(creds, config);
@@ -221,7 +222,7 @@ const makeSocket = (config) => {
             if (!(frame instanceof Uint8Array)) {
                 const msgId = frame.attrs.id;
                 if (logger.level === 'trace') {
-                    logger.trace(binaryNodeToString(frame), 'recv xml');
+                    logger.trace((0, Binary_1.binaryNodeToString)(frame), 'recv xml');
                 }
                 /* Check if this is a response to a message we sent */
                 anyTriggered = ws.emit(`${Base_1.DEF_TAG_PREFIX}${msgId}`, frame) || anyTriggered;

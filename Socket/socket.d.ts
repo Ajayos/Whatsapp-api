@@ -2,6 +2,7 @@
 import { Boom } from '@hapi/boom';
 import { SocketConfig } from '../Types';
 import { BinaryNode } from '../Binary';
+import { MobileSocketClient, WebSocketClient } from '../Client';
 /**
  * Connects to WA servers and performs:
  * - simple queries (no retry mechanism, wait for connection establishment)
@@ -10,7 +11,7 @@ import { BinaryNode } from '../Binary';
  */
 export declare const makeSocket: (config: SocketConfig) => {
     type: "md";
-    ws: any;
+    ws: MobileSocketClient | WebSocketClient;
     ev: import("../Types").KeerthanaEventEmitter & {
         process(handler: (events: Partial<import("../Types").KeerthanaEventMap>) => void | Promise<void>): () => void;
         buffer(): void;

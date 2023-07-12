@@ -484,7 +484,7 @@ const makeMessagesRecvSocket = (config) => {
                 // message failed to decrypt
                 if (msg.messageStubType === Proto_1.proto.WebMessageInfo.StubType.CIPHERTEXT) {
                     retryMutex.mutex(async () => {
-                        if (ws.readyState === ws.OPEN) {
+                        if (ws.isOpen) {
                             const encNode = (0, Binary_1.getBinaryNodeChild)(node, 'enc');
                             await sendRetryRequest(node, !encNode);
                             if (retryRequestDelayMs) {

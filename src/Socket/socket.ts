@@ -24,6 +24,7 @@ import {
 	Curve,
 	generateLoginNode,
 	generateMdTagPrefix,
+	generateMobileNode,
 	generateRegistrationNode,
 	getCodeFromWSError,
 	getErrorCodeFromStreamError,
@@ -39,9 +40,10 @@ import {
 	encodeBinaryNode,
 	getBinaryNodeChild,
 	getBinaryNodeChildren,
-	S_WHATSAPP_NET
+	S_WHATSAPP_NET,
+	binaryNodeToString
 } from '../Binary'
-
+import { MobileSocketClient, WebSocketClient } from '../Client'
 //import { sendMessage } from './send'
 
 /**

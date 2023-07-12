@@ -94,7 +94,7 @@ export declare const makeBusinessSocket: (config: SocketConfig) => {
     addMessageLabel: (jid: string, messageId: string, labelId: string) => Promise<void>;
     removeMessageLabel: (jid: string, messageId: string, labelId: string) => Promise<void>;
     type: "md";
-    ws: any;
+    ws: import("../Client").MobileSocketClient | import("../Client").WebSocketClient;
     ev: import("../Types").KeerthanaEventEmitter & {
         process(handler: (events: Partial<import("../Types").KeerthanaEventMap>) => void | Promise<void>): () => void;
         buffer(): void;
