@@ -49,11 +49,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish in GITHUB
-        run: npm publish --access public --registry=https://npm.pkg.github.com
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
-
       - name: Generate Changelog
         id: generate_changelog
         run: |
