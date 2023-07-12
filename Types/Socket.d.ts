@@ -8,19 +8,20 @@ import { proto } from '../Proto';
 import { AuthenticationState, SignalAuthState, TransactionCapabilityOptions } from './Auth';
 import { MediaConnInfo } from './Message';
 import { SignalRepository } from './Signal';
-export declare type WAVersion = [number, number, number];
-export declare type WABrowserDescription = [string, string, string];
-export declare type CacheStore = {
+export type WAVersion = [number, number, number];
+export type WABrowserDescription = [string, string, string];
+export type CacheStore = {
     get<T>(key: string): T | undefined;
     set<T>(key: string, value: T): void;
     del(key: string): void;
     flushAll(): void;
 };
-export declare type SocketConfig = {
+export type SocketConfig = {
     waWebSocketUrl: string | URL;
     connectTimeoutMs: number;
     defaultQueryTimeoutMs: number | undefined;
     keepAliveIntervalMs: number;
+    mobile?: boolean;
     agent?: Agent;
     logger: Logger;
     version: WAVersion;

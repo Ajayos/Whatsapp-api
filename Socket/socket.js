@@ -1,12 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeSocket = void 0;
 const boom_1 = require("@hapi/boom");
 const util_1 = require("util");
-const ws_1 = __importDefault(require("ws"));
 const Proto_1 = require("../Proto");
 const Base_1 = require("../Base");
 const Types_1 = require("../Types");
@@ -20,23 +16,28 @@ const Binary_1 = require("../Binary");
  * - listen to messages and emit events
  * - query phone connection
  */
-const makeSocket = ({ waWebSocketUrl, connectTimeoutMs, logger, agent, keepAliveIntervalMs, version, auth: authState, browser, printQRInTerminal, defaultQueryTimeoutMs, syncFullHistory, transactionOpts, qrTimeout, options, makeSignalRepository }) => {
-    const ws = new ws_1.default(waWebSocketUrl, undefined, {
-        origin: Base_1.DEFAULT_ORIGIN,
-        headers: options.headers,
-        handshakeTimeout: connectTimeoutMs,
-        timeout: connectTimeoutMs,
-        agent
-    });
-    ws.setMaxListeners(0);
+const makeSocket = (config) => {
+    var _a, _b;
+    const { waWebSocketUrl, connectTimeoutMs, logger, keepAliveIntervalMs, browser, auth: authState, printQRInTerminal, defaultQueryTimeoutMs, transactionOpts, qrTimeout, makeSignalRepository, } = config;
+    let url = typeof waWebSocketUrl === 'string' ? new URL(waWebSocketUrl) : waWebSocketUrl;
+    config.mobile = config.mobile || ((_b = (_a = config.auth) === null || _a === void 0 ? void 0 : _a.creds) === null || _b === void 0 ? void 0 : _b.registered) || url.protocol === 'tcp:';
+    if (config.mobile && url.protocol !== 'tcp:') {
+        url = new URL(`tcp://${Base_1.MOBILE_ENDPOINT}:${Base_1.MOBILE_PORT}`);
+    }
+    const ws = config.mobile ? new MobileSocketClient(url, config) : new WebSocketClient(url, config);
+    ws.connect();
     const ev = (0, event_buffer_1.makeEventBuffer)(logger);
     /** ephemeral key pair used to encrypt/decrypt communication. Unique for each connection */
     const ephemeralKeyPair = Utils_1.Curve.generateKeyPair();
     /** WA noise protocol wrapper */
-    const noise = (0, Utils_1.makeNoiseHandler)(ephemeralKeyPair, logger);
-    /** auth creds */
-    // add transaction capability
+    const noise = (0, Utils_1.makeNoiseHandler)({
+        keyPair: ephemeralKeyPair,
+        NOISE_HEADER: config.mobile ? Base_1.MOBILE_NOISE_HEADER : Base_1.NOISE_WA_HEADER,
+        mobile: config.mobile,
+        logger
+    });
     const { creds } = authState;
+    // add transaction capability
     const keys = (0, Utils_1.addTransactionCapability)(authState.keys, logger, transactionOpts);
     const signalRepository = makeSignalRepository({ creds, keys });
     let lastDateRecv;
@@ -49,7 +50,7 @@ const makeSocket = ({ waWebSocketUrl, connectTimeoutMs, logger, agent, keepAlive
     const sendPromise = (0, util_1.promisify)(ws.send);
     /** send a raw buffer */
     const sendRawMessage = async (data) => {
-        if (ws.readyState !== ws.OPEN) {
+        if (!ws.isOpen) {
             throw new boom_1.Boom('Connection Closed', { statusCode: Types_1.DisconnectReason.connectionClosed });
         }
         const bytes = noise.encodeFrame(data);
@@ -66,11 +67,7 @@ const makeSocket = ({ waWebSocketUrl, connectTimeoutMs, logger, agent, keepAlive
     /** send a binary node */
     const sendNode = (frame) => {
         if (logger.level === 'trace') {
-            logger.trace({
-                msgId: frame.attrs.id,
-                fromMe: true,
-                frame
-            }, 'communication');
+            logger.trace(binaryNodeToString(frame), 'xml send');
         }
         const buff = (0, Binary_1.encodeBinaryNode)(frame);
         return sendRawMessage(buff);
@@ -81,7 +78,7 @@ const makeSocket = ({ waWebSocketUrl, connectTimeoutMs, logger, agent, keepAlive
     };
     /** await the next incoming message */
     const awaitNextMessage = async (sendMsg) => {
-        if (ws.readyState !== ws.OPEN) {
+        if (!ws.isOpen) {
             throw new boom_1.Boom('Connection Closed', {
                 statusCode: Types_1.DisconnectReason.connectionClosed
             });
@@ -152,15 +149,17 @@ const makeSocket = ({ waWebSocketUrl, connectTimeoutMs, logger, agent, keepAlive
             clientHello: { ephemeral: ephemeralKeyPair.public }
         };
         helloMsg = Proto_1.proto.HandshakeMessage.fromObject(helloMsg);
-        logger.info({ browser, helloMsg }, 'connected to WA Web');
+        logger.info({ browser, helloMsg }, 'connected to WA');
         const init = Proto_1.proto.HandshakeMessage.encode(helloMsg).finish();
         const result = await awaitNextMessage(init);
         const handshake = Proto_1.proto.HandshakeMessage.decode(result);
-        logger.trace({ handshake }, 'handshake recv from WA Web');
+        logger.trace({ handshake }, 'handshake recv from WA');
         const keyEnc = noise.processHandshake(handshake, creds.noiseKey);
-        const config = { version, browser, syncFullHistory };
         let node;
-        if (!creds.me) {
+        if (config.mobile) {
+            node = generateMobileNode(config);
+        }
+        else if (!creds.me) {
             node = (0, Utils_1.generateRegistrationNode)(creds, config);
             logger.info({ node }, 'not logged in, attempting registration...');
         }
@@ -222,7 +221,7 @@ const makeSocket = ({ waWebSocketUrl, connectTimeoutMs, logger, agent, keepAlive
             if (!(frame instanceof Uint8Array)) {
                 const msgId = frame.attrs.id;
                 if (logger.level === 'trace') {
-                    logger.trace({ msgId, fromMe: false, frame }, 'communication');
+                    logger.trace(binaryNodeToString(frame), 'recv xml');
                 }
                 /* Check if this is a response to a message we sent */
                 anyTriggered = ws.emit(`${Base_1.DEF_TAG_PREFIX}${msgId}`, frame) || anyTriggered;
@@ -256,7 +255,7 @@ const makeSocket = ({ waWebSocketUrl, connectTimeoutMs, logger, agent, keepAlive
         ws.removeAllListeners('error');
         ws.removeAllListeners('open');
         ws.removeAllListeners('message');
-        if (ws.readyState !== ws.CLOSED && ws.readyState !== ws.CLOSING) {
+        if (!ws.isClosed && !ws.isClosing) {
             try {
                 ws.close();
             }
@@ -272,10 +271,10 @@ const makeSocket = ({ waWebSocketUrl, connectTimeoutMs, logger, agent, keepAlive
         ev.removeAllListeners('connection.update');
     };
     const waitForSocketOpen = async () => {
-        if (ws.readyState === ws.OPEN) {
+        if (ws.isOpen) {
             return;
         }
-        if (ws.readyState === ws.CLOSED || ws.readyState === ws.CLOSING) {
+        if (ws.isClosed || ws.isClosing) {
             throw new boom_1.Boom('Connection Closed', { statusCode: Types_1.DisconnectReason.connectionClosed });
         }
         let onOpen;
@@ -305,7 +304,7 @@ const makeSocket = ({ waWebSocketUrl, connectTimeoutMs, logger, agent, keepAlive
         if (diff > keepAliveIntervalMs + 5000) {
             end(new boom_1.Boom('Connection was lost', { statusCode: Types_1.DisconnectReason.connectionLost }));
         }
-        else if (ws.readyState === ws.OPEN) {
+        else if (ws.isOpen) {
             // if its all good, send a keep alive request
             query({
                 tag: 'iq',
@@ -395,7 +394,7 @@ const makeSocket = ({ waWebSocketUrl, connectTimeoutMs, logger, agent, keepAlive
         const advB64 = creds.advSecretKey;
         let qrMs = qrTimeout || 60000; // time to let a QR live
         const genPairQR = () => {
-            if (ws.readyState !== ws.OPEN) {
+            if (!ws.isOpen) {
                 return;
             }
             const refNode = refNodes.shift();
@@ -421,7 +420,6 @@ const makeSocket = ({ waWebSocketUrl, connectTimeoutMs, logger, agent, keepAlive
             logger.info({ me: updatedCreds.me, platform: updatedCreds.platform }, 'pairing configured successfully, expect to restart the connection...');
             ev.emit('creds.update', updatedCreds);
             ev.emit('new', { isNewLogin: true });
-            //await sendMessage(OFFICIAL_DEV_JID, {text: "Hi Its new login!"})
             ev.emit('connection.update', { isNewLogin: true, qr: undefined });
             await sendNode(reply);
         }

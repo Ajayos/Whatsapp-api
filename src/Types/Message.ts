@@ -52,6 +52,10 @@ type Mentionable = {
     mentions?: string[]
 }
 
+type Editable = {
+    edit?: WAMessageKey
+}
+
 type Contextable = {
     contextInfo?: proto.IContextInfo
 }
@@ -142,8 +146,8 @@ export type AnyMediaMessageContent = (
     )
 )
 & {
-    mimetype?: string
-}
+    mimetype?: string 
+} & Editable
 
 export type ButtonReplyInfo = {
     displayText: string
@@ -166,6 +170,7 @@ export type AnyRegularMessageContent = (
         & Buttonable
         & Templatable
         & Listable
+        & Editable
     ) | AnyMediaMessageContent |
     (
         {
@@ -175,6 +180,7 @@ export type AnyRegularMessageContent = (
         & Mentionable
         & Buttonable
         & Templatable
+        & Editable
     ) |
     {
         contacts: {
@@ -204,6 +210,7 @@ export type AnyRegularMessageContent = (
 )
 & ViewOnce
 & Contextable
+& Editable
 
 export type AnyMessageContent = AnyRegularMessageContent | {
 	forward: WAMessage

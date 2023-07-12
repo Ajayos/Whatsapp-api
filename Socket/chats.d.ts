@@ -1,5 +1,4 @@
 /// <reference types="node" />
-/// <reference types="ws" />
 import { Boom } from '@hapi/boom';
 import { proto } from '../Proto';
 import { ChatModification, MessageUpsertType, SocketConfig, WABusinessProfile, WAMediaUpload, WAPatchCreate, WAPresence, WAPrivacyOnlineValue, WAPrivacyValue, WAReadReceiptsValue } from '../Types';
@@ -32,6 +31,7 @@ export declare const makeChatsSocket: (config: SocketConfig) => {
     updateBlockStatus: (jid: string, action: 'block' | 'unblock') => Promise<void>;
     updateLastSeenPrivacy: (value: WAPrivacyValue) => Promise<void>;
     updateOnlinePrivacy: (value: WAPrivacyOnlineValue) => Promise<void>;
+    updateStatusPrivacy: (value: WAPrivacyValue) => Promise<void>;
     updateProfilePicturePrivacy: (value: WAPrivacyValue) => Promise<void>;
     updateReadReceiptsPrivacy: (value: WAReadReceiptsValue) => Promise<void>;
     updateGroupsAddPrivacy: (value: WAPrivacyValue) => Promise<void>;
@@ -39,8 +39,13 @@ export declare const makeChatsSocket: (config: SocketConfig) => {
     getBusinessProfile: (jid: string) => Promise<WABusinessProfile | void>;
     resyncAppState: (collections: readonly ("critical_block" | "critical_unblock_low" | "regular_high" | "regular_low" | "regular")[], isInitialSync: boolean) => Promise<void>;
     chatModify: (mod: ChatModification, jid: string) => Promise<void>;
+    cleanDirtyBits: (type: 'account_sync' | 'groups', fromTimestamp?: number | string) => Promise<void>;
+    addChatLabel: (jid: string, labelId: string) => Promise<void>;
+    removeChatLabel: (jid: string, labelId: string) => Promise<void>;
+    addMessageLabel: (jid: string, messageId: string, labelId: string) => Promise<void>;
+    removeMessageLabel: (jid: string, messageId: string, labelId: string) => Promise<void>;
     type: "md";
-    ws: import("ws");
+    ws: any;
     ev: import("../Types").KeerthanaEventEmitter & {
         process(handler: (events: Partial<import("../Types").KeerthanaEventMap>) => void | Promise<void>): () => void;
         buffer(): void;

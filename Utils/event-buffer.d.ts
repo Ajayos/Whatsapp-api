@@ -7,8 +7,8 @@ import { KeerthanaEventEmitter, KeerthanaEventMap } from '../Types';
  * this can make processing events extremely efficient -- since everything
  * can be done in a single transaction
  */
-declare type KeerthanaEventData = Partial<KeerthanaEventMap>;
-declare type KeerthanaBufferableEventEmitter = KeerthanaEventEmitter & {
+type KeerthanaEventData = Partial<KeerthanaEventMap>;
+type KeerthanaBufferableEventEmitter = KeerthanaEventEmitter & {
     /** Use to process events in a batch */
     process(handler: (events: KeerthanaEventData) => void | Promise<void>): (() => void);
     /**

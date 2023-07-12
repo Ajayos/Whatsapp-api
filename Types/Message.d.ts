@@ -10,31 +10,31 @@ import { MEDIA_HKDF_KEY_MAPPING } from '../Base';
 import type { GroupMetadata } from './GroupMetadata';
 import { CacheStore } from './Socket';
 export { proto as WAProto };
-export declare type WAMessage = proto.IWebMessageInfo;
-export declare type WAMessageContent = proto.IMessage;
-export declare type WAContactMessage = proto.Message.IContactMessage;
-export declare type WAContactsArrayMessage = proto.Message.IContactsArrayMessage;
-export declare type WAMessageKey = proto.IMessageKey;
-export declare type WATextMessage = proto.Message.IExtendedTextMessage;
-export declare type WAContextInfo = proto.IContextInfo;
-export declare type WALocationMessage = proto.Message.ILocationMessage;
-export declare type WAGenericMediaMessage = proto.Message.IVideoMessage | proto.Message.IImageMessage | proto.Message.IAudioMessage | proto.Message.IDocumentMessage | proto.Message.IStickerMessage;
+export type WAMessage = proto.IWebMessageInfo;
+export type WAMessageContent = proto.IMessage;
+export type WAContactMessage = proto.Message.IContactMessage;
+export type WAContactsArrayMessage = proto.Message.IContactsArrayMessage;
+export type WAMessageKey = proto.IMessageKey;
+export type WATextMessage = proto.Message.IExtendedTextMessage;
+export type WAContextInfo = proto.IContextInfo;
+export type WALocationMessage = proto.Message.ILocationMessage;
+export type WAGenericMediaMessage = proto.Message.IVideoMessage | proto.Message.IImageMessage | proto.Message.IAudioMessage | proto.Message.IDocumentMessage | proto.Message.IStickerMessage;
 export import WAMessageStubType = proto.WebMessageInfo.StubType;
 export import WAMessageStatus = proto.WebMessageInfo.Status;
-export declare type WAMediaUpload = Buffer | {
+export type WAMediaUpload = Buffer | {
     url: URL | string;
 } | {
     stream: Readable;
 };
 /** Set of message types that are supported by the library */
-export declare type MessageType = keyof proto.Message;
-export declare type DownloadableMessage = {
+export type MessageType = keyof proto.Message;
+export type DownloadableMessage = {
     mediaKey?: Uint8Array | null;
     directPath?: string | null;
     url?: string | null;
 };
-export declare type MessageReceiptType = 'read' | 'read-self' | 'hist_sync' | 'peer_msg' | 'sender' | 'inactive' | 'played' | undefined;
-export declare type MediaConnInfo = {
+export type MessageReceiptType = 'read' | 'read-self' | 'hist_sync' | 'peer_msg' | 'sender' | 'inactive' | 'played' | undefined;
+export type MediaConnInfo = {
     auth: string;
     ttl: number;
     hosts: {
@@ -52,40 +52,43 @@ export interface WAUrlInfo {
     highQualityThumbnail?: proto.Message.IImageMessage;
     originalThumbnailUrl?: string;
 }
-declare type Mentionable = {
+type Mentionable = {
     mentions?: string[];
 };
-declare type Contextable = {
+type Editable = {
+    edit?: WAMessageKey;
+};
+type Contextable = {
     contextInfo?: proto.IContextInfo;
 };
-declare type ViewOnce = {
+type ViewOnce = {
     viewOnce?: boolean;
 };
-declare type Buttonable = {
+type Buttonable = {
     buttons?: proto.Message.ButtonsMessage.IButton[];
 };
-declare type Templatable = {
+type Templatable = {
     templateButtons?: proto.IHydratedTemplateButton[];
     footer?: string;
 };
-declare type Listable = {
+type Listable = {
     sections?: proto.Message.ListMessage.ISection[];
     title?: string;
     buttonText?: string;
 };
-declare type WithDimensions = {
+type WithDimensions = {
     width?: number;
     height?: number;
 };
-export declare type PollMessageOptions = {
+export type PollMessageOptions = {
     name: string;
     selectableCount?: number;
     values: Array<string>;
     /** 32 byte message secret to encrypt poll selections */
     messageSecret?: Uint8Array;
 };
-export declare type MediaType = keyof typeof MEDIA_HKDF_KEY_MAPPING;
-export declare type AnyMediaMessageContent = (({
+export type MediaType = keyof typeof MEDIA_HKDF_KEY_MAPPING;
+export type AnyMediaMessageContent = (({
     image: WAMediaUpload;
     caption?: string;
     jpegThumbnail?: string;
@@ -108,21 +111,21 @@ export declare type AnyMediaMessageContent = (({
     caption?: string;
 } & Contextable & Buttonable & Templatable)) & {
     mimetype?: string;
-};
-export declare type ButtonReplyInfo = {
+} & Editable;
+export type ButtonReplyInfo = {
     displayText: string;
     id: string;
     index: number;
 };
-export declare type WASendableProduct = Omit<proto.Message.ProductMessage.IProductSnapshot, 'productImage'> & {
+export type WASendableProduct = Omit<proto.Message.ProductMessage.IProductSnapshot, 'productImage'> & {
     productImage: WAMediaUpload;
 };
-export declare type AnyRegularMessageContent = (({
+export type AnyRegularMessageContent = (({
     text: string;
     linkPreview?: WAUrlInfo | null;
-} & Contextable & Mentionable & Buttonable & Templatable & Listable) | AnyMediaMessageContent | ({
+} & Contextable & Mentionable & Buttonable & Templatable & Listable & Editable) | AnyMediaMessageContent | ({
     poll: PollMessageOptions;
-} & Contextable & Mentionable & Buttonable & Templatable) | {
+} & Contextable & Mentionable & Buttonable & Templatable & Editable) | {
     contacts: {
         displayName?: string;
         contacts: proto.Message.IContactMessage[];
@@ -141,8 +144,8 @@ export declare type AnyRegularMessageContent = (({
     businessOwnerJid?: string;
     body?: string;
     footer?: string;
-}) & ViewOnce & Contextable;
-export declare type AnyMessageContent = AnyRegularMessageContent | {
+}) & ViewOnce & Contextable & Editable;
+export type AnyMessageContent = AnyRegularMessageContent | {
     forward: WAMessage;
     force?: boolean;
 } | {
@@ -150,12 +153,12 @@ export declare type AnyMessageContent = AnyRegularMessageContent | {
 } | {
     disappearingMessagesInChat: boolean | number;
 };
-export declare type GroupMetadataParticipants = Pick<GroupMetadata, 'participants'>;
-declare type MinimalRelayOptions = {
+export type GroupMetadataParticipants = Pick<GroupMetadata, 'participants'>;
+type MinimalRelayOptions = {
     messageId?: string;
     cachedGroupMetadata?: (jid: string) => Promise<GroupMetadataParticipants | undefined>;
 };
-export declare type MessageRelayOptions = MinimalRelayOptions & {
+export type MessageRelayOptions = MinimalRelayOptions & {
     participant?: {
         jid: string;
         count: number;
@@ -165,16 +168,16 @@ export declare type MessageRelayOptions = MinimalRelayOptions & {
     };
     useUserDevicesCache?: boolean;
 };
-export declare type MiscMessageGenerationOptions = MinimalRelayOptions & {
+export type MiscMessageGenerationOptions = MinimalRelayOptions & {
     timestamp?: Date;
     quoted?: WAMessage;
     ephemeralExpiration?: number | string;
     mediaUploadTimeoutMs?: number;
 };
-export declare type MessageGenerationOptionsFromContent = MiscMessageGenerationOptions & {
+export type MessageGenerationOptionsFromContent = MiscMessageGenerationOptions & {
     userJid: string;
 };
-export declare type WAMediaUploadFunction = (readStream: Readable, opts: {
+export type WAMediaUploadFunction = (readStream: Readable, opts: {
     fileEncSha256B64: string;
     mediaType: MediaType;
     timeoutMs?: number;
@@ -182,7 +185,7 @@ export declare type WAMediaUploadFunction = (readStream: Readable, opts: {
     mediaUrl: string;
     directPath: string;
 }>;
-export declare type MediaGenerationOptions = {
+export type MediaGenerationOptions = {
     logger?: Logger;
     mediaTypeOverride?: MediaType;
     upload: WAMediaUploadFunction;
@@ -190,33 +193,33 @@ export declare type MediaGenerationOptions = {
     mediaUploadTimeoutMs?: number;
     options?: AxiosRequestConfig;
 };
-export declare type MessageContentGenerationOptions = MediaGenerationOptions & {
+export type MessageContentGenerationOptions = MediaGenerationOptions & {
     getUrlInfo?: (text: string) => Promise<WAUrlInfo | undefined>;
 };
-export declare type MessageGenerationOptions = MessageContentGenerationOptions & MessageGenerationOptionsFromContent;
+export type MessageGenerationOptions = MessageContentGenerationOptions & MessageGenerationOptionsFromContent;
 /**
  * Type of message upsert
  * 1. notify => notify the user, this message was just received
  * 2. append => append the message to the chat history, no notification required
  */
-export declare type MessageUpsertType = 'append' | 'notify';
-export declare type MessageUserReceipt = proto.IUserReceipt;
-export declare type WAMessageUpdate = {
+export type MessageUpsertType = 'append' | 'notify';
+export type MessageUserReceipt = proto.IUserReceipt;
+export type WAMessageUpdate = {
     update: Partial<WAMessage>;
     key: proto.IMessageKey;
 };
-export declare type WAMessageCursor = {
+export type WAMessageCursor = {
     before: WAMessageKey | undefined;
 } | {
     after: WAMessageKey | undefined;
 };
-export declare type MessageUserReceiptUpdate = {
+export type MessageUserReceiptUpdate = {
     key: proto.IMessageKey;
     receipt: MessageUserReceipt;
 };
-export declare type MediaDecryptionKeyInfo = {
+export type MediaDecryptionKeyInfo = {
     iv: Buffer;
     cipherKey: Buffer;
     macKey?: Buffer;
 };
-export declare type MinimalMessage = Pick<proto.IWebMessageInfo, 'key' | 'messageTimestamp'>;
+export type MinimalMessage = Pick<proto.IWebMessageInfo, 'key' | 'messageTimestamp'>;

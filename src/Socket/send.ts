@@ -354,7 +354,7 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 		useUserDevicesCache = useUserDevicesCache !== false
 
 		const participants: BinaryNode[] = []
-		const destinationServer = isGroup ? 'g.us' : (isBroadcast ? 'broadcast': 's.whatsapp.net')
+		const destinationServer = isGroup ? 'g.us' : (isBroadcast ? 'broadcast' : 's.whatsapp.net')
 		const destinationJid = jidEncode(user, destinationServer)
 		const binaryNodeContent: BinaryNode[] = []
 		const devices: JidWithDevice[] = []

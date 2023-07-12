@@ -1,18 +1,25 @@
 /*eslint-disable block-scoped-var, id-length, no-control-regex, no-magic-numbers, no-prototype-builtins, no-redeclare, no-shadow, no-var, sort-vars*/
 "use strict";
+
 var $protobuf = require("protobufjs/minimal");
+
 // Common aliases
 var $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.util;
+
 // Exported root namespace
 var $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
-$root.groupproto = (function () {
+
+$root.groupproto = (function() {
+
     /**
      * Namespace groupproto.
      * @exports groupproto
      * @namespace
      */
     var groupproto = {};
-    groupproto.SenderKeyMessage = (function () {
+
+    groupproto.SenderKeyMessage = (function() {
+
         /**
          * Properties of a SenderKeyMessage.
          * @memberof groupproto
@@ -21,6 +28,7 @@ $root.groupproto = (function () {
          * @property {number|null} [iteration] SenderKeyMessage iteration
          * @property {Uint8Array|null} [ciphertext] SenderKeyMessage ciphertext
          */
+
         /**
          * Constructs a new SenderKeyMessage.
          * @memberof groupproto
@@ -35,6 +43,7 @@ $root.groupproto = (function () {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
         /**
          * SenderKeyMessage id.
          * @member {number} id
@@ -42,6 +51,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderKeyMessage.prototype.id = 0;
+
         /**
          * SenderKeyMessage iteration.
          * @member {number} iteration
@@ -49,6 +59,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderKeyMessage.prototype.iteration = 0;
+
         /**
          * SenderKeyMessage ciphertext.
          * @member {Uint8Array} ciphertext
@@ -56,6 +67,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderKeyMessage.prototype.ciphertext = $util.newBuffer([]);
+
         /**
          * Creates a new SenderKeyMessage instance using the specified properties.
          * @function create
@@ -67,6 +79,7 @@ $root.groupproto = (function () {
         SenderKeyMessage.create = function create(properties) {
             return new SenderKeyMessage(properties);
         };
+
         /**
          * Encodes the specified SenderKeyMessage message. Does not implicitly {@link groupproto.SenderKeyMessage.verify|verify} messages.
          * @function encode
@@ -80,13 +93,14 @@ $root.groupproto = (function () {
             if (!writer)
                 writer = $Writer.create();
             if (message.id != null && Object.hasOwnProperty.call(message, "id"))
-                writer.uint32(/* id 1, wireType 0 =*/ 8).uint32(message.id);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.id);
             if (message.iteration != null && Object.hasOwnProperty.call(message, "iteration"))
-                writer.uint32(/* id 2, wireType 0 =*/ 16).uint32(message.iteration);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.iteration);
             if (message.ciphertext != null && Object.hasOwnProperty.call(message, "ciphertext"))
-                writer.uint32(/* id 3, wireType 2 =*/ 26).bytes(message.ciphertext);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.ciphertext);
             return writer;
         };
+
         /**
          * Encodes the specified SenderKeyMessage message, length delimited. Does not implicitly {@link groupproto.SenderKeyMessage.verify|verify} messages.
          * @function encodeDelimited
@@ -99,6 +113,7 @@ $root.groupproto = (function () {
         SenderKeyMessage.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
+
         /**
          * Decodes a SenderKeyMessage message from the specified reader or buffer.
          * @function decode
@@ -117,22 +132,23 @@ $root.groupproto = (function () {
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1:
-                        message.id = reader.uint32();
-                        break;
-                    case 2:
-                        message.iteration = reader.uint32();
-                        break;
-                    case 3:
-                        message.ciphertext = reader.bytes();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                case 1:
+                    message.id = reader.uint32();
+                    break;
+                case 2:
+                    message.iteration = reader.uint32();
+                    break;
+                case 3:
+                    message.ciphertext = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
+
         /**
          * Decodes a SenderKeyMessage message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
@@ -148,6 +164,7 @@ $root.groupproto = (function () {
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
+
         /**
          * Verifies a SenderKeyMessage message.
          * @function verify
@@ -170,6 +187,7 @@ $root.groupproto = (function () {
                     return "ciphertext: buffer expected";
             return null;
         };
+
         /**
          * Creates a SenderKeyMessage message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
@@ -193,6 +211,7 @@ $root.groupproto = (function () {
                     message.ciphertext = object.ciphertext;
             return message;
         };
+
         /**
          * Creates a plain object from a SenderKeyMessage message. Also converts values to other types if specified.
          * @function toObject
@@ -225,6 +244,7 @@ $root.groupproto = (function () {
                 object.ciphertext = options.bytes === String ? $util.base64.encode(message.ciphertext, 0, message.ciphertext.length) : options.bytes === Array ? Array.prototype.slice.call(message.ciphertext) : message.ciphertext;
             return object;
         };
+
         /**
          * Converts this SenderKeyMessage to JSON.
          * @function toJSON
@@ -235,9 +255,12 @@ $root.groupproto = (function () {
         SenderKeyMessage.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
+
         return SenderKeyMessage;
     })();
-    groupproto.SenderKeyDistributionMessage = (function () {
+
+    groupproto.SenderKeyDistributionMessage = (function() {
+
         /**
          * Properties of a SenderKeyDistributionMessage.
          * @memberof groupproto
@@ -247,6 +270,7 @@ $root.groupproto = (function () {
          * @property {Uint8Array|null} [chainKey] SenderKeyDistributionMessage chainKey
          * @property {Uint8Array|null} [signingKey] SenderKeyDistributionMessage signingKey
          */
+
         /**
          * Constructs a new SenderKeyDistributionMessage.
          * @memberof groupproto
@@ -261,6 +285,7 @@ $root.groupproto = (function () {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
         /**
          * SenderKeyDistributionMessage id.
          * @member {number} id
@@ -268,6 +293,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderKeyDistributionMessage.prototype.id = 0;
+
         /**
          * SenderKeyDistributionMessage iteration.
          * @member {number} iteration
@@ -275,6 +301,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderKeyDistributionMessage.prototype.iteration = 0;
+
         /**
          * SenderKeyDistributionMessage chainKey.
          * @member {Uint8Array} chainKey
@@ -282,6 +309,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderKeyDistributionMessage.prototype.chainKey = $util.newBuffer([]);
+
         /**
          * SenderKeyDistributionMessage signingKey.
          * @member {Uint8Array} signingKey
@@ -289,6 +317,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderKeyDistributionMessage.prototype.signingKey = $util.newBuffer([]);
+
         /**
          * Creates a new SenderKeyDistributionMessage instance using the specified properties.
          * @function create
@@ -300,6 +329,7 @@ $root.groupproto = (function () {
         SenderKeyDistributionMessage.create = function create(properties) {
             return new SenderKeyDistributionMessage(properties);
         };
+
         /**
          * Encodes the specified SenderKeyDistributionMessage message. Does not implicitly {@link groupproto.SenderKeyDistributionMessage.verify|verify} messages.
          * @function encode
@@ -313,15 +343,16 @@ $root.groupproto = (function () {
             if (!writer)
                 writer = $Writer.create();
             if (message.id != null && Object.hasOwnProperty.call(message, "id"))
-                writer.uint32(/* id 1, wireType 0 =*/ 8).uint32(message.id);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.id);
             if (message.iteration != null && Object.hasOwnProperty.call(message, "iteration"))
-                writer.uint32(/* id 2, wireType 0 =*/ 16).uint32(message.iteration);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.iteration);
             if (message.chainKey != null && Object.hasOwnProperty.call(message, "chainKey"))
-                writer.uint32(/* id 3, wireType 2 =*/ 26).bytes(message.chainKey);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.chainKey);
             if (message.signingKey != null && Object.hasOwnProperty.call(message, "signingKey"))
-                writer.uint32(/* id 4, wireType 2 =*/ 34).bytes(message.signingKey);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.signingKey);
             return writer;
         };
+
         /**
          * Encodes the specified SenderKeyDistributionMessage message, length delimited. Does not implicitly {@link groupproto.SenderKeyDistributionMessage.verify|verify} messages.
          * @function encodeDelimited
@@ -334,6 +365,7 @@ $root.groupproto = (function () {
         SenderKeyDistributionMessage.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
+
         /**
          * Decodes a SenderKeyDistributionMessage message from the specified reader or buffer.
          * @function decode
@@ -352,25 +384,26 @@ $root.groupproto = (function () {
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1:
-                        message.id = reader.uint32();
-                        break;
-                    case 2:
-                        message.iteration = reader.uint32();
-                        break;
-                    case 3:
-                        message.chainKey = reader.bytes();
-                        break;
-                    case 4:
-                        message.signingKey = reader.bytes();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                case 1:
+                    message.id = reader.uint32();
+                    break;
+                case 2:
+                    message.iteration = reader.uint32();
+                    break;
+                case 3:
+                    message.chainKey = reader.bytes();
+                    break;
+                case 4:
+                    message.signingKey = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
+
         /**
          * Decodes a SenderKeyDistributionMessage message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
@@ -386,6 +419,7 @@ $root.groupproto = (function () {
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
+
         /**
          * Verifies a SenderKeyDistributionMessage message.
          * @function verify
@@ -411,6 +445,7 @@ $root.groupproto = (function () {
                     return "signingKey: buffer expected";
             return null;
         };
+
         /**
          * Creates a SenderKeyDistributionMessage message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
@@ -439,6 +474,7 @@ $root.groupproto = (function () {
                     message.signingKey = object.signingKey;
             return message;
         };
+
         /**
          * Creates a plain object from a SenderKeyDistributionMessage message. Also converts values to other types if specified.
          * @function toObject
@@ -480,6 +516,7 @@ $root.groupproto = (function () {
                 object.signingKey = options.bytes === String ? $util.base64.encode(message.signingKey, 0, message.signingKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.signingKey) : message.signingKey;
             return object;
         };
+
         /**
          * Converts this SenderKeyDistributionMessage to JSON.
          * @function toJSON
@@ -490,9 +527,12 @@ $root.groupproto = (function () {
         SenderKeyDistributionMessage.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
+
         return SenderKeyDistributionMessage;
     })();
-    groupproto.SenderChainKey = (function () {
+
+    groupproto.SenderChainKey = (function() {
+
         /**
          * Properties of a SenderChainKey.
          * @memberof groupproto
@@ -500,6 +540,7 @@ $root.groupproto = (function () {
          * @property {number|null} [iteration] SenderChainKey iteration
          * @property {Uint8Array|null} [seed] SenderChainKey seed
          */
+
         /**
          * Constructs a new SenderChainKey.
          * @memberof groupproto
@@ -514,6 +555,7 @@ $root.groupproto = (function () {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
         /**
          * SenderChainKey iteration.
          * @member {number} iteration
@@ -521,6 +563,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderChainKey.prototype.iteration = 0;
+
         /**
          * SenderChainKey seed.
          * @member {Uint8Array} seed
@@ -528,6 +571,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderChainKey.prototype.seed = $util.newBuffer([]);
+
         /**
          * Creates a new SenderChainKey instance using the specified properties.
          * @function create
@@ -539,6 +583,7 @@ $root.groupproto = (function () {
         SenderChainKey.create = function create(properties) {
             return new SenderChainKey(properties);
         };
+
         /**
          * Encodes the specified SenderChainKey message. Does not implicitly {@link groupproto.SenderChainKey.verify|verify} messages.
          * @function encode
@@ -552,11 +597,12 @@ $root.groupproto = (function () {
             if (!writer)
                 writer = $Writer.create();
             if (message.iteration != null && Object.hasOwnProperty.call(message, "iteration"))
-                writer.uint32(/* id 1, wireType 0 =*/ 8).uint32(message.iteration);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.iteration);
             if (message.seed != null && Object.hasOwnProperty.call(message, "seed"))
-                writer.uint32(/* id 2, wireType 2 =*/ 18).bytes(message.seed);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.seed);
             return writer;
         };
+
         /**
          * Encodes the specified SenderChainKey message, length delimited. Does not implicitly {@link groupproto.SenderChainKey.verify|verify} messages.
          * @function encodeDelimited
@@ -569,6 +615,7 @@ $root.groupproto = (function () {
         SenderChainKey.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
+
         /**
          * Decodes a SenderChainKey message from the specified reader or buffer.
          * @function decode
@@ -587,19 +634,20 @@ $root.groupproto = (function () {
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1:
-                        message.iteration = reader.uint32();
-                        break;
-                    case 2:
-                        message.seed = reader.bytes();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                case 1:
+                    message.iteration = reader.uint32();
+                    break;
+                case 2:
+                    message.seed = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
+
         /**
          * Decodes a SenderChainKey message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
@@ -615,6 +663,7 @@ $root.groupproto = (function () {
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
+
         /**
          * Verifies a SenderChainKey message.
          * @function verify
@@ -634,6 +683,7 @@ $root.groupproto = (function () {
                     return "seed: buffer expected";
             return null;
         };
+
         /**
          * Creates a SenderChainKey message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
@@ -655,6 +705,7 @@ $root.groupproto = (function () {
                     message.seed = object.seed;
             return message;
         };
+
         /**
          * Creates a plain object from a SenderChainKey message. Also converts values to other types if specified.
          * @function toObject
@@ -684,6 +735,7 @@ $root.groupproto = (function () {
                 object.seed = options.bytes === String ? $util.base64.encode(message.seed, 0, message.seed.length) : options.bytes === Array ? Array.prototype.slice.call(message.seed) : message.seed;
             return object;
         };
+
         /**
          * Converts this SenderChainKey to JSON.
          * @function toJSON
@@ -694,9 +746,12 @@ $root.groupproto = (function () {
         SenderChainKey.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
+
         return SenderChainKey;
     })();
-    groupproto.SenderMessageKey = (function () {
+
+    groupproto.SenderMessageKey = (function() {
+
         /**
          * Properties of a SenderMessageKey.
          * @memberof groupproto
@@ -704,6 +759,7 @@ $root.groupproto = (function () {
          * @property {number|null} [iteration] SenderMessageKey iteration
          * @property {Uint8Array|null} [seed] SenderMessageKey seed
          */
+
         /**
          * Constructs a new SenderMessageKey.
          * @memberof groupproto
@@ -718,6 +774,7 @@ $root.groupproto = (function () {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
         /**
          * SenderMessageKey iteration.
          * @member {number} iteration
@@ -725,6 +782,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderMessageKey.prototype.iteration = 0;
+
         /**
          * SenderMessageKey seed.
          * @member {Uint8Array} seed
@@ -732,6 +790,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderMessageKey.prototype.seed = $util.newBuffer([]);
+
         /**
          * Creates a new SenderMessageKey instance using the specified properties.
          * @function create
@@ -743,6 +802,7 @@ $root.groupproto = (function () {
         SenderMessageKey.create = function create(properties) {
             return new SenderMessageKey(properties);
         };
+
         /**
          * Encodes the specified SenderMessageKey message. Does not implicitly {@link groupproto.SenderMessageKey.verify|verify} messages.
          * @function encode
@@ -756,11 +816,12 @@ $root.groupproto = (function () {
             if (!writer)
                 writer = $Writer.create();
             if (message.iteration != null && Object.hasOwnProperty.call(message, "iteration"))
-                writer.uint32(/* id 1, wireType 0 =*/ 8).uint32(message.iteration);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.iteration);
             if (message.seed != null && Object.hasOwnProperty.call(message, "seed"))
-                writer.uint32(/* id 2, wireType 2 =*/ 18).bytes(message.seed);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.seed);
             return writer;
         };
+
         /**
          * Encodes the specified SenderMessageKey message, length delimited. Does not implicitly {@link groupproto.SenderMessageKey.verify|verify} messages.
          * @function encodeDelimited
@@ -773,6 +834,7 @@ $root.groupproto = (function () {
         SenderMessageKey.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
+
         /**
          * Decodes a SenderMessageKey message from the specified reader or buffer.
          * @function decode
@@ -791,19 +853,20 @@ $root.groupproto = (function () {
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1:
-                        message.iteration = reader.uint32();
-                        break;
-                    case 2:
-                        message.seed = reader.bytes();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                case 1:
+                    message.iteration = reader.uint32();
+                    break;
+                case 2:
+                    message.seed = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
+
         /**
          * Decodes a SenderMessageKey message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
@@ -819,6 +882,7 @@ $root.groupproto = (function () {
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
+
         /**
          * Verifies a SenderMessageKey message.
          * @function verify
@@ -838,6 +902,7 @@ $root.groupproto = (function () {
                     return "seed: buffer expected";
             return null;
         };
+
         /**
          * Creates a SenderMessageKey message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
@@ -859,6 +924,7 @@ $root.groupproto = (function () {
                     message.seed = object.seed;
             return message;
         };
+
         /**
          * Creates a plain object from a SenderMessageKey message. Also converts values to other types if specified.
          * @function toObject
@@ -888,6 +954,7 @@ $root.groupproto = (function () {
                 object.seed = options.bytes === String ? $util.base64.encode(message.seed, 0, message.seed.length) : options.bytes === Array ? Array.prototype.slice.call(message.seed) : message.seed;
             return object;
         };
+
         /**
          * Converts this SenderMessageKey to JSON.
          * @function toJSON
@@ -898,9 +965,12 @@ $root.groupproto = (function () {
         SenderMessageKey.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
+
         return SenderMessageKey;
     })();
-    groupproto.SenderSigningKey = (function () {
+
+    groupproto.SenderSigningKey = (function() {
+
         /**
          * Properties of a SenderSigningKey.
          * @memberof groupproto
@@ -908,6 +978,7 @@ $root.groupproto = (function () {
          * @property {Uint8Array|null} ["public"] SenderSigningKey public
          * @property {Uint8Array|null} ["private"] SenderSigningKey private
          */
+
         /**
          * Constructs a new SenderSigningKey.
          * @memberof groupproto
@@ -922,6 +993,7 @@ $root.groupproto = (function () {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
         /**
          * SenderSigningKey public.
          * @member {Uint8Array} public
@@ -929,6 +1001,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderSigningKey.prototype["public"] = $util.newBuffer([]);
+
         /**
          * SenderSigningKey private.
          * @member {Uint8Array} private
@@ -936,6 +1009,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderSigningKey.prototype["private"] = $util.newBuffer([]);
+
         /**
          * Creates a new SenderSigningKey instance using the specified properties.
          * @function create
@@ -947,6 +1021,7 @@ $root.groupproto = (function () {
         SenderSigningKey.create = function create(properties) {
             return new SenderSigningKey(properties);
         };
+
         /**
          * Encodes the specified SenderSigningKey message. Does not implicitly {@link groupproto.SenderSigningKey.verify|verify} messages.
          * @function encode
@@ -960,11 +1035,12 @@ $root.groupproto = (function () {
             if (!writer)
                 writer = $Writer.create();
             if (message["public"] != null && Object.hasOwnProperty.call(message, "public"))
-                writer.uint32(/* id 1, wireType 2 =*/ 10).bytes(message["public"]);
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message["public"]);
             if (message["private"] != null && Object.hasOwnProperty.call(message, "private"))
-                writer.uint32(/* id 2, wireType 2 =*/ 18).bytes(message["private"]);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message["private"]);
             return writer;
         };
+
         /**
          * Encodes the specified SenderSigningKey message, length delimited. Does not implicitly {@link groupproto.SenderSigningKey.verify|verify} messages.
          * @function encodeDelimited
@@ -977,6 +1053,7 @@ $root.groupproto = (function () {
         SenderSigningKey.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
+
         /**
          * Decodes a SenderSigningKey message from the specified reader or buffer.
          * @function decode
@@ -995,19 +1072,20 @@ $root.groupproto = (function () {
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1:
-                        message["public"] = reader.bytes();
-                        break;
-                    case 2:
-                        message["private"] = reader.bytes();
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                case 1:
+                    message["public"] = reader.bytes();
+                    break;
+                case 2:
+                    message["private"] = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
+
         /**
          * Decodes a SenderSigningKey message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
@@ -1023,6 +1101,7 @@ $root.groupproto = (function () {
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
+
         /**
          * Verifies a SenderSigningKey message.
          * @function verify
@@ -1042,6 +1121,7 @@ $root.groupproto = (function () {
                     return "private: buffer expected";
             return null;
         };
+
         /**
          * Creates a SenderSigningKey message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
@@ -1066,6 +1146,7 @@ $root.groupproto = (function () {
                     message["private"] = object["private"];
             return message;
         };
+
         /**
          * Creates a plain object from a SenderSigningKey message. Also converts values to other types if specified.
          * @function toObject
@@ -1101,6 +1182,7 @@ $root.groupproto = (function () {
                 object["private"] = options.bytes === String ? $util.base64.encode(message["private"], 0, message["private"].length) : options.bytes === Array ? Array.prototype.slice.call(message["private"]) : message["private"];
             return object;
         };
+
         /**
          * Converts this SenderSigningKey to JSON.
          * @function toJSON
@@ -1111,9 +1193,12 @@ $root.groupproto = (function () {
         SenderSigningKey.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
+
         return SenderSigningKey;
     })();
-    groupproto.SenderKeyStateStructure = (function () {
+
+    groupproto.SenderKeyStateStructure = (function() {
+
         /**
          * Properties of a SenderKeyStateStructure.
          * @memberof groupproto
@@ -1123,6 +1208,7 @@ $root.groupproto = (function () {
          * @property {groupproto.ISenderSigningKey|null} [senderSigningKey] SenderKeyStateStructure senderSigningKey
          * @property {Array.<groupproto.ISenderMessageKey>|null} [senderMessageKeys] SenderKeyStateStructure senderMessageKeys
          */
+
         /**
          * Constructs a new SenderKeyStateStructure.
          * @memberof groupproto
@@ -1138,6 +1224,7 @@ $root.groupproto = (function () {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
         /**
          * SenderKeyStateStructure senderKeyId.
          * @member {number} senderKeyId
@@ -1145,6 +1232,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderKeyStateStructure.prototype.senderKeyId = 0;
+
         /**
          * SenderKeyStateStructure senderChainKey.
          * @member {groupproto.ISenderChainKey|null|undefined} senderChainKey
@@ -1152,6 +1240,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderKeyStateStructure.prototype.senderChainKey = null;
+
         /**
          * SenderKeyStateStructure senderSigningKey.
          * @member {groupproto.ISenderSigningKey|null|undefined} senderSigningKey
@@ -1159,6 +1248,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderKeyStateStructure.prototype.senderSigningKey = null;
+
         /**
          * SenderKeyStateStructure senderMessageKeys.
          * @member {Array.<groupproto.ISenderMessageKey>} senderMessageKeys
@@ -1166,6 +1256,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderKeyStateStructure.prototype.senderMessageKeys = $util.emptyArray;
+
         /**
          * Creates a new SenderKeyStateStructure instance using the specified properties.
          * @function create
@@ -1177,6 +1268,7 @@ $root.groupproto = (function () {
         SenderKeyStateStructure.create = function create(properties) {
             return new SenderKeyStateStructure(properties);
         };
+
         /**
          * Encodes the specified SenderKeyStateStructure message. Does not implicitly {@link groupproto.SenderKeyStateStructure.verify|verify} messages.
          * @function encode
@@ -1190,16 +1282,17 @@ $root.groupproto = (function () {
             if (!writer)
                 writer = $Writer.create();
             if (message.senderKeyId != null && Object.hasOwnProperty.call(message, "senderKeyId"))
-                writer.uint32(/* id 1, wireType 0 =*/ 8).uint32(message.senderKeyId);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.senderKeyId);
             if (message.senderChainKey != null && Object.hasOwnProperty.call(message, "senderChainKey"))
-                $root.groupproto.SenderChainKey.encode(message.senderChainKey, writer.uint32(/* id 2, wireType 2 =*/ 18).fork()).ldelim();
+                $root.groupproto.SenderChainKey.encode(message.senderChainKey, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.senderSigningKey != null && Object.hasOwnProperty.call(message, "senderSigningKey"))
-                $root.groupproto.SenderSigningKey.encode(message.senderSigningKey, writer.uint32(/* id 3, wireType 2 =*/ 26).fork()).ldelim();
+                $root.groupproto.SenderSigningKey.encode(message.senderSigningKey, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.senderMessageKeys != null && message.senderMessageKeys.length)
                 for (var i = 0; i < message.senderMessageKeys.length; ++i)
-                    $root.groupproto.SenderMessageKey.encode(message.senderMessageKeys[i], writer.uint32(/* id 4, wireType 2 =*/ 34).fork()).ldelim();
+                    $root.groupproto.SenderMessageKey.encode(message.senderMessageKeys[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             return writer;
         };
+
         /**
          * Encodes the specified SenderKeyStateStructure message, length delimited. Does not implicitly {@link groupproto.SenderKeyStateStructure.verify|verify} messages.
          * @function encodeDelimited
@@ -1212,6 +1305,7 @@ $root.groupproto = (function () {
         SenderKeyStateStructure.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
+
         /**
          * Decodes a SenderKeyStateStructure message from the specified reader or buffer.
          * @function decode
@@ -1230,27 +1324,28 @@ $root.groupproto = (function () {
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1:
-                        message.senderKeyId = reader.uint32();
-                        break;
-                    case 2:
-                        message.senderChainKey = $root.groupproto.SenderChainKey.decode(reader, reader.uint32());
-                        break;
-                    case 3:
-                        message.senderSigningKey = $root.groupproto.SenderSigningKey.decode(reader, reader.uint32());
-                        break;
-                    case 4:
-                        if (!(message.senderMessageKeys && message.senderMessageKeys.length))
-                            message.senderMessageKeys = [];
-                        message.senderMessageKeys.push($root.groupproto.SenderMessageKey.decode(reader, reader.uint32()));
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                case 1:
+                    message.senderKeyId = reader.uint32();
+                    break;
+                case 2:
+                    message.senderChainKey = $root.groupproto.SenderChainKey.decode(reader, reader.uint32());
+                    break;
+                case 3:
+                    message.senderSigningKey = $root.groupproto.SenderSigningKey.decode(reader, reader.uint32());
+                    break;
+                case 4:
+                    if (!(message.senderMessageKeys && message.senderMessageKeys.length))
+                        message.senderMessageKeys = [];
+                    message.senderMessageKeys.push($root.groupproto.SenderMessageKey.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
+
         /**
          * Decodes a SenderKeyStateStructure message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
@@ -1266,6 +1361,7 @@ $root.groupproto = (function () {
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
+
         /**
          * Verifies a SenderKeyStateStructure message.
          * @function verify
@@ -1301,6 +1397,7 @@ $root.groupproto = (function () {
             }
             return null;
         };
+
         /**
          * Creates a SenderKeyStateStructure message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
@@ -1337,6 +1434,7 @@ $root.groupproto = (function () {
             }
             return message;
         };
+
         /**
          * Creates a plain object from a SenderKeyStateStructure message. Also converts values to other types if specified.
          * @function toObject
@@ -1370,6 +1468,7 @@ $root.groupproto = (function () {
             }
             return object;
         };
+
         /**
          * Converts this SenderKeyStateStructure to JSON.
          * @function toJSON
@@ -1380,15 +1479,19 @@ $root.groupproto = (function () {
         SenderKeyStateStructure.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
+
         return SenderKeyStateStructure;
     })();
-    groupproto.SenderKeyRecordStructure = (function () {
+
+    groupproto.SenderKeyRecordStructure = (function() {
+
         /**
          * Properties of a SenderKeyRecordStructure.
          * @memberof groupproto
          * @interface ISenderKeyRecordStructure
          * @property {Array.<groupproto.ISenderKeyStateStructure>|null} [senderKeyStates] SenderKeyRecordStructure senderKeyStates
          */
+
         /**
          * Constructs a new SenderKeyRecordStructure.
          * @memberof groupproto
@@ -1404,6 +1507,7 @@ $root.groupproto = (function () {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+
         /**
          * SenderKeyRecordStructure senderKeyStates.
          * @member {Array.<groupproto.ISenderKeyStateStructure>} senderKeyStates
@@ -1411,6 +1515,7 @@ $root.groupproto = (function () {
          * @instance
          */
         SenderKeyRecordStructure.prototype.senderKeyStates = $util.emptyArray;
+
         /**
          * Creates a new SenderKeyRecordStructure instance using the specified properties.
          * @function create
@@ -1422,6 +1527,7 @@ $root.groupproto = (function () {
         SenderKeyRecordStructure.create = function create(properties) {
             return new SenderKeyRecordStructure(properties);
         };
+
         /**
          * Encodes the specified SenderKeyRecordStructure message. Does not implicitly {@link groupproto.SenderKeyRecordStructure.verify|verify} messages.
          * @function encode
@@ -1436,9 +1542,10 @@ $root.groupproto = (function () {
                 writer = $Writer.create();
             if (message.senderKeyStates != null && message.senderKeyStates.length)
                 for (var i = 0; i < message.senderKeyStates.length; ++i)
-                    $root.groupproto.SenderKeyStateStructure.encode(message.senderKeyStates[i], writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim();
+                    $root.groupproto.SenderKeyStateStructure.encode(message.senderKeyStates[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             return writer;
         };
+
         /**
          * Encodes the specified SenderKeyRecordStructure message, length delimited. Does not implicitly {@link groupproto.SenderKeyRecordStructure.verify|verify} messages.
          * @function encodeDelimited
@@ -1451,6 +1558,7 @@ $root.groupproto = (function () {
         SenderKeyRecordStructure.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
+
         /**
          * Decodes a SenderKeyRecordStructure message from the specified reader or buffer.
          * @function decode
@@ -1469,18 +1577,19 @@ $root.groupproto = (function () {
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1:
-                        if (!(message.senderKeyStates && message.senderKeyStates.length))
-                            message.senderKeyStates = [];
-                        message.senderKeyStates.push($root.groupproto.SenderKeyStateStructure.decode(reader, reader.uint32()));
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                case 1:
+                    if (!(message.senderKeyStates && message.senderKeyStates.length))
+                        message.senderKeyStates = [];
+                    message.senderKeyStates.push($root.groupproto.SenderKeyStateStructure.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
+
         /**
          * Decodes a SenderKeyRecordStructure message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
@@ -1496,6 +1605,7 @@ $root.groupproto = (function () {
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
+
         /**
          * Verifies a SenderKeyRecordStructure message.
          * @function verify
@@ -1518,6 +1628,7 @@ $root.groupproto = (function () {
             }
             return null;
         };
+
         /**
          * Creates a SenderKeyRecordStructure message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
@@ -1542,6 +1653,7 @@ $root.groupproto = (function () {
             }
             return message;
         };
+
         /**
          * Creates a plain object from a SenderKeyRecordStructure message. Also converts values to other types if specified.
          * @function toObject
@@ -1564,6 +1676,7 @@ $root.groupproto = (function () {
             }
             return object;
         };
+
         /**
          * Converts this SenderKeyRecordStructure to JSON.
          * @function toJSON
@@ -1574,8 +1687,11 @@ $root.groupproto = (function () {
         SenderKeyRecordStructure.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
+
         return SenderKeyRecordStructure;
     })();
+
     return groupproto;
 })();
+
 module.exports = $root;

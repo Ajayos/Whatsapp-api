@@ -10,3 +10,4 @@ export declare const getBinaryNodeChildUInt: (node: BinaryNode, childTag: string
 export declare const assertNodeErrorFree: (node: BinaryNode) => void;
 export declare const reduceBinaryNodeToDictionary: (node: BinaryNode, tag: string) => any;
 export declare const getBinaryNodeMessages: ({ content }: BinaryNode) => proto.WebMessageInfo[];
+export declare function binaryNodeToString(node: BinaryNode | BinaryNode['content'], i?: number): any;

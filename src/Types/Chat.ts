@@ -1,6 +1,8 @@
 import type { proto } from '../Proto'
 import type { AccountSettings } from './Auth'
 import type { BufferedEventData } from './Events'
+import type { ChatLabelAssociationActionBody } from './LabelAssociation'
+import type { MessageLabelAssociationActionBody } from './LabelAssociation'
 import type { MinimalMessage } from './Message'
 
 export type WAPresence = 'unavailable' | 'available' | 'composing' | 'recording' | 'paused'
@@ -12,11 +14,11 @@ export type WAPrivacyOnlineValue = 'all' | 'match_last_seen'
 export type WAReadReceiptsValue = 'all' | 'none'
 
 export const ALL_WA_PATCH_NAMES = [
-	'critical_block',
-	'critical_unblock_low',
-	'regular_high',
-	'regular_low',
-	'regular'
+    'critical_block',
+    'critical_unblock_low',
+    'regular_high',
+    'regular_low',
+    'regular'
 ] as const
 
 export type WAPatchName = typeof ALL_WA_PATCH_NAMES[number]
@@ -95,6 +97,14 @@ export type ChatModification =
     } | {
         delete: true,
         lastMessages: LastMessageList
+    } | {
+        addChatLabel: ChatLabelAssociationActionBody
+    } | {
+        removeChatLabel: ChatLabelAssociationActionBody
+    } | {
+        addMessageLabel: MessageLabelAssociationActionBody
+    } | {
+        removeMessageLabel: MessageLabelAssociationActionBody
     }
 
 export type InitialReceivedChatsState = {

@@ -4,12 +4,12 @@ export declare const OFFICIAL_DEV_JID = "919188346721@s.whatsapp.net";
 export declare const SERVER_JID = "server@c.us";
 export declare const PSA_WID = "0@c.us";
 export declare const STORIES_JID = "status@broadcast";
-export declare type JidServer = 'c.us' | 'g.us' | 'broadcast' | 's.whatsapp.net' | 'call';
-export declare type JidWithDevice = {
+export type JidServer = 'c.us' | 'g.us' | 'broadcast' | 's.whatsapp.net' | 'call';
+export type JidWithDevice = {
     user: string;
     device?: number;
 };
-export declare type FullJid = JidWithDevice & {
+export type FullJid = JidWithDevice & {
     server: JidServer | string;
     agent?: number;
 };

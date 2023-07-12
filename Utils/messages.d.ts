@@ -46,7 +46,7 @@ export declare const updateMessageWithReceipt: (msg: Pick<WAMessage, 'userReceip
 export declare const updateMessageWithReaction: (msg: Pick<WAMessage, 'reactions'>, reaction: proto.IReaction) => void;
 /** Update the message with a new poll update */
 export declare const updateMessageWithPollUpdate: (msg: Pick<WAMessage, 'pollUpdates'>, update: proto.IPollUpdate) => void;
-declare type VoteAggregation = {
+type VoteAggregation = {
     name: string;
     voters: string[];
 };
@@ -63,7 +63,7 @@ export declare const aggregateMessageKeysNotFromMe: (keys: proto.IMessageKey[]) 
     participant: string | undefined;
     messageIds: string[];
 }[];
-declare type DownloadMediaMessageContext = {
+type DownloadMediaMessageContext = {
     reuploadRequest: (msg: WAMessage) => Promise<WAMessage>;
     logger: Logger;
 };

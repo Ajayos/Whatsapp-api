@@ -103,7 +103,7 @@ function decryptPollVote({ encPayload, encIv }, { pollCreatorJid, pollMsgId, pol
 }
 exports.decryptPollVote = decryptPollVote;
 const processMessage = async (message, { shouldProcessHistoryMsg, ev, creds, keyStore, logger, options, getMessage }) => {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
     const meId = creds.me.id;
     const { accountSettings } = creds;
     const chat = { id: (0, Binary_1.jidNormalizedUser)((0, exports.getChatId)(message.key)) };
@@ -249,9 +249,13 @@ const processMessage = async (message, { shouldProcessHistoryMsg, ev, creds, key
                 const description = (_g = message.messageStubParameters) === null || _g === void 0 ? void 0 : _g[0];
                 emitGroupUpdate({ desc: description });
                 break;
+            case Types_1.WAMessageStubType.GROUP_CHANGE_INVITE_LINK:
+                const code = (_h = message.messageStubParameters) === null || _h === void 0 ? void 0 : _h[0];
+                emitGroupUpdate({ inviteCode: code });
+                break;
             case Types_1.WAMessageStubType.GROUP_CHANGE_ICON:
                 var profile = '';
-                const mprofile = (_h = message.messageStubParameters) === null || _h === void 0 ? void 0 : _h[0];
+                const mprofile = (_j = message.messageStubParameters) === null || _j === void 0 ? void 0 : _j[0];
                 if (!mprofile) {
                     profile = 'deleted';
                 }
@@ -261,15 +265,15 @@ const processMessage = async (message, { shouldProcessHistoryMsg, ev, creds, key
                 emitGroupUpdate({ icon_update: profile });
                 break;
             case Types_1.WAMessageStubType.GROUP_MEMBERSHIP_JOIN_APPROVAL_MODE:
-                const membershipApprovalMode = (_j = message.messageStubParameters) === null || _j === void 0 ? void 0 : _j[0];
+                const membershipApprovalMode = (_k = message.messageStubParameters) === null || _k === void 0 ? void 0 : _k[0];
                 emitGroupUpdate({ membershipApprovalMode: membershipApprovalMode === 'on' });
                 break;
             case Types_1.WAMessageStubType.GROUP_MEMBERSHIP_JOIN_APPROVAL_REQUEST:
-                const membershipApprovalRequest = (_k = message.messageStubParameters) === null || _k === void 0 ? void 0 : _k[0];
+                const membershipApprovalRequest = (_l = message.messageStubParameters) === null || _l === void 0 ? void 0 : _l[0];
                 emitGroupUpdate({ membershipApprovalRequest });
                 break;
             case Types_1.WAMessageStubType.COMMUNITY_LINK_PARENT_GROUP_MEMBERSHIP_APPROVAL:
-                const membershipApprovalRevoke = (_l = message.messageStubParameters) === null || _l === void 0 ? void 0 : _l[0];
+                const membershipApprovalRevoke = (_m = message.messageStubParameters) === null || _m === void 0 ? void 0 : _m[0];
                 emitGroupUpdate({ membershipApprovalRevoke });
                 break;
         }
@@ -282,7 +286,7 @@ const processMessage = async (message, { shouldProcessHistoryMsg, ev, creds, key
             const meIdNormalised = (0, Binary_1.jidNormalizedUser)(meId);
             const pollCreatorJid = (0, generics_1.getKeyAuthor)(creationMsgKey, meIdNormalised);
             const voterJid = (0, generics_1.getKeyAuthor)(message.key, meIdNormalised);
-            const pollEncKey = (_m = pollMsg.messageContextInfo) === null || _m === void 0 ? void 0 : _m.messageSecret;
+            const pollEncKey = (_o = pollMsg.messageContextInfo) === null || _o === void 0 ? void 0 : _o.messageSecret;
             try {
                 const voteMsg = decryptPollVote(content.pollUpdateMessage.vote, {
                     pollEncKey,

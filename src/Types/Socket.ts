@@ -23,6 +23,7 @@ export type SocketConfig = {
     connectTimeoutMs: number
     defaultQueryTimeoutMs: number | undefined
     keepAliveIntervalMs: number
+    mobile?: boolean
     agent?: Agent
     logger: Logger
     version: WAVersion

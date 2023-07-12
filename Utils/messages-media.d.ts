@@ -55,7 +55,7 @@ export declare function generateThumbnail(file: string, mediaType: 'video' | 'im
 export declare const getHttpStream: (url: string | URL, options?: AxiosRequestConfig & {
     isStream?: true;
 }) => Promise<Readable>;
-declare type EncryptedStreamOptions = {
+type EncryptedStreamOptions = {
     saveOriginalFileIfRequired?: boolean;
     logger?: Logger;
     opts?: AxiosRequestConfig;
@@ -70,7 +70,7 @@ export declare const encryptedStream: (media: WAMediaUpload, mediaType: MediaTyp
     fileLength: number;
     didSaveToTmpPath: boolean;
 }>;
-export declare type MediaDownloadOptions = {
+export type MediaDownloadOptions = {
     startByte?: number;
     endByte?: number;
     options?: AxiosRequestConfig<any>;
@@ -91,6 +91,7 @@ export declare const encryptMediaRetryRequest: (key: proto.IMessageKey, mediaKey
 export declare const decodeMediaRetryNode: (node: BinaryNode) => {
     key: proto.IMessageKey;
     media?: {
+        /** generates all the keys required to encrypt/decrypt & sign a media message */
         ciphertext: Uint8Array;
         iv: Uint8Array;
     } | undefined;

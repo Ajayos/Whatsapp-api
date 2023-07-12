@@ -16,7 +16,7 @@ export declare const encodeBigEndian: (e: number, t?: number) => Uint8Array;
 export declare const toNumber: (t: Long | number | null | undefined) => number;
 /** unix timestamp of a date in seconds */
 export declare const unixTimestampSeconds: (date?: Date) => number;
-export declare type DebouncedTimeout = ReturnType<typeof debouncedTimeout>;
+export type DebouncedTimeout = ReturnType<typeof debouncedTimeout>;
 export declare const debouncedTimeout: (intervalMs?: number, task?: () => void) => {
     start: (newIntervalMs?: number, newTask?: () => void) => void;
     cancel: () => void;

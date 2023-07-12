@@ -1,5 +1,4 @@
 /// <reference types="node" />
-/// <reference types="ws" />
 import { Boom } from '@hapi/boom';
 import { proto } from '../Proto';
 import { AnyMessageContent, MediaConnInfo, MessageReceiptType, MessageRelayOptions, MiscMessageGenerationOptions, SocketConfig, WAMessageKey } from '../Types';
@@ -22,6 +21,12 @@ export declare const makeMessagesSocket: (config: SocketConfig) => {
     groupCreate: (subject: string, participants: string[]) => Promise<import("../Types").GroupMetadata>;
     groupLeave: (id: string) => Promise<void>;
     groupUpdateSubject: (jid: string, subject: string) => Promise<void>;
+    groupRequestParticipantsList: (jid: string) => Promise<any[]>;
+    groupRequestParticipantsUpdate: (jid: string, participants: string[], action: "reject" | "approve") => Promise<{
+        status: any;
+        /** Bulk read messages. Keys can be from different chats & participants */
+        jid: any;
+    }[]>;
     groupParticipantsUpdate: (jid: string, participants: string[], action: import("../Types").ParticipantAction) => Promise<{
         status: any;
         jid: any;
@@ -62,6 +67,7 @@ export declare const makeMessagesSocket: (config: SocketConfig) => {
     updateBlockStatus: (jid: string, action: "block" | "unblock") => Promise<void>;
     updateLastSeenPrivacy: (value: import("../Types").WAPrivacyValue) => Promise<void>;
     updateOnlinePrivacy: (value: import("../Types").WAPrivacyOnlineValue) => Promise<void>;
+    updateStatusPrivacy: (value: import("../Types").WAPrivacyValue) => Promise<void>;
     updateProfilePicturePrivacy: (value: import("../Types").WAPrivacyValue) => Promise<void>;
     updateReadReceiptsPrivacy: (value: import("../Types").WAReadReceiptsValue) => Promise<void>;
     updateGroupsAddPrivacy: (value: import("../Types").WAPrivacyValue) => Promise<void>;
@@ -69,8 +75,13 @@ export declare const makeMessagesSocket: (config: SocketConfig) => {
     getBusinessProfile: (jid: string) => Promise<void | import("../Types").WABusinessProfile>;
     resyncAppState: (collections: readonly ("critical_block" | "critical_unblock_low" | "regular_high" | "regular_low" | "regular")[], isInitialSync: boolean) => Promise<void>;
     chatModify: (mod: import("../Types").ChatModification, jid: string) => Promise<void>;
+    cleanDirtyBits: (type: "account_sync" | "groups", fromTimestamp?: string | number | undefined) => Promise<void>;
+    addChatLabel: (jid: string, labelId: string) => Promise<void>;
+    removeChatLabel: (jid: string, labelId: string) => Promise<void>;
+    addMessageLabel: (jid: string, messageId: string, labelId: string) => Promise<void>;
+    removeMessageLabel: (jid: string, messageId: string, labelId: string) => Promise<void>;
     type: "md";
-    ws: import("ws");
+    ws: any;
     ev: import("../Types").KeerthanaEventEmitter & {
         process(handler: (events: Partial<import("../Types").KeerthanaEventMap>) => void | Promise<void>): () => void;
         buffer(): void;

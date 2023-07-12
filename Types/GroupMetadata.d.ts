@@ -1,10 +1,10 @@
 import { Contact } from './Contact';
-export declare type GroupParticipant = (Contact & {
+export type GroupParticipant = (Contact & {
     isAdmin?: boolean;
     isSuperAdmin?: boolean;
     admin?: 'admin' | 'superadmin' | null;
 });
-export declare type ParticipantAction = 'add' | 'remove' | 'promote' | 'demote';
+export type ParticipantAction = 'add' | 'remove' | 'promote' | 'demote';
 export interface GroupMetadata {
     id: string;
     owner: string | undefined;
@@ -22,6 +22,7 @@ export interface GroupMetadata {
     participants: GroupParticipant[];
     ephemeralDuration?: number;
     inviteCode?: string;
+    author?: string;
 }
 export interface WAGroupCreateResponse {
     status: number;

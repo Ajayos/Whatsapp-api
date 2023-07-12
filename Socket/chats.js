@@ -87,6 +87,9 @@ const makeChatsSocket = (config) => {
     const updateGroupsAddPrivacy = async (value) => {
         await privacyQuery('groupadd', value);
     };
+    const updateStatusPrivacy = async (value) => {
+        await privacyQuery('status', value);
+    };
     const updateDefaultDisappearingMode = async (duration) => {
         await query({
             tag: 'iq',
@@ -311,6 +314,27 @@ const makeChatsSocket = (config) => {
                     attrs: {
                         type: 'account_sync',
                         timestamp: fromTimestamp.toString(),
+                    }
+                }
+            ]
+        });
+    };
+    const cleanDirtyBits = async (type, fromTimestamp) => {
+        logger.info({ fromTimestamp }, 'clean dirty bits ' + type);
+        await sendNode({
+            tag: 'iq',
+            attrs: {
+                to: Binary_1.S_WHATSAPP_NET,
+                type: 'set',
+                xmlns: 'urn:xmpp:whatsapp:dirty',
+                id: generateMessageTag(),
+            },
+            content: [
+                {
+                    tag: 'clean',
+                    attrs: {
+                        type,
+                        ...(fromTimestamp ? { timestamp: fromTimestamp.toString() } : null),
                     }
                 }
             ]
@@ -646,6 +670,48 @@ const makeChatsSocket = (config) => {
         return appPatch(patch);
     };
     /**
+     * Adds label for the chats
+     */
+    const addChatLabel = (jid, labelId) => {
+        return chatModify({
+            addChatLabel: {
+                labelId
+            }
+        }, jid);
+    };
+    /**
+     * Removes label for the chat
+     */
+    const removeChatLabel = (jid, labelId) => {
+        return chatModify({
+            removeChatLabel: {
+                labelId
+            }
+        }, jid);
+    };
+    /**
+     * Adds label for the message
+     */
+    const addMessageLabel = (jid, messageId, labelId) => {
+        return chatModify({
+            addMessageLabel: {
+                messageId,
+                labelId
+            }
+        }, jid);
+    };
+    /**
+     * Removes label for the message
+     */
+    const removeMessageLabel = (jid, messageId, labelId) => {
+        return chatModify({
+            removeMessageLabel: {
+                messageId,
+                labelId
+            }
+        }, jid);
+    };
+    /**
      * queries need to be fired on connection open
      * help ensure parity with WA Web
      * */
@@ -726,11 +792,15 @@ const makeChatsSocket = (config) => {
                 if (attrs.timestamp) {
                     let { lastAccountSyncTimestamp } = authState.creds;
                     if (lastAccountSyncTimestamp) {
-                        await updateAccountSyncTimestamp(lastAccountSyncTimestamp);
+                        // await updateAccountSyncTimestamp(lastAccountSyncTimestamp)
+                        await cleanDirtyBits('account_sync', lastAccountSyncTimestamp);
                     }
                     lastAccountSyncTimestamp = +attrs.timestamp;
                     ev.emit('creds.update', { lastAccountSyncTimestamp });
                 }
+                break;
+            case 'groups':
+                // handled in groups.ts
                 break;
             default:
                 logger.info({ node }, 'received unknown sync');
@@ -776,13 +846,19 @@ const makeChatsSocket = (config) => {
         updateBlockStatus,
         updateLastSeenPrivacy,
         updateOnlinePrivacy,
+        updateStatusPrivacy,
         updateProfilePicturePrivacy,
         updateReadReceiptsPrivacy,
         updateGroupsAddPrivacy,
         updateDefaultDisappearingMode,
         getBusinessProfile,
         resyncAppState,
-        chatModify
+        chatModify,
+        cleanDirtyBits,
+        addChatLabel,
+        removeChatLabel,
+        addMessageLabel,
+        removeMessageLabel
     };
 };
 exports.makeChatsSocket = makeChatsSocket;

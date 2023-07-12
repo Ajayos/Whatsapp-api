@@ -4,10 +4,12 @@ import { AuthenticationCreds } from './Auth';
 import { WACallEvent } from './Call';
 import { Chat, ChatUpdate, PresenceData } from './Chat';
 import { Contact } from './Contact';
+import { Label } from './Label';
+import { LabelAssociation } from './LabelAssociation';
 import { GroupMetadata, ParticipantAction } from './GroupMetadata';
 import { MessageUpsertType, MessageUserReceiptUpdate, WAMessage, WAMessageKey, WAMessageUpdate } from './Message';
 import { ConnectionState } from './State';
-export declare type KeerthanaEventMap = {
+export type KeerthanaEventMap = {
     /** connection state has been updated -- WS closed, opened, connecting etc. */
     'connection.update': Partial<ConnectionState>;
     /** ON QR UPDATE  */
@@ -83,8 +85,13 @@ export declare type KeerthanaEventMap = {
     };
     /** Receive an update on a call, including when the call was received, rejected, accepted */
     'call': WACallEvent[];
+    'labels.edit': Label;
+    'labels.association': {
+        association: LabelAssociation;
+        type: 'add' | 'remove';
+    };
 };
-export declare type BufferedEventData = {
+export type BufferedEventData = {
     historySets: {
         chats: {
             [jid: string]: Chat;
@@ -139,7 +146,7 @@ export declare type BufferedEventData = {
         [jid: string]: Partial<GroupMetadata>;
     };
 };
-export declare type KeerthanaEvent = keyof KeerthanaEventMap;
+export type KeerthanaEvent = keyof KeerthanaEventMap;
 export interface KeerthanaEventEmitter {
     on<T extends keyof KeerthanaEventMap>(event: T, listener: (arg: KeerthanaEventMap[T]) => void): void;
     off<T extends keyof KeerthanaEventMap>(event: T, listener: (arg: KeerthanaEventMap[T]) => void): void;

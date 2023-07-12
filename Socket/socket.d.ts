@@ -1,7 +1,6 @@
 /// <reference types="node" />
 import { Boom } from '@hapi/boom';
-import WebSocket from 'ws';
-import { SocketConfig, AuthenticationCreds } from '../Types';
+import { SocketConfig } from '../Types';
 import { BinaryNode } from '../Binary';
 /**
  * Connects to WA servers and performs:
@@ -9,9 +8,9 @@ import { BinaryNode } from '../Binary';
  * - listen to messages and emit events
  * - query phone connection
  */
-export declare const makeSocket: ({ waWebSocketUrl, connectTimeoutMs, logger, agent, keepAliveIntervalMs, version, auth: authState, browser, printQRInTerminal, defaultQueryTimeoutMs, syncFullHistory, transactionOpts, qrTimeout, options, makeSignalRepository }: SocketConfig) => {
+export declare const makeSocket: (config: SocketConfig) => {
     type: "md";
-    ws: WebSocket;
+    ws: any;
     ev: import("../Types").KeerthanaEventEmitter & {
         process(handler: (events: Partial<import("../Types").KeerthanaEventMap>) => void | Promise<void>): () => void;
         buffer(): void;
@@ -20,7 +19,7 @@ export declare const makeSocket: ({ waWebSocketUrl, connectTimeoutMs, logger, ag
         isBuffering(): boolean;
     };
     authState: {
-        creds: AuthenticationCreds;
+        creds: import("../Types").AuthenticationCreds;
         keys: import("../Types").SignalKeyStoreWithTransaction;
     };
     signalRepository: import("../Types").SignalRepository;
@@ -39,4 +38,4 @@ export declare const makeSocket: ({ waWebSocketUrl, connectTimeoutMs, logger, ag
     /** Waits for the connection to WA to reach a state */
     waitForConnectionUpdate: (check: (u: Partial<import("../Types").ConnectionState>) => boolean | undefined, timeoutMs?: number | undefined) => Promise<void>;
 };
-export declare type Socket = ReturnType<typeof makeSocket>;
+export type Socket = ReturnType<typeof makeSocket>;

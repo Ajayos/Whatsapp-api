@@ -1,6 +1,6 @@
 import { Contact } from './Contact';
-export declare type WAConnectionState = 'open' | 'connecting' | 'close';
-export declare type ConnectionState = {
+export type WAConnectionState = 'open' | 'connecting' | 'close';
+export type ConnectionState = {
     connection: WAConnectionState;
     lastDisconnect?: {
         error: Error | undefined;

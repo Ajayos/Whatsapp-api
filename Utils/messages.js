@@ -392,6 +392,16 @@ const generateWAMessageContent = async (message, options) => {
         m[messageType].contextInfo = m[messageType] || {};
         m[messageType].contextInfo.mentionedJid = message.mentions;
     }
+    if ('edit' in message) {
+        m = {
+            protocolMessage: {
+                key: message.edit,
+                editedMessage: m,
+                timestampMs: Date.now(),
+                type: Types_1.WAProto.Message.ProtocolMessage.Type.MESSAGE_EDIT
+            }
+        };
+    }
     if ('contextInfo' in message && !!message.contextInfo) {
         const [messageType] = Object.keys(m);
         m[messageType].contextInfo = m[messageType] || {};

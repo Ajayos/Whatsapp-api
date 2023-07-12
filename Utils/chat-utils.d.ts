@@ -4,8 +4,8 @@ import type { Logger } from 'pino';
 import { proto } from '../Proto';
 import { KeerthanaEventEmitter, ChatModification, ChatMutation, Contact, InitialAppStateSyncOptions, LTHashState, WAPatchCreate, WAPatchName } from '../Types';
 import { BinaryNode } from '../Binary';
-declare type FetchAppStateSyncKey = (keyId: string) => Promise<proto.Message.IAppStateSyncKeyData | null | undefined>;
-export declare type ChatMutationMap = {
+type FetchAppStateSyncKey = (keyId: string) => Promise<proto.Message.IAppStateSyncKeyData | null | undefined>;
+export type ChatMutationMap = {
     [index: string]: ChatMutation;
 };
 export declare const newLTHashState: () => LTHashState;
