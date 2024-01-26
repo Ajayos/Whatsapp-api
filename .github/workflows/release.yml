@@ -75,7 +75,7 @@ jobs:
 
       - name: Set up Git for GitHub Packages
         run: |
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.TOKEN }} \n@Ajayos:registry=https://npm.pkg.github.com\n always-auth=true\n//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }} \nregistry=https://registry.npmjs.org/\nalways-auth=true" > ~/dist/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.TOKEN }} \n@Ajayos:registry=https://npm.pkg.github.com\n always-auth=true\n//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }} \nregistry=https://registry.npmjs.org/\nalways-auth=true" > ~/.npmrc
           git config --global user.name "Ajay o s 🕊️★⃝AJAY O S©️🧚‍♂️"
           git config --global user.email "ajayosakhub@gmail.com"
         
