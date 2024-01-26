@@ -1,0 +1,100 @@
+name: MAKE RELEASE 🚀
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "Ajay o s 🕊️★⃝AJAY O S©️🧚‍♂️"
+          git config --global user.email "ajayosakhub@gmail.com"
+
+      - name: Install dependencies
+        run: npm install -f axios @actions/core @actions/github gh-pages javascript-obfuscator typescript copyfiles auto-changelog archiver --save-dev
+
+      - name: Install dev dependencies
+        run: npm install prettier --save-dev
+
+      - name: Run build
+        run: npm run build
+
+      - name: Run prettier
+        run: npm run dev:prettier
+
+      - name: Run release
+        run: npm run dev:release
+
+      - name: Run prepare
+        run: npm run prepare
+
+      - name: Build and push
+        run: node --max-old-space-size=4096 ./.github/actions/build.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_REPO_URL: ${{ github.repository }}
+          GITHUB_USERNAME: ${{ github.repository_owner }}
+          GITHUB_BRANCH: ${{ github.ref }}
+          GITHUB_REPO_NAME: ${{ github.repository_name }}
+
+      - name: copy pakage.json to dist
+        run: |
+          cp package.json dist/package.json
+          cp CHANGELOG.md dist/CHANGELOG.md
+
+      - name: Deploy to dist 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          BRANCH: dist
+          FOLDER: ./dist
+
+      - name: Deploy to docs 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: ./docs
+
+      - name: Login to npm
+        run: |
+          npm login --registry=https://registry.npmjs.org/ --scope=@${{ github.repository_owner }} --always-auth --username="ajayos" --password=${{ secrets.NPM_TOKEN }} --email="ajayosakhub@gmail.com"
+
+      - name: Set up Git for GitHub Packages
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.TOKEN }} \n@Ajayos:registry=https://npm.pkg.github.com\n always-auth=true\n//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }} \nregistry=https://registry.npmjs.org/\nalways-auth=true" > ~/.npmrc
+          git config --global user.name "Ajay o s 🕊️★⃝AJAY O S©️🧚‍♂️"
+          git config --global user.email "ajayosakhub@gmail.com"
+        
+      - name: Publish to npm
+        run: npm publish ./dist --access public registry=https://registry.npmjs.org/
+
+      - name: Publish github packages
+        run: npm publish ./dist --access public registry=https://npm.pkg.github.com/
+
+      - name: Remove publish and dist folders
+        run: |
+          rm -rf dist
+          rm -rf docs
+          rm -rf package-lock.json
+          rm -rf node_modules
+
+      - name: Deploy to master 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          BRANCH: master
+          FOLDER: .

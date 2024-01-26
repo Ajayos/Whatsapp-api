@@ -14,12 +14,17 @@
     "automation"
   ],
   "scripts": {
-    "build:all": "tsc && typedoc",
+    "build": "tsc && typedoc && npm run copy-files",
     "build:docs": "typedoc",
     "build:tsc": "tsc",
     "lint": "eslint src --ext .js,.ts,.jsx,.tsx",
     "dev:prettier": "prettier --write \"**/**/*.{js,ts,json,css,md}\"",
-    "lint:fix": "eslint src --fix --ext .js,.ts,.jsx,.tsx"
+    "lint:fix": "eslint src --fix --ext .js,.ts,.jsx,.tsx",
+    "test": "node dist/lib/whatsapp.js",
+    "copy-files": "copyfiles -u 1 src/src/**/*.{js,sh,proto,json,d.ts} dist",
+    "dev:release": "standard-version && auto-changelog",
+    "prepare": "npm install -g auto-changelog",
+    "postinstall": "npm run dev:prettier && npm run dev:format && npm run dev:release"
   },
   "author": "Ajay o s",
   "license": "Apache-2.0",

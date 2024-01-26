@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "allowJs": false,
     "checkJs": false,
-    "outDir": "./",
+    "outDir": "./dist",
     "strict": false,
     "strictNullChecks": true,
     "skipLibCheck": true,

@@ -1,14 +1,14 @@
 export interface Label {
   /** Label uniq ID */
-  id: string;
+  id: string
   /** Label name */
-  name: string;
+  name: string
   /** Label color ID */
-  color: number;
+  color: number
   /** Is label has been deleted */
-  deleted: boolean;
+  deleted: boolean
   /** WhatsApp has 5 predefined labels (New customer, New order & etc) */
-  predefinedId?: string;
+  predefinedId?: string
 }
 
 /** WhatsApp has 20 predefined colors */

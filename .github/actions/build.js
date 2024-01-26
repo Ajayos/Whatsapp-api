@@ -58,13 +58,13 @@ class RUN {
       const releaseDetails = await this.getReleaseDetails(releaseId);
       const version = releaseDetails.tag_name;
 
-      await this.publishRelease(version, releaseId);
+      await this.publishRelease(version, releaseId, releaseDetails);
     } catch (error) {
       console.error("Error publishing release:", error.message);
     }
   }
 
-  async publishRelease(version, releaseId) {
+  async publishRelease(version, releaseId, releaseDetails) {
     try {
       const changelogPath = path.join(__dirname, "..", "..", `CHANGELOG.md`);
       const changelogContent = await fs.readFile(changelogPath, "utf-8");
@@ -74,7 +74,7 @@ class RUN {
 
       var textArray = await this.splitTextToArray(body_);
       textArray.splice(3, 4);
-      const body = textArray.join("\n");
+      const body = textArray.join("\n") + releaseDetails.body + "\n";
 
       fs.writeFile(changelogPath, body, function (err) {
         if (err) return console.log(err);
