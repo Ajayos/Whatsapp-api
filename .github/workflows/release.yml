@@ -71,7 +71,7 @@ jobs:
 
       - name: Login to npm
         run: |
-          npm login --registry=https://registry.npmjs.org/ --scope=@${{ github.repository_owner }} --always-auth --username="ajayos" --password=${{ secrets.NPM_TOKEN }} --email="ajayosakhub@gmail.com"
+          
 
       - name: Set up Git for GitHub Packages
         run: |
@@ -81,16 +81,12 @@ jobs:
         
       - name: Publish to npm
         run: |
+          npm login --registry=https://registry.npmjs.org/ --scope=@${{ github.repository_owner }} --always-auth --username="ajayos" --password=${{ secrets.NPM_TOKEN }} --email="ajayosakhub@gmail.com"
           cd dist
-          ls -A
-          echo "scripting...."
+          git config --global user.name "Ajay o s 🕊️★⃝AJAY O S©️🧚‍♂️"
+          git config --global user.email "ajayosakhub@gmail.com"
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.TOKEN }} \n@Ajayos:registry=https://npm.pkg.github.com\n always-auth=true\n\n//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }} \nregistry=https://registry.npmjs.org/\nalways-auth=true" > .npmrc
-          ls -A
           npm publish --access public
-
-      - name: Publish github packages
-        run: |
-          cd dist
           npm publish --access public registry=https://npm.pkg.github.com/
 
       - name: Remove publish and dist folders
