@@ -1,8 +1,8 @@
 
-#### [15.1.7](https://github.com/Ajayos/Whatsapp-api/compare/v15.1.5...15.1.7)
+#### [15.1.8](https://github.com/Ajayos/Whatsapp-api/compare/v15.1.8...15.1.8)
 
 > 26 January 2024
 
-- ➤⃟🍒 ✮⃝COSMOS ✮⃝AURORA🎀⃟⃪➣ ➤⃟🍒 [`d60a11d`](https://github.com/Ajayos/Whatsapp-api/commit/d60a11d90ac519aa68f3d2f138cc3849dc83a7a3)
-- chore(release): 15.1.5 [`c47e9ab`](https://github.com/Ajayos/Whatsapp-api/commit/c47e9ab8cedb4185f7bb33c80538f6623343b656)
-**Full Changelog**: https://github.com/Ajayos/Whatsapp-api/compare/15.1.4...15.1.7
+- Update package.json [`75b2dff`](https://github.com/Ajayos/Whatsapp-api/commit/75b2dff7f5ff95904530626c694ce5231f0c1961)
+- chore(release): 15.1.8 [`eb467b2`](https://github.com/Ajayos/Whatsapp-api/commit/eb467b2c0ea8994dd30c215d6992b396b831ed7a)
+**Full Changelog**: https://github.com/Ajayos/Whatsapp-api/compare/15.1.5...15.1.8
