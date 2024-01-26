@@ -4,6 +4,7 @@
 node_modules/
 jspm_packages/
 logs/
+backup/
 lib/
 package-lock.json
 .npmrc

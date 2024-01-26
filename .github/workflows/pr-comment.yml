@@ -30,7 +30,7 @@ jobs:
             To test this PR you can run the following command below:
             ```
             # NPM
-            npm install @ajayos/keerthana@${{ github.event.pull_request.head.repo.full_name }}#${{ github.event.pull_request.head.ref }}
+            npm install @ajayos/whatsapp-api@${{ github.event.pull_request.head.repo.full_name }}#${{ github.event.pull_request.head.ref }}
             # YARN v2
-            yarn add @ajayos/keerthana@${{ github.event.pull_request.head.repo.full_name }}#${{ github.event.pull_request.head.ref }}
+            yarn add @ajayos/whatsapp-api@${{ github.event.pull_request.head.repo.full_name }}#${{ github.event.pull_request.head.ref }}
             ```

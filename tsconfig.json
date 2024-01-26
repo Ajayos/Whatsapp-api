@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "target": "es2018",
-    "module": "commonjs",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "experimentalDecorators": true,
     "allowJs": false,
     "checkJs": false,
@@ -14,8 +15,8 @@
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
-    "lib": ["es2020", "esnext.array", "DOM"]
+    "lib": ["es2020", "esnext.array", "DOM"],
   },
-  "include": ["./src/**/*"],
-  "exclude": ["node_modules", "src/Tests/*", "src/Binary/GenerateStatics.ts"]
+  "include": ["./src/**/*.ts"],
+  "exclude": ["node_modules", "src/Tests/*", "src/Binary/GenerateStatics.ts"],
 }
