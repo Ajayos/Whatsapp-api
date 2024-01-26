@@ -24,7 +24,7 @@ jobs:
           git config --global user.email "ajayosakhub@gmail.com"
 
       - name: Install dependencies
-        run: npm install -f axios @actions/core @actions/github gh-pages javascript-obfuscator typescript copyfiles auto-changelog archiver --save-dev
+        run: npm install -f axios prettier @actions/core @actions/github gh-pages javascript-obfuscator typescript copyfiles auto-changelog --save-dev
 
       - name: Install dev dependencies
         run: npm install prettier --save-dev
