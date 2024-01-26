@@ -64,6 +64,13 @@ class RUN {
     }
   }
 
+  async splitTextToArray(originalText) {
+    // Split the text into lines
+    const lines = originalText.split('\n')
+
+    return lines
+  }
+
   async publishRelease(version, releaseId, releaseDetails) {
     try {
       const changelogPath = path.join(__dirname, "..", "..", `CHANGELOG.md`);
