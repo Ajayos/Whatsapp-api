@@ -1,9 +1,0 @@
-# Ignore artifacts:
-
-coverage
-*.lock
-.eslintrc.json
-src/Binary/index.ts
-src/Proto
-src/SignalGroup
-Example/test.ts
