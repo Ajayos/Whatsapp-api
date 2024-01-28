@@ -540,11 +540,41 @@
               ><span class="tsd-signature-symbol">)</span
               ><span class="tsd-signature-symbol">; </span><br /><span
                 >    </span
+              ><span class="tsd-kind-property">groupJoinApprovalMode</span
+              ><span class="tsd-signature-symbol">: </span
+              ><span class="tsd-signature-symbol">(</span
+              ><span class="tsd-signature-symbol">(</span
+              ><span class="tsd-kind-parameter">jid</span>,
+              <span class="tsd-kind-parameter">mode</span
+              ><span class="tsd-signature-symbol">)</span
+              ><span class="tsd-signature-symbol"> =&gt; </span
+              ><span class="tsd-signature-type">Promise</span
+              ><span class="tsd-signature-symbol">&lt;</span
+              ><span class="tsd-signature-type">void</span
+              ><span class="tsd-signature-symbol">&gt;</span
+              ><span class="tsd-signature-symbol">)</span
+              ><span class="tsd-signature-symbol">; </span><br /><span
+                >    </span
               ><span class="tsd-kind-property">groupLeave</span
               ><span class="tsd-signature-symbol">: </span
               ><span class="tsd-signature-symbol">(</span
               ><span class="tsd-signature-symbol">(</span
               ><span class="tsd-kind-parameter">id</span
+              ><span class="tsd-signature-symbol">)</span
+              ><span class="tsd-signature-symbol"> =&gt; </span
+              ><span class="tsd-signature-type">Promise</span
+              ><span class="tsd-signature-symbol">&lt;</span
+              ><span class="tsd-signature-type">void</span
+              ><span class="tsd-signature-symbol">&gt;</span
+              ><span class="tsd-signature-symbol">)</span
+              ><span class="tsd-signature-symbol">; </span><br /><span
+                >    </span
+              ><span class="tsd-kind-property">groupMemberAddMode</span
+              ><span class="tsd-signature-symbol">: </span
+              ><span class="tsd-signature-symbol">(</span
+              ><span class="tsd-signature-symbol">(</span
+              ><span class="tsd-kind-parameter">jid</span>,
+              <span class="tsd-kind-parameter">mode</span
               ><span class="tsd-signature-symbol">)</span
               ><span class="tsd-signature-symbol"> =&gt; </span
               ><span class="tsd-signature-type">Promise</span
@@ -2033,11 +2063,41 @@
                 ><span class="tsd-signature-symbol">)</span
                 ><span class="tsd-signature-symbol">; </span><br /><span
                   >    </span
+                ><span class="tsd-kind-property">groupJoinApprovalMode</span
+                ><span class="tsd-signature-symbol">: </span
+                ><span class="tsd-signature-symbol">(</span
+                ><span class="tsd-signature-symbol">(</span
+                ><span class="tsd-kind-parameter">jid</span>,
+                <span class="tsd-kind-parameter">mode</span
+                ><span class="tsd-signature-symbol">)</span
+                ><span class="tsd-signature-symbol"> =&gt; </span
+                ><span class="tsd-signature-type">Promise</span
+                ><span class="tsd-signature-symbol">&lt;</span
+                ><span class="tsd-signature-type">void</span
+                ><span class="tsd-signature-symbol">&gt;</span
+                ><span class="tsd-signature-symbol">)</span
+                ><span class="tsd-signature-symbol">; </span><br /><span
+                  >    </span
                 ><span class="tsd-kind-property">groupLeave</span
                 ><span class="tsd-signature-symbol">: </span
                 ><span class="tsd-signature-symbol">(</span
                 ><span class="tsd-signature-symbol">(</span
                 ><span class="tsd-kind-parameter">id</span
+                ><span class="tsd-signature-symbol">)</span
+                ><span class="tsd-signature-symbol"> =&gt; </span
+                ><span class="tsd-signature-type">Promise</span
+                ><span class="tsd-signature-symbol">&lt;</span
+                ><span class="tsd-signature-type">void</span
+                ><span class="tsd-signature-symbol">&gt;</span
+                ><span class="tsd-signature-symbol">)</span
+                ><span class="tsd-signature-symbol">; </span><br /><span
+                  >    </span
+                ><span class="tsd-kind-property">groupMemberAddMode</span
+                ><span class="tsd-signature-symbol">: </span
+                ><span class="tsd-signature-symbol">(</span
+                ><span class="tsd-signature-symbol">(</span
+                ><span class="tsd-kind-parameter">jid</span>,
+                <span class="tsd-kind-parameter">mode</span
                 ><span class="tsd-signature-symbol">)</span
                 ><span class="tsd-signature-symbol"> =&gt; </span
                 ><span class="tsd-signature-type">Promise</span
@@ -4807,6 +4867,75 @@
                 </li>
                 <li class="tsd-parameter">
                   <h5>
+                    <span class="tsd-kind-property"
+                      >group<wbr />Join<wbr />Approval<wbr />Mode</span
+                    ><span class="tsd-signature-symbol">: </span
+                    ><span class="tsd-signature-symbol">(</span
+                    ><span class="tsd-signature-symbol">(</span
+                    ><span class="tsd-kind-parameter">jid</span>,
+                    <span class="tsd-kind-parameter">mode</span
+                    ><span class="tsd-signature-symbol">)</span
+                    ><span class="tsd-signature-symbol"> =&gt; </span
+                    ><span class="tsd-signature-type">Promise</span
+                    ><span class="tsd-signature-symbol">&lt;</span
+                    ><span class="tsd-signature-type">void</span
+                    ><span class="tsd-signature-symbol">&gt;</span
+                    ><span class="tsd-signature-symbol">)</span>
+                  </h5>
+                  <ul class="tsd-parameters">
+                    <li class="tsd-parameter-signature">
+                      <ul class="tsd-signatures">
+                        <li
+                          class="tsd-signature"
+                          id="makeWASocket.__type.groupJoinApprovalMode.__type-49.__type-50"
+                        >
+                          <span class="tsd-signature-symbol">(</span
+                          ><span class="tsd-kind-parameter">jid</span>,
+                          <span class="tsd-kind-parameter">mode</span
+                          ><span class="tsd-signature-symbol">)</span
+                          ><span class="tsd-signature-symbol">: </span
+                          ><span class="tsd-signature-type">Promise</span
+                          ><span class="tsd-signature-symbol">&lt;</span
+                          ><span class="tsd-signature-type">void</span
+                          ><span class="tsd-signature-symbol">&gt;</span>
+                        </li>
+                        <li class="tsd-description">
+                          <div class="tsd-parameters">
+                            <h4 class="tsd-parameters-title">Parameters</h4>
+                            <ul class="tsd-parameter-list">
+                              <li>
+                                <h5>
+                                  <span class="tsd-kind-parameter">jid</span>:
+                                  <span class="tsd-signature-type">string</span>
+                                </h5>
+                              </li>
+                              <li>
+                                <h5>
+                                  <span class="tsd-kind-parameter">mode</span>:
+                                  <span class="tsd-signature-type"
+                                    >&quot;on&quot;</span
+                                  ><span class="tsd-signature-symbol"> | </span
+                                  ><span class="tsd-signature-type"
+                                    >&quot;off&quot;</span
+                                  >
+                                </h5>
+                              </li>
+                            </ul>
+                          </div>
+                          <h4 class="tsd-returns-title">
+                            Returns
+                            <span class="tsd-signature-type">Promise</span
+                            ><span class="tsd-signature-symbol">&lt;</span
+                            ><span class="tsd-signature-type">void</span
+                            ><span class="tsd-signature-symbol">&gt;</span>
+                          </h4>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li class="tsd-parameter">
+                  <h5>
                     <span class="tsd-kind-property">group<wbr />Leave</span
                     ><span class="tsd-signature-symbol">: </span
                     ><span class="tsd-signature-symbol">(</span
@@ -4825,7 +4954,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.groupLeave.__type-49.__type-50"
+                          id="makeWASocket.__type.groupLeave.__type-51.__type-52"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">id</span
@@ -4844,6 +4973,75 @@
                                 <h5>
                                   <span class="tsd-kind-parameter">id</span>:
                                   <span class="tsd-signature-type">string</span>
+                                </h5>
+                              </li>
+                            </ul>
+                          </div>
+                          <h4 class="tsd-returns-title">
+                            Returns
+                            <span class="tsd-signature-type">Promise</span
+                            ><span class="tsd-signature-symbol">&lt;</span
+                            ><span class="tsd-signature-type">void</span
+                            ><span class="tsd-signature-symbol">&gt;</span>
+                          </h4>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li class="tsd-parameter">
+                  <h5>
+                    <span class="tsd-kind-property"
+                      >group<wbr />Member<wbr />Add<wbr />Mode</span
+                    ><span class="tsd-signature-symbol">: </span
+                    ><span class="tsd-signature-symbol">(</span
+                    ><span class="tsd-signature-symbol">(</span
+                    ><span class="tsd-kind-parameter">jid</span>,
+                    <span class="tsd-kind-parameter">mode</span
+                    ><span class="tsd-signature-symbol">)</span
+                    ><span class="tsd-signature-symbol"> =&gt; </span
+                    ><span class="tsd-signature-type">Promise</span
+                    ><span class="tsd-signature-symbol">&lt;</span
+                    ><span class="tsd-signature-type">void</span
+                    ><span class="tsd-signature-symbol">&gt;</span
+                    ><span class="tsd-signature-symbol">)</span>
+                  </h5>
+                  <ul class="tsd-parameters">
+                    <li class="tsd-parameter-signature">
+                      <ul class="tsd-signatures">
+                        <li
+                          class="tsd-signature"
+                          id="makeWASocket.__type.groupMemberAddMode.__type-53.__type-54"
+                        >
+                          <span class="tsd-signature-symbol">(</span
+                          ><span class="tsd-kind-parameter">jid</span>,
+                          <span class="tsd-kind-parameter">mode</span
+                          ><span class="tsd-signature-symbol">)</span
+                          ><span class="tsd-signature-symbol">: </span
+                          ><span class="tsd-signature-type">Promise</span
+                          ><span class="tsd-signature-symbol">&lt;</span
+                          ><span class="tsd-signature-type">void</span
+                          ><span class="tsd-signature-symbol">&gt;</span>
+                        </li>
+                        <li class="tsd-description">
+                          <div class="tsd-parameters">
+                            <h4 class="tsd-parameters-title">Parameters</h4>
+                            <ul class="tsd-parameter-list">
+                              <li>
+                                <h5>
+                                  <span class="tsd-kind-parameter">jid</span>:
+                                  <span class="tsd-signature-type">string</span>
+                                </h5>
+                              </li>
+                              <li>
+                                <h5>
+                                  <span class="tsd-kind-parameter">mode</span>:
+                                  <span class="tsd-signature-type"
+                                    >&quot;all_member_add&quot;</span
+                                  ><span class="tsd-signature-symbol"> | </span
+                                  ><span class="tsd-signature-type"
+                                    >&quot;admin_add&quot;</span
+                                  >
                                 </h5>
                               </li>
                             </ul>
@@ -4883,7 +5081,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.groupMetadata.__type-51.__type-52"
+                          id="makeWASocket.__type.groupMetadata.__type-55.__type-56"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span
@@ -4968,7 +5166,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.groupParticipantsUpdate.__type-53.__type-54"
+                          id="makeWASocket.__type.groupParticipantsUpdate.__type-57.__type-58"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -5096,7 +5294,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.groupRequestParticipantsList.__type-55.__type-56"
+                          id="makeWASocket.__type.groupRequestParticipantsList.__type-59.__type-60"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span
@@ -5189,7 +5387,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.groupRequestParticipantsUpdate.__type-57.__type-58"
+                          id="makeWASocket.__type.groupRequestParticipantsUpdate.__type-61.__type-62"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -5294,7 +5492,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.groupRevokeInvite.__type-59.__type-60"
+                          id="makeWASocket.__type.groupRevokeInvite.__type-63.__type-64"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span
@@ -5355,7 +5553,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.groupSettingUpdate.__type-61.__type-62"
+                          id="makeWASocket.__type.groupSettingUpdate.__type-65.__type-66"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -5431,7 +5629,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.groupToggleEphemeral.__type-63.__type-64"
+                          id="makeWASocket.__type.groupToggleEphemeral.__type-67.__type-68"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -5499,7 +5697,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.groupUpdateDescription.__type-65.__type-66"
+                          id="makeWASocket.__type.groupUpdateDescription.__type-69.__type-70"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -5569,7 +5767,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.groupUpdateSubject.__type-67.__type-68"
+                          id="makeWASocket.__type.groupUpdateSubject.__type-71.__type-72"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -5633,7 +5831,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.logout.__type-69.__type-70"
+                          id="makeWASocket.__type.logout.__type-73.__type-74"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">msg</span
@@ -5695,7 +5893,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.onUnexpectedError.__type-71.__type-72"
+                          id="makeWASocket.__type.onUnexpectedError.__type-75.__type-76"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">err</span>,
@@ -5776,7 +5974,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.onWhatsApp.__type-73.__type-74"
+                          id="makeWASocket.__type.onWhatsApp.__type-77.__type-78"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-signature-symbol">...</span
@@ -5862,7 +6060,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.presenceSubscribe.__type-75.__type-76"
+                          id="makeWASocket.__type.presenceSubscribe.__type-79.__type-80"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">toJid</span>,
@@ -5952,7 +6150,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature tsd-anchor-link"
-                          id="makeWASocket.__type.processingMutex.__type-77.mutex.mutex-1"
+                          id="makeWASocket.__type.processingMutex.__type-81.mutex.mutex-1"
                         >
                           <span class="tsd-kind-call-signature">mutex</span
                           ><span class="tsd-signature-symbol">&lt;</span
@@ -5971,7 +6169,7 @@
                             >T</span
                           ><span class="tsd-signature-symbol">&gt;</span
                           ><a
-                            href="#makeWASocket.__type.processingMutex.__type-77.mutex.mutex-1"
+                            href="#makeWASocket.__type.processingMutex.__type-81.mutex.mutex-1"
                             aria-label="Permalink"
                             class="tsd-anchor-icon"
                             ><svg viewBox="0 0 24 24">
@@ -6079,7 +6277,7 @@
                               <li>
                                 Defined in
                                 <a
-                                  href="https://github.com/Ajayos/Whatsapp-api/blob/28f2e6f/src/Utils/make-mutex.ts#L7"
+                                  href="https://github.com/Ajayos/Whatsapp-api/blob/f8761e7/src/Utils/make-mutex.ts#L7"
                                   >Utils/make-mutex.ts:7</a
                                 >
                               </li>
@@ -6113,7 +6311,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.productCreate.__type-78.__type-79"
+                          id="makeWASocket.__type.productCreate.__type-82.__type-83"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">create</span
@@ -6186,7 +6384,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.productDelete.__type-80.__type-81"
+                          id="makeWASocket.__type.productDelete.__type-84.__type-85"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">productIds</span
@@ -6260,7 +6458,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.productUpdate.__type-82.__type-83"
+                          id="makeWASocket.__type.productUpdate.__type-86.__type-87"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">productId</span>,
@@ -6342,7 +6540,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.profilePictureUrl.__type-84.__type-85"
+                          id="makeWASocket.__type.profilePictureUrl.__type-88.__type-89"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -6385,7 +6583,7 @@
                                   ><span class="tsd-signature-type"
                                     >&quot;preview&quot;</span
                                   ><span class="tsd-signature-symbol">
-                                    = &#39;preview&#39;</span
+                                    = &quot;preview&quot;</span
                                   >
                                 </h5>
                               </li>
@@ -6442,7 +6640,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.query.__type-86.__type-87"
+                          id="makeWASocket.__type.query.__type-90.__type-91"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">node</span>,
@@ -6527,7 +6725,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.readMessages.__type-88.__type-89"
+                          id="makeWASocket.__type.readMessages.__type-92.__type-93"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">keys</span
@@ -6603,7 +6801,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.refreshMediaConn.__type-90.__type-91"
+                          id="makeWASocket.__type.refreshMediaConn.__type-94.__type-95"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">forceGet</span
@@ -6670,7 +6868,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.register.__type-92.__type-93"
+                          id="makeWASocket.__type.register.__type-96.__type-97"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">code</span
@@ -6727,7 +6925,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.rejectCall.__type-94.__type-95"
+                          id="makeWASocket.__type.rejectCall.__type-98.__type-99"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">callId</span>,
@@ -6794,7 +6992,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.relayMessage.__type-96.__type-97"
+                          id="makeWASocket.__type.relayMessage.__type-100.__type-101"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -6877,7 +7075,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.removeChatLabel.__type-98.__type-99"
+                          id="makeWASocket.__type.removeChatLabel.__type-102.__type-103"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -6947,7 +7145,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.removeMessageLabel.__type-100.__type-101"
+                          id="makeWASocket.__type.removeMessageLabel.__type-104.__type-105"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -7024,7 +7222,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.removeProfilePicture.__type-102.__type-103"
+                          id="makeWASocket.__type.removeProfilePicture.__type-106.__type-107"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span
@@ -7086,7 +7284,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.requestPairingCode.__type-104.__type-105"
+                          id="makeWASocket.__type.requestPairingCode.__type-108.__type-109"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">phoneNumber</span
@@ -7145,7 +7343,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.requestRegistrationCode.__type-106.__type-107"
+                          id="makeWASocket.__type.requestRegistrationCode.__type-110.__type-111"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter"
@@ -7212,7 +7410,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.resyncAppState.__type-108.__type-109"
+                          id="makeWASocket.__type.resyncAppState.__type-112.__type-113"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-signature-symbol">...</span
@@ -7310,7 +7508,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.sendMessage.__type-110.__type-111"
+                          id="makeWASocket.__type.sendMessage.__type-114.__type-115"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -7403,7 +7601,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.sendMessageAck.__type-112.__type-113"
+                          id="makeWASocket.__type.sendMessageAck.__type-116.__type-117"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter"
@@ -7465,7 +7663,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.sendNode.__type-114.__type-115"
+                          id="makeWASocket.__type.sendNode.__type-118.__type-119"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">frame</span
@@ -7531,7 +7729,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.sendPresenceUpdate.__type-116.__type-117"
+                          id="makeWASocket.__type.sendPresenceUpdate.__type-120.__type-121"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">type</span>,
@@ -7602,7 +7800,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.sendRawMessage.__type-118.__type-119"
+                          id="makeWASocket.__type.sendRawMessage.__type-122.__type-123"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">data</span
@@ -7669,7 +7867,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.sendReceipt.__type-120.__type-121"
+                          id="makeWASocket.__type.sendReceipt.__type-124.__type-125"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -7767,7 +7965,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.sendReceipts.__type-122.__type-123"
+                          id="makeWASocket.__type.sendReceipts.__type-126.__type-127"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">keys</span>,
@@ -7852,7 +8050,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.sendRetryRequest.__type-124.__type-125"
+                          id="makeWASocket.__type.sendRetryRequest.__type-128.__type-129"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">node</span>,
@@ -7939,7 +8137,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.star.__type-126.__type-127"
+                          id="makeWASocket.__type.star.__type-130.__type-131"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -8038,7 +8236,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.updateBlockStatus.__type-128.__type-129"
+                          id="makeWASocket.__type.updateBlockStatus.__type-132.__type-133"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -8107,7 +8305,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.updateDefaultDisappearingMode.__type-130.__type-131"
+                          id="makeWASocket.__type.updateDefaultDisappearingMode.__type-134.__type-135"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">duration</span
@@ -8165,7 +8363,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.updateGroupsAddPrivacy.__type-132.__type-133"
+                          id="makeWASocket.__type.updateGroupsAddPrivacy.__type-136.__type-137"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">value</span
@@ -8225,7 +8423,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.updateLastSeenPrivacy.__type-134.__type-135"
+                          id="makeWASocket.__type.updateLastSeenPrivacy.__type-138.__type-139"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">value</span
@@ -8288,7 +8486,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.updateMediaMessage.__type-136.__type-137"
+                          id="makeWASocket.__type.updateMediaMessage.__type-140.__type-141"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">message</span
@@ -8355,7 +8553,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.updateOnlinePrivacy.__type-138.__type-139"
+                          id="makeWASocket.__type.updateOnlinePrivacy.__type-142.__type-143"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">value</span
@@ -8415,7 +8613,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.updateProfileName.__type-140.__type-141"
+                          id="makeWASocket.__type.updateProfileName.__type-144.__type-145"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">name</span
@@ -8472,7 +8670,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.updateProfilePicture.__type-142.__type-143"
+                          id="makeWASocket.__type.updateProfilePicture.__type-146.__type-147"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">jid</span>,
@@ -8546,7 +8744,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.updateProfilePicturePrivacy.__type-144.__type-145"
+                          id="makeWASocket.__type.updateProfilePicturePrivacy.__type-148.__type-149"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">value</span
@@ -8606,7 +8804,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.updateProfileStatus.__type-146.__type-147"
+                          id="makeWASocket.__type.updateProfileStatus.__type-150.__type-151"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">status</span
@@ -8667,7 +8865,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.updateReadReceiptsPrivacy.__type-148.__type-149"
+                          id="makeWASocket.__type.updateReadReceiptsPrivacy.__type-152.__type-153"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">value</span
@@ -8727,7 +8925,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.updateStatusPrivacy.__type-150.__type-151"
+                          id="makeWASocket.__type.updateStatusPrivacy.__type-154.__type-155"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">value</span
@@ -8788,7 +8986,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.uploadPreKeys.__type-152.__type-153"
+                          id="makeWASocket.__type.uploadPreKeys.__type-156.__type-157"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">count</span
@@ -8854,7 +9052,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.uploadPreKeysToServerIfRequired.__type-154.__type-155"
+                          id="makeWASocket.__type.uploadPreKeysToServerIfRequired.__type-158.__type-159"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-signature-symbol">)</span
@@ -8898,7 +9096,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.upsertMessage.__type-156.__type-157"
+                          id="makeWASocket.__type.upsertMessage.__type-160.__type-161"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-signature-symbol">...</span
@@ -9002,7 +9200,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.waitForConnectionUpdate.__type-158.__type-159"
+                          id="makeWASocket.__type.waitForConnectionUpdate.__type-162.__type-163"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-kind-parameter">check</span>,
@@ -9157,7 +9355,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.waitForMessage.__type-160.__type-161"
+                          id="makeWASocket.__type.waitForMessage.__type-164.__type-165"
                         >
                           <span class="tsd-signature-symbol">&lt;</span
                           ><span
@@ -9264,7 +9462,7 @@
                       <ul class="tsd-signatures">
                         <li
                           class="tsd-signature"
-                          id="makeWASocket.__type.waitForSocketOpen.__type-162.__type-163"
+                          id="makeWASocket.__type.waitForSocketOpen.__type-166.__type-167"
                         >
                           <span class="tsd-signature-symbol">(</span
                           ><span class="tsd-signature-symbol">)</span
@@ -9300,7 +9498,7 @@
                   <li>
                     Defined in
                     <a
-                      href="https://github.com/Ajayos/Whatsapp-api/blob/28f2e6f/src/Socket/index.ts#L6"
+                      href="https://github.com/Ajayos/Whatsapp-api/blob/f8761e7/src/Socket/index.ts#L6"
                       >Socket/index.ts:6</a
                     >
                   </li>
