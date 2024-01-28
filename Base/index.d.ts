@@ -29,10 +29,7 @@ export declare const PHONENUMBER_MCC: {
   "880": number;
   "1-246": number;
   "375": number;
-  "32": number /**
-   * @ignore
-   * logger
-   */;
+  "32": number;
   "501": number;
   "229": number;
   "1-441": number;
@@ -244,8 +241,7 @@ export declare const PHONE_CONNECTION_CB = "CB:Pong";
 export declare const WA_DEFAULT_EPHEMERAL: number;
 export declare const MOBILE_TOKEN: Buffer;
 export declare const MOBILE_REGISTRATION_ENDPOINT = "https://v.whatsapp.net/v2";
-export declare const MOBILE_USERAGENT =
-  "WhatsApp/2.23.13.82 iOS/15.3.1 Device/Apple-iPhone_7";
+export declare const MOBILE_USERAGENT: string;
 export declare const REGISTRATION_PUBLIC_KEY: Buffer;
 export declare const NOISE_MODE = "Noise_XX_25519_AESGCM_SHA256\0\0\0\0";
 export declare const DICT_VERSION = 2;

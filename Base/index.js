@@ -37,6 +37,7 @@ exports.DEFAULT_CACHE_TTLS =
   exports.UNAUTHORIZED_CODES =
   exports.logger =
     void 0;
+const crypto_1 = require("crypto");
 const pino_1 = __importDefault(require("pino"));
 const Proto_1 = require("../Proto");
 const libsignal_1 = require("../Signal/libsignal");
@@ -51,6 +52,7 @@ const phonenumber_mcc_json_1 = __importDefault(
 exports.logger = (0, pino_1.default)({ level: "info" });
 exports.UNAUTHORIZED_CODES = [401, 403, 419];
 exports.PHONENUMBER_MCC = phonenumber_mcc_json_1.default;
+const WA_VERSION = "2.23.14.82";
 exports.DEFAULT_ORIGIN = "https://web.whatsapp.com";
 exports.MOBILE_ENDPOINT = "g.whatsapp.net";
 exports.MOBILE_PORT = 443;
@@ -58,12 +60,14 @@ exports.DEF_CALLBACK_PREFIX = "CB:";
 exports.DEF_TAG_PREFIX = "TAG:";
 exports.PHONE_CONNECTION_CB = "CB:Pong";
 exports.WA_DEFAULT_EPHEMERAL = 7 * 24 * 60 * 60;
+const WA_VERSION_HASH = (0, crypto_1.createHash)("md5")
+  .update(WA_VERSION)
+  .digest("hex");
 exports.MOBILE_TOKEN = Buffer.from(
-  "0a1mLfGUIBVrMKF1RdvLI5lkRBvof6vn0fD2QRSM3d3683e76445591c0591bc3c034c3bca",
+  "0a1mLfGUIBVrMKF1RdvLI5lkRBvof6vn0fD2QRSM" + WA_VERSION_HASH,
 );
 exports.MOBILE_REGISTRATION_ENDPOINT = "https://v.whatsapp.net/v2";
-exports.MOBILE_USERAGENT =
-  "WhatsApp/2.23.13.82 iOS/15.3.1 Device/Apple-iPhone_7";
+exports.MOBILE_USERAGENT = `WhatsApp/${WA_VERSION} iOS/15.3.1 Device/Apple-iPhone_7`;
 exports.REGISTRATION_PUBLIC_KEY = Buffer.from([
   5, 142, 140, 15, 116, 195, 235, 197, 215, 166, 134, 92, 108, 60, 132, 56, 86,
   176, 97, 33, 204, 232, 234, 119, 77, 34, 251, 111, 18, 37, 18, 48, 45,
@@ -92,7 +96,7 @@ exports.PROCESSABLE_HISTORY_TYPES = [
   Proto_1.proto.Message.HistorySyncNotification.HistorySyncType.FULL,
 ];
 exports.DEFAULT_CONNECTION_CONFIG = {
-  version: [2, 2402, 5],
+  version: [2, 2403, 2],
   browser: Utils_1.Browsers.aurora(),
   waWebSocketUrl: "wss://web.whatsapp.com/ws/chat",
   connectTimeoutMs: 20000,

@@ -276,9 +276,9 @@ exports.getAudioDuration = getAudioDuration;
 async function getAudioWaveform(buffer, logger) {
   try {
     // @ts-ignore
-    const audioDecode = (...args) =>
+    const audioDecode = (buffer) =>
       import("audio-decode").then(({ default: audioDecode }) =>
-        audioDecode(...args),
+        audioDecode(buffer),
       );
     let audioData;
     if (Buffer.isBuffer(buffer)) {

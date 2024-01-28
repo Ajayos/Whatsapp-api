@@ -297,6 +297,20 @@ const makeGroupsSocket = (config) => {
     groupSettingUpdate: async (jid, setting) => {
       await groupQuery(jid, "set", [{ tag: setting, attrs: {} }]);
     },
+    groupMemberAddMode: async (jid, mode) => {
+      await groupQuery(jid, "set", [
+        { tag: "member_add_mode", attrs: {}, content: mode },
+      ]);
+    },
+    groupJoinApprovalMode: async (jid, mode) => {
+      await groupQuery(jid, "set", [
+        {
+          tag: "membership_approval_mode",
+          attrs: {},
+          content: [{ tag: "group_join", attrs: { state: mode } }],
+        },
+      ]);
+    },
     groupFetchAllParticipating,
   };
 };
@@ -327,7 +341,7 @@ const extractGroupMetadata = (result) => {
     subject: group.attrs.subject,
     subjectOwner: group.attrs.s_o,
     subjectTime: +group.attrs.s_t,
-    size: +group.attrs.size,
+    size: (0, Binary_1.getBinaryNodeChildren)(group, "participant").length,
     creation: +group.attrs.creation,
     owner: group.attrs.creator
       ? (0, Binary_1.jidNormalizedUser)(group.attrs.creator)
@@ -340,6 +354,10 @@ const extractGroupMetadata = (result) => {
     isCommunityAnnounce: !!(0, Binary_1.getBinaryNodeChild)(
       group,
       "default_sub_group",
+    ),
+    joinApprovalMode: !!(0, Binary_1.getBinaryNodeChild)(
+      group,
+      "membership_approval_mode",
     ),
     memberAddMode,
     participants: (0, Binary_1.getBinaryNodeChildren)(group, "participant").map(

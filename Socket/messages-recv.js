@@ -270,6 +270,24 @@ const makeMessagesRecvSocket = (config) => {
           Types_1.WAMessageStubType.GROUP_CHANGE_INVITE_LINK;
         msg.messageStubParameters = [child.attrs.code];
         break;
+      case "member_add_mode":
+        const addMode = child.content;
+        if (addMode) {
+          msg.messageStubType = Types_1.WAMessageStubType.GROUP_MEMBER_ADD_MODE;
+          msg.messageStubParameters = [addMode.toString()];
+        }
+        break;
+      case "membership_approval_mode":
+        const approvalMode = (0, Binary_1.getBinaryNodeChild)(
+          child,
+          "group_join",
+        );
+        if (approvalMode) {
+          msg.messageStubType =
+            Types_1.WAMessageStubType.GROUP_MEMBERSHIP_JOIN_APPROVAL_MODE;
+          msg.messageStubParameters = [approvalMode.attrs.state];
+        }
+        break;
     }
   };
   const processNotification = async (node) => {

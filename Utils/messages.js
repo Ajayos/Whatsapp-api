@@ -688,6 +688,9 @@ const normalizeMessageContent = (content) => {
         : message.documentWithCaptionMessage) ||
       (message === null || message === void 0
         ? void 0
+        : message.viewOnceMessageV2Extension) ||
+      (message === null || message === void 0
+        ? void 0
         : message.viewOnceMessageV2) ||
       (message === null || message === void 0 ? void 0 : message.editedMessage)
     );
@@ -784,13 +787,13 @@ exports.extractMessageContent = extractMessageContent;
  * Returns the device predicted by message ID
  */
 const getDevice = (id) =>
-  /^3A/.test(id)
+  /^3A.{18}$/.test(id)
     ? "ios"
-    : /^3E/.test(id)
+    : /^3E.{20}$/.test(id)
       ? "web"
-      : /^.{21}/.test(id)
+      : /^(.{21}|.{32})$/.test(id)
         ? "android"
-        : /^.{18}/.test(id)
+        : /^.{18}$/.test(id)
           ? "desktop"
           : "unknown";
 exports.getDevice = getDevice;

@@ -140,7 +140,7 @@ const processMessage = async (
   message,
   { shouldProcessHistoryMsg, ev, creds, keyStore, logger, options, getMessage },
 ) => {
-  var _a, _b, _c, _d, _e, _f, _g, _h;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
   const meId = creds.me.id;
   const { accountSettings } = creds;
   const chat = {
@@ -376,6 +376,20 @@ const processMessage = async (
             : _g[0];
         emitGroupUpdate({ inviteCode: code });
         break;
+      case Types_1.WAMessageStubType.GROUP_MEMBER_ADD_MODE:
+        const memberAddValue =
+          (_h = message.messageStubParameters) === null || _h === void 0
+            ? void 0
+            : _h[0];
+        emitGroupUpdate({ memberAddMode: memberAddValue === "all_member_add" });
+        break;
+      case Types_1.WAMessageStubType.GROUP_MEMBERSHIP_JOIN_APPROVAL_MODE:
+        const approvalMode =
+          (_j = message.messageStubParameters) === null || _j === void 0
+            ? void 0
+            : _j[0];
+        emitGroupUpdate({ joinApprovalMode: approvalMode === "on" });
+        break;
     }
   } else if (
     content === null || content === void 0 ? void 0 : content.pollUpdateMessage
@@ -394,9 +408,9 @@ const processMessage = async (
         meIdNormalised,
       );
       const pollEncKey =
-        (_h = pollMsg.messageContextInfo) === null || _h === void 0
+        (_k = pollMsg.messageContextInfo) === null || _k === void 0
           ? void 0
-          : _h.messageSecret;
+          : _k.messageSecret;
       try {
         const voteMsg = decryptPollVote(content.pollUpdateMessage.vote, {
           pollEncKey,
@@ -412,7 +426,8 @@ const processMessage = async (
                 {
                   pollUpdateMessageKey: message.key,
                   vote: voteMsg,
-                  senderTimestampMs: message.messageTimestamp,
+                  senderTimestampMs:
+                    content.pollUpdateMessage.senderTimestampMs.toNumber(),
                 },
               ],
             },

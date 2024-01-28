@@ -58,6 +58,11 @@ export declare const makeGroupsSocket: (config: SocketConfig) => {
     jid: string,
     setting: "announcement" | "not_announcement" | "locked" | "unlocked",
   ) => Promise<void>;
+  groupMemberAddMode: (
+    jid: string,
+    mode: "admin_add" | "all_member_add",
+  ) => Promise<void>;
+  groupJoinApprovalMode: (jid: string, mode: "on" | "off") => Promise<void>;
   groupFetchAllParticipating: () => Promise<{
     [_: string]: GroupMetadata;
   }>;

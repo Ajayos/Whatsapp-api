@@ -144,6 +144,11 @@ declare const makeWASocket: (config: UserFacingSocketConfig) => {
     jid: string,
     setting: "announcement" | "locked" | "not_announcement" | "unlocked",
   ) => Promise<void>;
+  groupMemberAddMode: (
+    jid: string,
+    mode: "all_member_add" | "admin_add",
+  ) => Promise<void>;
+  groupJoinApprovalMode: (jid: string, mode: "on" | "off") => Promise<void>;
   groupFetchAllParticipating: () => Promise<{
     [_: string]: import("../Types").GroupMetadata;
   }>;
