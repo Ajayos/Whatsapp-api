@@ -1,56 +1,56 @@
-import type { proto } from '../Proto'
-import type { AccountSettings } from './Auth'
-import type { BufferedEventData } from './Events'
-import type { ChatLabelAssociationActionBody } from './LabelAssociation'
-import type { MessageLabelAssociationActionBody } from './LabelAssociation'
-import type { MinimalMessage } from './Message'
+import type { proto } from "../Proto";
+import type { AccountSettings } from "./Auth";
+import type { BufferedEventData } from "./Events";
+import type { ChatLabelAssociationActionBody } from "./LabelAssociation";
+import type { MessageLabelAssociationActionBody } from "./LabelAssociation";
+import type { MinimalMessage } from "./Message";
 
 /** privacy settings in WhatsApp Web */
-export type WAPrivacyValue = 'all' | 'contacts' | 'contact_blacklist' | 'none';
+export type WAPrivacyValue = "all" | "contacts" | "contact_blacklist" | "none";
 
-export type WAPrivacyOnlineValue = 'all' | 'match_last_seen';
+export type WAPrivacyOnlineValue = "all" | "match_last_seen";
 
-export type WAReadReceiptsValue = 'all' | 'none';
+export type WAReadReceiptsValue = "all" | "none";
 
 /** set of statuses visible to other people; see updatePresence() in WhatsAppWeb.Send */
 export type WAPresence =
-  | 'unavailable'
-  | 'available'
-  | 'composing'
-  | 'recording'
-  | 'paused';
+  | "unavailable"
+  | "available"
+  | "composing"
+  | "recording"
+  | "paused";
 
 export const ALL_WA_PATCH_NAMES = [
-	'critical_block',
-	'critical_unblock_low',
-	'regular_high',
-	'regular_low',
-	'regular',
-] as const
+  "critical_block",
+  "critical_unblock_low",
+  "regular_high",
+  "regular_low",
+  "regular",
+] as const;
 
 export type WAPatchName = (typeof ALL_WA_PATCH_NAMES)[number];
 
 export interface PresenceData {
-  lastKnownPresence: WAPresence
-  lastSeen?: number
+  lastKnownPresence: WAPresence;
+  lastSeen?: number;
 }
 
 export type ChatMutation = {
-  syncAction: proto.ISyncActionData
-  index: string[]
+  syncAction: proto.ISyncActionData;
+  index: string[];
 };
 
 export type WAPatchCreate = {
-  syncAction: proto.ISyncActionValue
-  index: string[]
-  type: WAPatchName
-  apiVersion: number
-  operation: proto.SyncdMutation.SyncdOperation
+  syncAction: proto.ISyncActionValue;
+  index: string[];
+  type: WAPatchName;
+  apiVersion: number;
+  operation: proto.SyncdMutation.SyncdOperation;
 };
 
 export type Chat = proto.IConversation & {
   /** unix timestamp of when the last message was received in the chat */
-  lastMessageRecvTimestamp?: number
+  lastMessageRecvTimestamp?: number;
 };
 
 export type ChatUpdate = Partial<
@@ -64,7 +64,7 @@ export type ChatUpdate = Partial<
      * false if it can be discarded;
      * undefined if the condition is not yet fulfilled
      * */
-    conditional: (bufferedData: BufferedEventData) => boolean | undefined
+    conditional: (bufferedData: BufferedEventData) => boolean | undefined;
   }
 >;
 
@@ -78,31 +78,31 @@ export type LastMessageList =
 
 export type ChatModification =
   | {
-      archive: boolean
-      lastMessages: LastMessageList
+      archive: boolean;
+      lastMessages: LastMessageList;
     }
   | { pushNameSetting: string }
   | { pin: boolean }
   | {
       /** mute for duration, or provide timestamp of mute to remove*/
-      mute: number | null
+      mute: number | null;
     }
   | {
       clear:
-        | 'all'
-        | { messages: { id: string, fromMe?: boolean, timestamp: number }[] }
+        | "all"
+        | { messages: { id: string; fromMe?: boolean; timestamp: number }[] };
     }
   | {
       star: {
-        messages: { id: string, fromMe?: boolean }[]
-        star: boolean
-      }
+        messages: { id: string; fromMe?: boolean }[];
+        star: boolean;
+      };
     }
   | {
-      markRead: boolean
-      lastMessages: LastMessageList
+      markRead: boolean;
+      lastMessages: LastMessageList;
     }
-  | { delete: true, lastMessages: LastMessageList }
+  | { delete: true; lastMessages: LastMessageList }
   // Label assosiation
   | { addChatLabel: ChatLabelAssociationActionBody }
   | { removeChatLabel: ChatLabelAssociationActionBody }
@@ -112,12 +112,12 @@ export type ChatModification =
 export type InitialReceivedChatsState = {
   [jid: string]: {
     /** the last message received from the other party */
-    lastMsgRecvTimestamp?: number
+    lastMsgRecvTimestamp?: number;
     /** the absolute last message in the chat */
-    lastMsgTimestamp: number
-  }
+    lastMsgTimestamp: number;
+  };
 };
 
 export type InitialAppStateSyncOptions = {
-  accountSettings: AccountSettings
+  accountSettings: AccountSettings;
 };
