@@ -6,6 +6,7 @@ jspm_packages/
 logs/
 backup/
 lib/
+example/
 package-lock.json
 .npmrc
 .sql
