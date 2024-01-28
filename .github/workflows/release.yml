@@ -66,22 +66,6 @@ jobs:
           BRANCH: gh-pages
           FOLDER: ./docs
 
-      - name: Set up Git for GitHub Packages
-        run: |
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.TOKEN }} \n@Ajayos:registry=https://npm.pkg.github.com\n always-auth=true\n\n//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }} \nregistry=https://registry.npmjs.org/\nalways-auth=true" > ~/.npmrc
-          git config --global user.name "Ajay o s 🕊️★⃝AJAY O S©️🧚‍♂️"
-          git config --global user.email "ajayosakhub@gmail.com"
-        
-      - name: Publish to npm
-        run: |
-          
-          cd dist
-          git config --global user.name "Ajay o s 🕊️★⃝AJAY O S©️🧚‍♂️"
-          git config --global user.email "ajayosakhub@gmail.com"
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.TOKEN }} \n@Ajayos:registry=https://npm.pkg.github.com\n always-auth=true\n\n//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }} \nregistry=https://registry.npmjs.org/\nalways-auth=true" > .npmrc
-          npm publish --access public
-          npm publish --access public registry=https://npm.pkg.github.com/
-
       - name: Remove publish and dist folders
         run: |
           rm -rf dist
