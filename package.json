@@ -21,7 +21,7 @@
     "dev:prettier": "prettier --write \"**/**/*.{js,ts,json,css,md,html}\"",
     "lint:fix": "eslint src --fix --ext .js,.ts,.jsx,.tsx",
     "test": "node dist/lib/whatsapp.js",
-    "copy-files": "copyfiles -u 1 src/src/**/*.{js,sh,proto,json,d.ts} dist",
+    "copy-files": "copyfiles -u 1 src/**/*.{js,sh,proto,json,d.ts} dist",
     "dev:release": "standard-version && auto-changelog",
     "build:in": "npm install -g auto-changelog",
     "build:make": "npm run dev:prettier && npm run dev:format && npm run dev:release"
@@ -36,14 +36,14 @@
     "@ajayos/nodedb": "^1.1.0",
     "@hapi/boom": "^9.1.3",
     "audio-decode": "^2.1.3",
-    "cache-manager": "^5.2.2",
+    "cache-manager": "4.0.1",
     "express": "^4.18.2",
     "futoin-hkdf": "^1.5.1",
     "libphonenumber-js": "^1.10.20",
     "music-metadata": "^7.12.3",
     "node-cache": "^5.1.2",
     "pino": "^7.0.0",
-    "protobufjs": "^6.11.3",
+    "protobufjs": "^7.2.4",
     "uuid": "^9.0.0",
     "ws": "^8.13.0"
   },
@@ -51,7 +51,7 @@
     "jimp": "^0.16.1",
     "link-preview-js": "^3.0.0",
     "qrcode-terminal": "^0.12.0",
-    "sharp": "^0.30.5"
+    "sharp": "^0.32.2"
   },
   "peerDependenciesMeta": {
     "jimp": {

@@ -323,6 +323,23 @@ export const makeGroupsSocket = (config: SocketConfig) => {
     ) => {
       await groupQuery(jid, "set", [{ tag: setting, attrs: {} }]);
     },
+    groupMemberAddMode: async (
+      jid: string,
+      mode: "admin_add" | "all_member_add",
+    ) => {
+      await groupQuery(jid, "set", [
+        { tag: "member_add_mode", attrs: {}, content: mode },
+      ]);
+    },
+    groupJoinApprovalMode: async (jid: string, mode: "on" | "off") => {
+      await groupQuery(jid, "set", [
+        {
+          tag: "membership_approval_mode",
+          attrs: {},
+          content: [{ tag: "group_join", attrs: { state: mode } }],
+        },
+      ]);
+    },
     groupFetchAllParticipating,
   };
 };
@@ -348,7 +365,7 @@ export const extractGroupMetadata = (result: BinaryNode) => {
     subject: group.attrs.subject,
     subjectOwner: group.attrs.s_o,
     subjectTime: +group.attrs.s_t,
-    size: +group.attrs.size,
+    size: getBinaryNodeChildren(group, "participant").length,
     creation: +group.attrs.creation,
     owner: group.attrs.creator
       ? jidNormalizedUser(group.attrs.creator)
@@ -359,6 +376,7 @@ export const extractGroupMetadata = (result: BinaryNode) => {
     announce: !!getBinaryNodeChild(group, "announcement"),
     isCommunity: !!getBinaryNodeChild(group, "parent"),
     isCommunityAnnounce: !!getBinaryNodeChild(group, "default_sub_group"),
+    joinApprovalMode: !!getBinaryNodeChild(group, "membership_approval_mode"),
     memberAddMode,
     participants: getBinaryNodeChildren(group, "participant").map(
       ({ attrs }) => {

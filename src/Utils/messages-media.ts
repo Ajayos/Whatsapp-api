@@ -241,9 +241,9 @@ export async function getAudioWaveform(
 ) {
   try {
     // @ts-ignore
-    const audioDecode = (...args) =>
+    const audioDecode = (buffer: Buffer | ArrayBuffer | Uint8Array) =>
       import("audio-decode").then(({ default: audioDecode }) =>
-        audioDecode(...args),
+        audioDecode(buffer),
       );
     let audioData: Buffer;
     if (Buffer.isBuffer(buffer)) {

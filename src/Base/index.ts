@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import Pino from "pino";
 import { proto } from "../Proto";
 import { makeLibSignalRepository } from "../Signal/libsignal";
@@ -14,6 +15,8 @@ export const UNAUTHORIZED_CODES = [401, 403, 419];
 
 export const PHONENUMBER_MCC = phoneNumberMCC;
 
+const WA_VERSION = "2.23.14.82";
+
 export const DEFAULT_ORIGIN = "https://web.whatsapp.com";
 export const MOBILE_ENDPOINT = "g.whatsapp.net";
 export const MOBILE_PORT = 443;
@@ -23,12 +26,14 @@ export const PHONE_CONNECTION_CB = "CB:Pong";
 
 export const WA_DEFAULT_EPHEMERAL = 7 * 24 * 60 * 60;
 
+const WA_VERSION_HASH = createHash("md5").update(WA_VERSION).digest("hex");
 export const MOBILE_TOKEN = Buffer.from(
-  "0a1mLfGUIBVrMKF1RdvLI5lkRBvof6vn0fD2QRSM3d3683e76445591c0591bc3c034c3bca",
+  "0a1mLfGUIBVrMKF1RdvLI5lkRBvof6vn0fD2QRSM" + WA_VERSION_HASH,
 );
+
 export const MOBILE_REGISTRATION_ENDPOINT = "https://v.whatsapp.net/v2";
-export const MOBILE_USERAGENT =
-  "WhatsApp/2.23.13.82 iOS/15.3.1 Device/Apple-iPhone_7";
+export const MOBILE_USERAGENT = `WhatsApp/${WA_VERSION} iOS/15.3.1 Device/Apple-iPhone_7`;
+
 export const REGISTRATION_PUBLIC_KEY = Buffer.from([
   5, 142, 140, 15, 116, 195, 235, 197, 215, 166, 134, 92, 108, 60, 132, 56, 86,
   176, 97, 33, 204, 232, 234, 119, 77, 34, 251, 111, 18, 37, 18, 48, 45,
@@ -59,7 +64,7 @@ export const PROCESSABLE_HISTORY_TYPES = [
 ];
 
 export const DEFAULT_CONNECTION_CONFIG: SocketConfig = {
-  version: [2, 2402, 5],
+  version: [2, 2403, 2],
   browser: Browsers.aurora(),
   waWebSocketUrl: "wss://web.whatsapp.com/ws/chat",
   connectTimeoutMs: 20_000,

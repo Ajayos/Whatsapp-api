@@ -732,6 +732,7 @@ export const normalizeMessageContent = (
       message?.ephemeralMessage ||
       message?.viewOnceMessage ||
       message?.documentWithCaptionMessage ||
+      message?.viewOnceMessageV2Extension ||
       message?.viewOnceMessageV2 ||
       message?.editedMessage
     );
@@ -801,13 +802,13 @@ export const extractMessageContent = (
  * Returns the device predicted by message ID
  */
 export const getDevice = (id: string) =>
-  /^3A/.test(id)
+  /^3A.{18}$/.test(id)
     ? "ios"
-    : /^3E/.test(id)
+    : /^3E.{20}$/.test(id)
       ? "web"
-      : /^.{21}/.test(id)
+      : /^(.{21}|.{32})$/.test(id)
         ? "android"
-        : /^.{18}/.test(id)
+        : /^.{18}$/.test(id)
           ? "desktop"
           : "unknown";
 
