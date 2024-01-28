@@ -27,7 +27,7 @@ jobs:
         run: npm install -f axios prettier @actions/core @actions/github gh-pages javascript-obfuscator typescript copyfiles auto-changelog --save-dev
 
       - name: Install dev dependencies
-        run: npm install prettier --save-dev
+        run: npm install prettier --save-dev && npm install -g auto-changelog
 
       - name: Run build
         run: npm run build
@@ -37,9 +37,6 @@ jobs:
 
       - name: Run release
         run: npm run dev:release
-
-      - name: Run prepare
-        run: npm run prepare
 
       - name: Build and push
         run: node --max-old-space-size=4096 ./.github/actions/build.js
@@ -77,7 +74,7 @@ jobs:
         
       - name: Publish to npm
         run: |
-          npm login --registry=https://registry.npmjs.org/ --scope=@${{ github.repository_owner }} --always-auth --username="ajayos" --password=${{ secrets.NPM_TOKEN }} --email="ajayosakhub@gmail.com"
+          
           cd dist
           git config --global user.name "Ajay o s 🕊️★⃝AJAY O S©️🧚‍♂️"
           git config --global user.email "ajayosakhub@gmail.com"
