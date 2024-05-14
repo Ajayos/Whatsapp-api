@@ -1,3 +1,3 @@
-const { groupproto } = require("./GroupProtocol");
+const { groupproto } = require('./GroupProtocol');
 
 module.exports = groupproto;

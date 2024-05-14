@@ -30,8 +30,6 @@ var __exportStar =
 				__createBinding(exports, m, p);
 	};
 Object.defineProperty(exports, '__esModule', { value: true });
+__exportStar(require('./constants'), exports);
 __exportStar(require('./encode'), exports);
-__exportStar(require('./decode'), exports);
-__exportStar(require('./generic-utils'), exports);
-__exportStar(require('./jid-utils'), exports);
-__exportStar(require('./types'), exports);
+__exportStar(require('./BinaryInfo'), exports);
