@@ -1,6 +1,6 @@
 {
 	"name": "@ajayos/whatsapp-api",
-	"version": "15.2.2",
+	"version": "15.2.3",
 	"description": "WhatsApp API",
 	"homepage": "https://github.com/Ajayos/whatsapp-api",
 	"keywords": [
@@ -83,7 +83,7 @@
 		"@types/sharp": "^0.29.4",
 		"@types/ws": "^8.0.0",
 		"auto-changelog": "^2.4.0",
-		"axios": "^1.6.7",
+		"axios": "^1.6.8",
 		"conventional-changelog-cli": "^2.2.2",
 		"copyfiles": "^2.4.1",
 		"eslint": "^8.0.0",
@@ -93,7 +93,7 @@
 		"jimp": "^0.16.1",
 		"link-preview-js": "^3.0.0",
 		"open": "^8.4.2",
-		"prettier": "^3.2.4",
+		"prettier": "^3.2.5",
 		"qrcode-terminal": "^0.12.0",
 		"release-it": "^15.10.3",
 		"sharp": "^0.30.5",
