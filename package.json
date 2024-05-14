@@ -1,6 +1,6 @@
 {
 	"name": "@ajayos/whatsapp-api",
-	"version": "15.2.1",
+	"version": "15.2.2",
 	"description": "WhatsApp API",
 	"homepage": "https://github.com/Ajayos/whatsapp-api",
 	"keywords": [
@@ -19,6 +19,7 @@
 		"build:tsc": "tsc",
 		"lint": "eslint src --ext .js,.ts,.jsx,.tsx,",
 		"prettier": "prettier --write \"**/**/*.{js,ts,json,css,md,html}\"",
+		"dev:prettier": "prettier --write \"**/**/*.{js,ts,json,css,md,html}\"",
 		"lint:fix": "eslint src --fix --ext .js,.ts,.jsx,.tsx",
 		"test": "node dist/lib/whatsapp.js",
 		"example": "node --inspect -r ts-node/register example/index.ts",
