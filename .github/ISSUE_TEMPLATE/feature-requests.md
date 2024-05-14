@@ -1,9 +1,9 @@
 ---
 name: Feature Requests
 about: Template for general issues/feature requests
-title: ""
-labels: ""
-assignees: ""
+title: ''
+labels: ''
+assignees: ''
 ---
 
 **Before adding this issue, make sure you do the following to make sure this is not a duplicate:**
