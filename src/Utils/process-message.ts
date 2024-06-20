@@ -16,6 +16,8 @@ import {
 	SignalKeyStoreWithTransaction,
 	SocketConfig,
 	WAMessageStubType,
+	RequestJoinAction,
+	RequestJoinMethod,
 } from '../Types';
 import { getContentType, normalizeMessageContent } from '../Utils/messages';
 import { aesDecryptGCM, hmacSign } from './crypto';
@@ -332,6 +334,20 @@ const processMessage = async (
 			]);
 		};
 
+		const emitGroupRequestJoin = (
+			participant: string,
+			action: RequestJoinAction,
+			method: RequestJoinMethod,
+		) => {
+			ev.emit('group.join-request', {
+				id: jid,
+				author: message.participant!,
+				participant,
+				action,
+				method: method!,
+			});
+		};
+
 		const participantsIncludesMe = () =>
 			participants.find(jid => areJidsSameUser(meId, jid));
 
@@ -392,6 +408,12 @@ const processMessage = async (
 			case WAMessageStubType.GROUP_MEMBERSHIP_JOIN_APPROVAL_MODE:
 				const approvalMode = message.messageStubParameters?.[0];
 				emitGroupUpdate({ joinApprovalMode: approvalMode === 'on' });
+				break;
+			case WAMessageStubType.GROUP_MEMBERSHIP_JOIN_APPROVAL_REQUEST_NON_ADMIN_ADD:
+				const participant = message.messageStubParameters?.[0] as string;
+				const action = message.messageStubParameters?.[1] as RequestJoinAction;
+				const method = message.messageStubParameters?.[2] as RequestJoinMethod;
+				emitGroupRequestJoin(participant, action, method);
 				break;
 		}
 	} else if (content?.pollUpdateMessage) {

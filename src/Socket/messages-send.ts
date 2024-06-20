@@ -35,6 +35,7 @@ import {
 	encryptMediaRetryRequest,
 	extractDeviceJids,
 	generateMessageID,
+	generateMessageIDV2, 
 	generateWAMessage,
 	getStatusCodeForMediaRetry,
 	getUrlFromDirectPath,
@@ -381,7 +382,7 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 		const isStatus = jid === statusJid;
 		const isLid = server === 'lid';
 
-		msgId = msgId || generateMessageID();
+		msgId = msgId || generateMessageIDV2(sock.user?.id)
 		useUserDevicesCache = useUserDevicesCache !== false;
 
 		const participants: BinaryNode[] = [];
@@ -863,6 +864,7 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 					upload: waUploadToServer,
 					mediaCache: config.mediaCache,
 					options: config.options,
+					messageId: generateMessageIDV2(sock.user?.id),
 					...options,
 				});
 				const isDeleteMsg = 'delete' in content && !!content.delete;

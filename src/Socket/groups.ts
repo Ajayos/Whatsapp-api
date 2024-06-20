@@ -15,7 +15,7 @@ import {
 	WAMessageKey,
 	WAMessageStubType,
 } from '../Types';
-import { generateMessageID, unixTimestampSeconds } from '../Utils';
+import { generateMessageID, generateMessageIDV2, unixTimestampSeconds } from '../Utils';
 import { makeChatsSocket } from './chats';
 
 export const makeGroupsSocket = (config: SocketConfig) => {
@@ -287,7 +287,7 @@ export const makeGroupsSocket = (config: SocketConfig) => {
 					{
 						key: {
 							remoteJid: inviteMessage.groupJid,
-							id: generateMessageID(),
+							id: generateMessageIDV2(sock.user?.id),
 							fromMe: false,
 							participant: key.remoteJid,
 						},

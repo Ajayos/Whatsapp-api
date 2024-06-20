@@ -9,6 +9,7 @@ import {
 	getBinaryNodeChildBuffer,
 	getBinaryNodeChildren,
 	isJidGroup,
+	isJidStatusBroadcast,
 	isJidUser,
 	jidDecode,
 	jidNormalizedUser,
@@ -261,6 +262,8 @@ export const makeMessagesRecvSocket = (config: SocketConfig) => {
 		child: BinaryNode,
 		msg: Partial<proto.IWebMessageInfo>,
 	) => {
+		const participantJid =
+			getBinaryNodeChild(child, 'participant')?.attrs?.jid || participant;
 		switch (child?.tag) {
 			case 'create':
 				const metadata = extractGroupMetadata(child);
@@ -349,6 +352,24 @@ export const makeMessagesRecvSocket = (config: SocketConfig) => {
 						WAMessageStubType.GROUP_MEMBERSHIP_JOIN_APPROVAL_MODE;
 					msg.messageStubParameters = [approvalMode.attrs.state];
 				}
+				break;
+			case 'created_membership_requests':
+				msg.messageStubType =
+					WAMessageStubType.GROUP_MEMBERSHIP_JOIN_APPROVAL_REQUEST_NON_ADMIN_ADD;
+				msg.messageStubParameters = [
+					participantJid,
+					'created',
+					child.attrs.request_method,
+				];
+				break;
+			case 'revoked_membership_requests':
+				const isDenied = areJidsSameUser(participantJid, participant);
+				msg.messageStubType =
+					WAMessageStubType.GROUP_MEMBERSHIP_JOIN_APPROVAL_REQUEST_NON_ADMIN_ADD;
+				msg.messageStubParameters = [
+					participantJid,
+					isDenied ? 'revoked' : 'rejected',
+				];
 				break;
 		}
 	};
@@ -662,7 +683,7 @@ export const makeMessagesRecvSocket = (config: SocketConfig) => {
 			participant: attrs.participant,
 		};
 
-		if (shouldIgnoreJid(remoteJid)) {
+		if (shouldIgnoreJid(remoteJid) && remoteJid !== '@s.whatsapp.net') {
 			logger.debug({ remoteJid }, 'ignoring receipt from jid');
 			await sendMessageAck(node);
 			return;
@@ -683,7 +704,7 @@ export const makeMessagesRecvSocket = (config: SocketConfig) => {
 					// or another device of ours has read some messages
 					(status > proto.WebMessageInfo.Status.DELIVERY_ACK || !isNodeFromMe)
 				) {
-					if (isJidGroup(remoteJid)) {
+					if (isJidGroup(remoteJid) || isJidStatusBroadcast(remoteJid)) {
 						if (attrs.participant) {
 							const updateKey: keyof MessageUserReceipt =
 								status === proto.WebMessageInfo.Status.DELIVERY_ACK
@@ -743,7 +764,7 @@ export const makeMessagesRecvSocket = (config: SocketConfig) => {
 
 	const handleNotification = async (node: BinaryNode) => {
 		const remoteJid = node.attrs.from;
-		if (shouldIgnoreJid(remoteJid)) {
+		if (shouldIgnoreJid(remoteJid) && remoteJid !== '@s.whatsapp.net') {
 			logger.debug({ remoteJid, id: node.attrs.id }, 'ignored notification');
 			await sendMessageAck(node);
 			return;
@@ -801,8 +822,11 @@ export const makeMessagesRecvSocket = (config: SocketConfig) => {
 			}
 		}
 
-		if (shouldIgnoreJid(msg.key.remoteJid!)) {
-			logger.debug({ key: msg.key }, 'ignored message');
+		if (
+			shouldIgnoreJid(node.attrs.from!) &&
+			node.attrs.from! !== '@s.whatsapp.net'
+		) {
+			logger.debug({ key: node.attrs.key }, 'ignored message');
 			await sendMessageAck(node);
 			return;
 		}

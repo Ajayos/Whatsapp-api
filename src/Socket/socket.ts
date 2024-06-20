@@ -74,6 +74,11 @@ export const makeSocket = (config: SocketConfig) => {
 		url = new URL(`tcp://${MOBILE_ENDPOINT}:${MOBILE_PORT}`);
 	}
 
+	if(!config.mobile && url.protocol === 'wss' && authState?.creds?.routingInfo) {
+		url.searchParams.append('ED', authState.creds.routingInfo.toString('base64url'))
+	}
+
+
 	const ws = config.socket
 		? config.socket
 		: config.mobile
@@ -91,6 +96,7 @@ export const makeSocket = (config: SocketConfig) => {
 		NOISE_HEADER: config.mobile ? MOBILE_NOISE_HEADER : NOISE_WA_HEADER,
 		mobile: config.mobile,
 		logger,
+		routingInfo: authState?.creds?.routingInfo
 	});
 
 	const { creds } = authState;
@@ -719,6 +725,15 @@ export const makeSocket = (config: SocketConfig) => {
 			}),
 		);
 	});
+
+	ws.on('CB:ib,,edge_routing', (node: BinaryNode) => {
+		const edgeRoutingNode = getBinaryNodeChild(node, 'edge_routing')
+		const routingInfo = getBinaryNodeChild(edgeRoutingNode, 'routing_info')
+		if(routingInfo?.content) {
+			authState.creds.routingInfo = Buffer.from(routingInfo?.content as Uint8Array)
+			ev.emit('creds.update', authState.creds)
+		}
+	})
 
 	let didStartBuffer = false;
 	process.nextTick(() => {

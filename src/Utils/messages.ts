@@ -25,6 +25,7 @@ import {
 	WATextMessage,
 } from '../Types';
 import { sha256 } from './crypto';
+import { type Transform } from 'stream';
 import {
 	generateMessageID,
 	getKeyAuthor,
@@ -447,6 +448,12 @@ export const generateWAMessageContent = async (
 				};
 				break;
 		}
+	} else if('ptv' in message && message.ptv) {
+		const { videoMessage } = await prepareWAMessageMedia(
+			{ video: message.video },
+			options,
+		);
+		m.ptvMessage = videoMessage;
 	} else if ('product' in message) {
 		const { imageMessage } = await prepareWAMessageMedia(
 			{ image: message.product.productImage },
@@ -956,16 +963,13 @@ const REUPLOAD_REQUIRED_STATUS = [410, 404];
 /**
  * Downloads the given message. Throws an error if it's not a media message
  */
-export const downloadMediaMessage = async (
+export const downloadMediaMessage = async <Type extends 'buffer' | 'stream'>(
 	message: WAMessage,
-	type: 'buffer' | 'stream',
+	type: Type,
 	options: MediaDownloadOptions,
 	ctx?: DownloadMediaMessageContext,
 ) => {
-	try {
-		const result = await downloadMsg();
-		return result;
-	} catch (error) {
+	const result = await downloadMsg().catch(async error => {
 		if (ctx) {
 			if (axios.isAxiosError(error)) {
 				// check if the message requires a reupload
@@ -981,9 +985,10 @@ export const downloadMediaMessage = async (
 				}
 			}
 		}
-
 		throw error;
-	}
+	});
+
+	return result as Type extends 'buffer' ? Buffer : Transform;
 
 	async function downloadMsg() {
 		const mContent = extractMessageContent(message.message);

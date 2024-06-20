@@ -1,11 +1,11 @@
 import { Boom } from '@hapi/boom';
 import axios, { AxiosRequestConfig } from 'axios';
-import { randomBytes } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import { platform, release } from 'os';
 import { Logger } from 'pino';
 import { proto } from '../Proto';
 const baileysVersion = [2, 2402, 5];
-import { BinaryNode, getAllBinaryNodeChildren } from '../Binary';
+import { BinaryNode, getAllBinaryNodeChildren, jidDecode } from '../Binary';
 import {
 	BaileysEventEmitter,
 	BaileysEventMap,
@@ -201,7 +201,28 @@ export async function promiseTimeout<T>(
 
 // generate a random ID to attach to a message
 export const generateMessageID = () =>
-	'BAE5' + randomBytes(6).toString('hex').toUpperCase();
+	'3EB0' + randomBytes(18).toString('hex').toUpperCase();
+
+// inspired from whatsmeow code
+// https://github.com/tulir/whatsmeow/blob/64bc969fbe78d31ae0dd443b8d4c80a5d026d07a/send.go#L42
+export const generateMessageIDV2 = (userId?: string): string => {
+	const data = Buffer.alloc(8 + 20 + 16);
+	data.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 1000)));
+
+	if (userId) {
+		const id = jidDecode(userId);
+		if (id?.user) {
+			data.write(id.user, 8);
+			data.write('@c.us', 8 + id.user.length);
+		}
+	}
+
+	const random = randomBytes(16);
+	random.copy(data, 28);
+
+	const hash = createHash('sha256').update(data).digest();
+	return '3EB0' + hash.toString('hex').toUpperCase().substring(0, 18);
+};
 
 export function bindWaitForEvent<T extends keyof BaileysEventMap>(
 	ev: BaileysEventEmitter,
