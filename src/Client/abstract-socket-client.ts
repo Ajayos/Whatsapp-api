@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events';
-import { URL } from 'url';
+import { EventEmitter } from 'events'
+import { URL } from 'url'
 
 export abstract class AbstractSocketClient extends EventEmitter {
 	abstract get isOpen(): boolean;
@@ -8,8 +8,8 @@ export abstract class AbstractSocketClient extends EventEmitter {
 	abstract get isConnecting(): boolean;
 
 	constructor(public url: URL) {
-		super();
-		this.setMaxListeners(0);
+		super()
+		this.setMaxListeners(0)
 	}
 
 	abstract connect(): Promise<void>;
