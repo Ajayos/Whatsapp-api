@@ -9,6 +9,7 @@ import {
 	promises as fs,
 	WriteStream,
 } from 'fs'
+// @ts-ignore
 import type { IAudioMetadata } from 'music-metadata'
 import { tmpdir } from 'os'
 import { join } from 'path'
@@ -61,6 +62,7 @@ const getImageProcessingLibrary = async() => {
 		return { sharp }
 	}
 
+	// @ts-ignore
 	const jimp = _jimp?.default || _jimp
 	if(jimp) {
 		return { jimp }

@@ -249,6 +249,7 @@ export type MessageRelayOptions = MinimalRelayOptions & {
 	useUserDevicesCache?: boolean
 	/** jid list of participants for status@broadcast */
 	statusJidList?: string[]
+	cachedGroupMetadata?: any
 };
 
 export type MiscMessageGenerationOptions = MinimalRelayOptions & {
