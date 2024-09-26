@@ -1,16 +1,18 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.decryptMessageNode = exports.decodeMessageNode = void 0;
+exports.decryptMessageNode = exports.NO_MESSAGE_FOUND_ERROR_TEXT = void 0;
+exports.decodeMessageNode = decodeMessageNode;
 const boom_1 = require('@hapi/boom');
 const Binary_1 = require('../Binary');
 const Proto_1 = require('../Proto');
 const generics_1 = require('./generics');
-const NO_MESSAGE_FOUND_ERROR_TEXT = 'Message absent from node';
+exports.NO_MESSAGE_FOUND_ERROR_TEXT = 'Message absent from node';
 /**
  * Decode the received node as a message.
  * @note this will only parse the message, not decrypt it
  */
 function decodeMessageNode(stanza, meId, meLid) {
+	var _a;
 	let msgType;
 	let chatId;
 	let author;
@@ -65,13 +67,21 @@ function decodeMessageNode(stanza, meId, meLid) {
 		}
 		chatId = from;
 		author = participant;
+	} else if ((0, Binary_1.isJidNewsletter)(from)) {
+		msgType = 'newsletter';
+		chatId = from;
+		author = from;
 	} else {
 		throw new boom_1.Boom('Unknown message type', { data: stanza });
 	}
 	const fromMe = ((0, Binary_1.isLidUser)(from) ? isMeLid : isMe)(
 		stanza.attrs.participant || stanza.attrs.from,
 	);
-	const pushname = stanza.attrs.notify;
+	const pushname =
+		(_a = stanza === null || stanza === void 0 ? void 0 : stanza.attrs) ===
+			null || _a === void 0
+			? void 0
+			: _a.notify;
 	const key = {
 		remoteJid: chatId,
 		fromMe,
@@ -93,7 +103,6 @@ function decodeMessageNode(stanza, meId, meLid) {
 		sender: msgType === 'chat' ? author : chatId,
 	};
 }
-exports.decodeMessageNode = decodeMessageNode;
 const decryptMessageNode = (stanza, meId, meLid, repository, logger) => {
 	const { fullMessage, author, sender } = decodeMessageNode(
 		stanza,
@@ -117,7 +126,7 @@ const decryptMessageNode = (stanza, meId, meLid, repository, logger) => {
 							);
 						fullMessage.verifiedBizName = details.verifiedName;
 					}
-					if (tag !== 'enc') {
+					if (tag !== 'enc' && tag !== 'plaintext') {
 						continue;
 					}
 					if (!(content instanceof Uint8Array)) {
@@ -126,7 +135,7 @@ const decryptMessageNode = (stanza, meId, meLid, repository, logger) => {
 					decryptables += 1;
 					let msgBuffer;
 					try {
-						const e2eType = attrs.type;
+						const e2eType = tag === 'plaintext' ? 'plaintext' : attrs.type;
 						switch (e2eType) {
 							case 'skmsg':
 								msgBuffer = await repository.decryptGroupMessage({
@@ -144,11 +153,16 @@ const decryptMessageNode = (stanza, meId, meLid, repository, logger) => {
 									ciphertext: content,
 								});
 								break;
+							case 'plaintext':
+								msgBuffer = content;
+								break;
 							default:
 								throw new Error(`Unknown e2e type: ${e2eType}`);
 						}
 						let msg = Proto_1.proto.Message.decode(
-							(0, generics_1.unpadRandomMax16)(msgBuffer),
+							e2eType !== 'plaintext'
+								? (0, generics_1.unpadRandomMax16)(msgBuffer)
+								: msgBuffer,
 						);
 						msg =
 							((_a = msg.deviceSentMessage) === null || _a === void 0
@@ -188,8 +202,7 @@ const decryptMessageNode = (stanza, meId, meLid, repository, logger) => {
 				fullMessage.messageStubType =
 					Proto_1.proto.WebMessageInfo.StubType.CIPHERTEXT;
 				fullMessage.messageStubParameters = [
-					NO_MESSAGE_FOUND_ERROR_TEXT,
-					JSON.stringify(stanza, generics_1.BufferJSON.replacer),
+					exports.NO_MESSAGE_FOUND_ERROR_TEXT,
 				];
 			}
 		},

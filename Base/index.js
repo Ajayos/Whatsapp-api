@@ -94,9 +94,10 @@ exports.PROCESSABLE_HISTORY_TYPES = [
 	Proto_1.proto.Message.HistorySyncNotification.HistorySyncType.PUSH_NAME,
 	Proto_1.proto.Message.HistorySyncNotification.HistorySyncType.RECENT,
 	Proto_1.proto.Message.HistorySyncNotification.HistorySyncType.FULL,
+	Proto_1.proto.Message.HistorySyncNotification.HistorySyncType.ON_DEMAND,
 ];
 exports.DEFAULT_CONNECTION_CONFIG = {
-	version: [2, 2403, 2],
+	version: [2, 3000, 1015901307],
 	browser: Utils_1.Browsers.aurora(),
 	waWebSocketUrl: 'wss://web.whatsapp.com/ws/chat',
 	connectTimeoutMs: 20000,
@@ -123,6 +124,7 @@ exports.DEFAULT_CONNECTION_CONFIG = {
 		snapshot: false,
 	},
 	getMessage: async () => undefined,
+	cachedGroupMetadata: async () => undefined,
 	makeSignalRepository: libsignal_1.makeLibSignalRepository,
 };
 exports.MEDIA_PATH_MAP = {
@@ -160,8 +162,8 @@ exports.MEDIA_KEYS = Object.keys(exports.MEDIA_PATH_MAP);
 exports.MIN_PREKEY_COUNT = 5;
 exports.INITIAL_PREKEY_COUNT = 30;
 exports.DEFAULT_CACHE_TTLS = {
-	SIGNAL_STORE: 5 * 60,
-	MSG_RETRY: 60 * 60,
-	CALL_OFFER: 5 * 60,
+	SIGNAL_STORE: 5 * 60, // 5 minutes
+	MSG_RETRY: 60 * 60, // 1 hour
+	CALL_OFFER: 5 * 60, // 5 minutes
 	USER_DEVICES: 5 * 60, // 5 minutes
 };

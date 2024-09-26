@@ -1,6 +1,7 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.jidNormalizedUser =
+	exports.isJidNewsletter =
 	exports.isJidStatusBroadcast =
 	exports.isJidGroup =
 	exports.isJidBroadcast =
@@ -77,6 +78,10 @@ exports.isJidGroup = isJidGroup;
 /** is the jid the status broadcast */
 const isJidStatusBroadcast = jid => jid === 'status@broadcast';
 exports.isJidStatusBroadcast = isJidStatusBroadcast;
+/** is the jid a newsletter */
+const isJidNewsletter = jid =>
+	jid === null || jid === void 0 ? void 0 : jid.endsWith('@newsletter');
+exports.isJidNewsletter = isJidNewsletter;
 const jidNormalizedUser = jid => {
 	const result = (0, exports.jidDecode)(jid);
 	if (!result) {

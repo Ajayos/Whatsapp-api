@@ -5,9 +5,7 @@ var __importDefault =
 		return mod && mod.__esModule ? mod : { default: mod };
 	};
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.bytesToCrockford =
-	exports.trimUndefined =
-	exports.isWABusinessPlatform =
+exports.isWABusinessPlatform =
 	exports.getCodeFromWSError =
 	exports.getCallStatusFromNode =
 	exports.getErrorCodeFromStreamError =
@@ -16,9 +14,8 @@ exports.bytesToCrockford =
 	exports.fetchLatestWaWebVersion =
 	exports.printQRIfNecessaryListener =
 	exports.bindWaitForConnectionUpdate =
-	exports.bindWaitForEvent =
+	exports.generateMessageIDV2 =
 	exports.generateMessageID =
-	exports.promiseTimeout =
 	exports.delayCancellable =
 	exports.delay =
 	exports.debouncedTimeout =
@@ -31,8 +28,13 @@ exports.bytesToCrockford =
 	exports.writeRandomPadMax16 =
 	exports.getKeyAuthor =
 	exports.BufferJSON =
+	exports.getPlatformId =
 	exports.Browsers =
 		void 0;
+exports.promiseTimeout = promiseTimeout;
+exports.bindWaitForEvent = bindWaitForEvent;
+exports.trimUndefined = trimUndefined;
+exports.bytesToCrockford = bytesToCrockford;
 const boom_1 = require('@hapi/boom');
 const axios_1 = __importDefault(require('axios'));
 const crypto_1 = require('crypto');
@@ -46,12 +48,17 @@ const PLATFORM_MAP = {
 	darwin: 'Mac OS',
 	win32: 'Windows',
 	android: 'Android',
+	freebsd: 'FreeBSD',
+	openbsd: 'OpenBSD',
+	sunos: 'Solaris',
 };
 exports.Browsers = {
-	ubuntu: browser => ['Ubuntu', browser, '20.0.04'],
-	macOS: browser => ['Mac OS', browser, '10.15.7'],
+	ubuntu: browser => ['Ubuntu', browser, '22.04.4'],
+	macOS: browser => ['Mac OS', browser, '14.4.1'],
 	baileys: browser => ['Baileys', browser, '4.0.0'],
-	aurora: () => ['AURORA', 'Firefox', '10.15.7'],
+	windows: browser => ['Windows', browser, '10.0.22631'],
+	aurora: () => ['AURORA', 'Firefox', '14.4.1'],
+	keerthana: () => ['KEERTHANA', 'Firefox', '14.4.1'],
 	/** The appropriate browser based on your OS & release */
 	appropriate: browser => [
 		PLATFORM_MAP[(0, os_1.platform)()] || 'Ubuntu',
@@ -59,6 +66,12 @@ exports.Browsers = {
 		(0, os_1.release)(),
 	],
 };
+const getPlatformId = browser => {
+	const platformType =
+		Proto_1.proto.DeviceProps.PlatformType[browser.toUpperCase()];
+	return platformType ? platformType.toString().charCodeAt(0).toString() : '49'; //chrome
+};
+exports.getPlatformId = getPlatformId;
 exports.BufferJSON = {
 	replacer: (k, value) => {
 		if (
@@ -211,11 +224,28 @@ async function promiseTimeout(ms, promise) {
 	}).finally(cancel);
 	return p;
 }
-exports.promiseTimeout = promiseTimeout;
 // generate a random ID to attach to a message
 const generateMessageID = () =>
-	'BAE5' + (0, crypto_1.randomBytes)(6).toString('hex').toUpperCase();
+	'3EB0' + (0, crypto_1.randomBytes)(18).toString('hex').toUpperCase();
 exports.generateMessageID = generateMessageID;
+// inspired from whatsmeow code
+// https://github.com/tulir/whatsmeow/blob/64bc969fbe78d31ae0dd443b8d4c80a5d026d07a/send.go#L42
+const generateMessageIDV2 = userId => {
+	const data = Buffer.alloc(8 + 20 + 16);
+	data.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 1000)));
+	if (userId) {
+		const id = (0, Binary_1.jidDecode)(userId);
+		if (id === null || id === void 0 ? void 0 : id.user) {
+			data.write(id.user, 8);
+			data.write('@c.us', 8 + id.user.length);
+		}
+	}
+	const random = (0, crypto_1.randomBytes)(16);
+	random.copy(data, 28);
+	const hash = (0, crypto_1.createHash)('sha256').update(data).digest();
+	return '3EB0' + hash.toString('hex').toUpperCase().substring(0, 18);
+};
+exports.generateMessageIDV2 = generateMessageIDV2;
 function bindWaitForEvent(ev, event) {
 	return async (check, timeoutMs) => {
 		let listener;
@@ -246,7 +276,6 @@ function bindWaitForEvent(ev, event) {
 		});
 	};
 }
-exports.bindWaitForEvent = bindWaitForEvent;
 const bindWaitForConnectionUpdate = ev =>
 	bindWaitForEvent(ev, 'connection.update');
 exports.bindWaitForConnectionUpdate = bindWaitForConnectionUpdate;
@@ -350,7 +379,8 @@ const getCallStatusFromNode = ({ tag, attrs }) => {
 			if (attrs.reason === 'timeout') {
 				status = 'timeout';
 			} else {
-				status = 'reject';
+				//fired when accepted/rejected/timeout/caller hangs up
+				status = 'terminate';
 			}
 			break;
 		case 'reject':
@@ -414,7 +444,6 @@ function trimUndefined(obj) {
 	}
 	return obj;
 }
-exports.trimUndefined = trimUndefined;
 const CROCKFORD_CHARACTERS = '123456789ABCDEFGHJKLMNPQRSTVWXYZ';
 function bytesToCrockford(buffer) {
 	let value = 0;
@@ -435,4 +464,3 @@ function bytesToCrockford(buffer) {
 	}
 	return crockford.join('');
 }
-exports.bytesToCrockford = bytesToCrockford;

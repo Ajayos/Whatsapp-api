@@ -5,9 +5,9 @@ const boom_1 = require('@hapi/boom');
 const crypto_1 = require('crypto');
 const url_1 = require('url');
 const util_1 = require('util');
+const Base_1 = require('../Base');
 const Binary_1 = require('../Binary');
 const Client_1 = require('../Client');
-const Base_1 = require('../Base');
 const Proto_1 = require('../Proto');
 const Types_1 = require('../Types');
 const Utils_1 = require('../Utils');
@@ -18,6 +18,7 @@ const Utils_1 = require('../Utils');
  * - query phone connection
  */
 const makeSocket = config => {
+	var _a, _b;
 	const {
 		connectTimeoutMs,
 		logger,
@@ -37,6 +38,20 @@ const makeSocket = config => {
 			`tcp://${Base_1.MOBILE_ENDPOINT}:${Base_1.MOBILE_PORT}`,
 		);
 	}
+	if (
+		!config.mobile &&
+		url.protocol === 'wss' &&
+		((_a =
+			authState === null || authState === void 0 ? void 0 : authState.creds) ===
+			null || _a === void 0
+			? void 0
+			: _a.routingInfo)
+	) {
+		url.searchParams.append(
+			'ED',
+			authState.creds.routingInfo.toString('base64url'),
+		);
+	}
 	const ws = config.socket
 		? config.socket
 		: config.mobile
@@ -54,6 +69,13 @@ const makeSocket = config => {
 			: Base_1.NOISE_WA_HEADER,
 		mobile: config.mobile,
 		logger,
+		routingInfo:
+			(_b =
+				authState === null || authState === void 0
+					? void 0
+					: authState.creds) === null || _b === void 0
+				? void 0
+				: _b.routingInfo,
 	});
 	const { creds } = authState;
 	// add transaction capability
@@ -366,9 +388,9 @@ const makeSocket = config => {
 			}
 			const diff = Date.now() - lastDateRecv.getTime();
 			/*
-            check if it's been a suspicious amount of time since the server responded with our last seen
-            it could be that the network is down
-        */
+                check if it's been a suspicious amount of time since the server responded with our last seen
+                it could be that the network is down
+            */
 			if (diff > keepAliveIntervalMs + 5000) {
 				end(
 					new boom_1.Boom('Connection was lost', {
@@ -475,12 +497,12 @@ const makeSocket = config => {
 						{
 							tag: 'companion_platform_id',
 							attrs: {},
-							content: '49', // Chrome
+							content: (0, Utils_1.getPlatformId)(browser[1]),
 						},
 						{
 							tag: 'companion_platform_display',
 							attrs: {},
-							content: `${browser[1]} (${browser[0]})`,
+							content: `${browser[1]} => (${browser[0]})`,
 						},
 						{
 							tag: 'link_code_pairing_nonce',
@@ -496,7 +518,7 @@ const makeSocket = config => {
 	async function generatePairingKey() {
 		const salt = (0, crypto_1.randomBytes)(32);
 		const randomIv = (0, crypto_1.randomBytes)(16);
-		const key = (0, Utils_1.derivePairingCodeKey)(
+		const key = await (0, Utils_1.derivePairingCodeKey)(
 			authState.creds.pairingCode,
 			salt,
 		);
@@ -647,6 +669,28 @@ const makeSocket = config => {
 				statusCode: Types_1.DisconnectReason.multideviceMismatch,
 			}),
 		);
+	});
+	ws.on('CB:ib,,edge_routing', node => {
+		const edgeRoutingNode = (0, Binary_1.getBinaryNodeChild)(
+			node,
+			'edge_routing',
+		);
+		const routingInfo = (0, Binary_1.getBinaryNodeChild)(
+			edgeRoutingNode,
+			'routing_info',
+		);
+		if (
+			routingInfo === null || routingInfo === void 0
+				? void 0
+				: routingInfo.content
+		) {
+			authState.creds.routingInfo = Buffer.from(
+				routingInfo === null || routingInfo === void 0
+					? void 0
+					: routingInfo.content,
+			);
+			ev.emit('creds.update', authState.creds);
+		}
 	});
 	let didStartBuffer = false;
 	process.nextTick(() => {

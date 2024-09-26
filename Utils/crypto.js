@@ -49,27 +49,26 @@ var __importDefault =
 		return mod && mod.__esModule ? mod : { default: mod };
 	};
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.derivePairingCodeKey =
-	exports.hkdf =
-	exports.md5 =
-	exports.sha256 =
-	exports.hmacSign =
-	exports.aesEncrypWithIV =
-	exports.aesEncrypt =
-	exports.aesDecryptWithIV =
-	exports.aesDecrypt =
-	exports.aesDecryptCTR =
-	exports.aesEncryptCTR =
-	exports.aesDecryptGCM =
-	exports.aesEncryptGCM =
-	exports.signedKeyPair =
-	exports.Curve =
-	exports.generateSignalPubKey =
-		void 0;
+exports.signedKeyPair = exports.Curve = exports.generateSignalPubKey = void 0;
+exports.aesEncryptGCM = aesEncryptGCM;
+exports.aesDecryptGCM = aesDecryptGCM;
+exports.aesEncryptCTR = aesEncryptCTR;
+exports.aesDecryptCTR = aesDecryptCTR;
+exports.aesDecrypt = aesDecrypt;
+exports.aesDecryptWithIV = aesDecryptWithIV;
+exports.aesEncrypt = aesEncrypt;
+exports.aesEncrypWithIV = aesEncrypWithIV;
+exports.hmacSign = hmacSign;
+exports.sha256 = sha256;
+exports.md5 = md5;
+exports.hkdf = hkdf;
+exports.derivePairingCodeKey = derivePairingCodeKey;
 const libsignal = __importStar(require('@ajayos/libsignal'));
 const crypto_1 = require('crypto');
 const futoin_hkdf_1 = __importDefault(require('futoin-hkdf'));
+const util_1 = require('util');
 const Base_1 = require('../Base');
+const pbkdf2Promise = (0, util_1.promisify)(crypto_1.pbkdf2);
 /** prefix version byte to the pub keys, required for some curve crypto functions */
 const generateSignalPubKey = pubKey =>
 	pubKey.length === 33
@@ -128,7 +127,6 @@ function aesEncryptGCM(plaintext, key, iv, additionalData) {
 		cipher.getAuthTag(),
 	]);
 }
-exports.aesEncryptGCM = aesEncryptGCM;
 /**
  * decrypt AES 256 GCM;
  * where the auth tag is suffixed to the ciphertext
@@ -143,17 +141,14 @@ function aesDecryptGCM(ciphertext, key, iv, additionalData) {
 	decipher.setAuthTag(tag);
 	return Buffer.concat([decipher.update(enc), decipher.final()]);
 }
-exports.aesDecryptGCM = aesDecryptGCM;
 function aesEncryptCTR(plaintext, key, iv) {
 	const cipher = (0, crypto_1.createCipheriv)('aes-256-ctr', key, iv);
 	return Buffer.concat([cipher.update(plaintext), cipher.final()]);
 }
-exports.aesEncryptCTR = aesEncryptCTR;
 function aesDecryptCTR(ciphertext, key, iv) {
 	const decipher = (0, crypto_1.createDecipheriv)('aes-256-ctr', key, iv);
 	return Buffer.concat([decipher.update(ciphertext), decipher.final()]);
 }
-exports.aesDecryptCTR = aesDecryptCTR;
 /** decrypt AES 256 CBC; where the IV is prefixed to the buffer */
 function aesDecrypt(buffer, key) {
 	return aesDecryptWithIV(
@@ -162,39 +157,32 @@ function aesDecrypt(buffer, key) {
 		buffer.slice(0, 16),
 	);
 }
-exports.aesDecrypt = aesDecrypt;
 /** decrypt AES 256 CBC */
 function aesDecryptWithIV(buffer, key, IV) {
 	const aes = (0, crypto_1.createDecipheriv)('aes-256-cbc', key, IV);
 	return Buffer.concat([aes.update(buffer), aes.final()]);
 }
-exports.aesDecryptWithIV = aesDecryptWithIV;
 // encrypt AES 256 CBC; where a random IV is prefixed to the buffer
 function aesEncrypt(buffer, key) {
 	const IV = (0, crypto_1.randomBytes)(16);
 	const aes = (0, crypto_1.createCipheriv)('aes-256-cbc', key, IV);
 	return Buffer.concat([IV, aes.update(buffer), aes.final()]); // prefix IV to the buffer
 }
-exports.aesEncrypt = aesEncrypt;
 // encrypt AES 256 CBC with a given IV
 function aesEncrypWithIV(buffer, key, IV) {
 	const aes = (0, crypto_1.createCipheriv)('aes-256-cbc', key, IV);
 	return Buffer.concat([aes.update(buffer), aes.final()]); // prefix IV to the buffer
 }
-exports.aesEncrypWithIV = aesEncrypWithIV;
 // sign HMAC using SHA 256
 function hmacSign(buffer, key, variant = 'sha256') {
 	return (0, crypto_1.createHmac)(variant, key).update(buffer).digest();
 }
-exports.hmacSign = hmacSign;
 function sha256(buffer) {
 	return (0, crypto_1.createHash)('sha256').update(buffer).digest();
 }
-exports.sha256 = sha256;
 function md5(buffer) {
 	return (0, crypto_1.createHash)('md5').update(buffer).digest();
 }
-exports.md5 = md5;
 // HKDF key expansion
 function hkdf(buffer, expandedLength, info) {
 	return (0, futoin_hkdf_1.default)(
@@ -203,8 +191,6 @@ function hkdf(buffer, expandedLength, info) {
 		info,
 	);
 }
-exports.hkdf = hkdf;
-function derivePairingCodeKey(pairingCode, salt) {
-	return (0, crypto_1.pbkdf2Sync)(pairingCode, salt, 2 << 16, 32, 'sha256');
+async function derivePairingCodeKey(pairingCode, salt) {
+	return await pbkdf2Promise(pairingCode, salt, 2 << 16, 32, 'sha256');
 }
-exports.derivePairingCodeKey = derivePairingCodeKey;

@@ -42,6 +42,7 @@ const processHistoryMessage = item => {
 		case Proto_1.proto.HistorySync.HistorySyncType.INITIAL_BOOTSTRAP:
 		case Proto_1.proto.HistorySync.HistorySyncType.RECENT:
 		case Proto_1.proto.HistorySync.HistorySyncType.FULL:
+		case Proto_1.proto.HistorySync.HistorySyncType.ON_DEMAND:
 			for (const chat of item.conversations) {
 				contacts.push({ id: chat.id, name: chat.name || undefined });
 				const msgs = chat.messages || [];
@@ -103,6 +104,8 @@ const processHistoryMessage = item => {
 		chats,
 		contacts,
 		messages,
+		syncType: item.syncType,
+		progress: item.progress,
 	};
 };
 exports.processHistoryMessage = processHistoryMessage;

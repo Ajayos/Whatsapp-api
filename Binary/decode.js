@@ -48,12 +48,14 @@ exports.decodeBinaryNode =
 	exports.decodeDecompressedBinaryNode =
 	exports.decompressingIfRequired =
 		void 0;
+const util_1 = require('util');
 const zlib_1 = require('zlib');
 const constants = __importStar(require('./constants'));
 const jid_utils_1 = require('./jid-utils');
-const decompressingIfRequired = buffer => {
+const inflatePromise = (0, util_1.promisify)(zlib_1.inflate);
+const decompressingIfRequired = async buffer => {
 	if (2 & buffer.readUInt8()) {
-		buffer = (0, zlib_1.inflateSync)(buffer.slice(1));
+		buffer = await inflatePromise(buffer.slice(1));
 	} else {
 		// nodes with no compression have a 0x00 prefix, we remove that
 		buffer = buffer.slice(1);
@@ -280,8 +282,8 @@ const decodeDecompressedBinaryNode = (
 	};
 };
 exports.decodeDecompressedBinaryNode = decodeDecompressedBinaryNode;
-const decodeBinaryNode = buff => {
-	const decompBuff = (0, exports.decompressingIfRequired)(buff);
+const decodeBinaryNode = async buff => {
+	const decompBuff = await (0, exports.decompressingIfRequired)(buff);
 	return (0, exports.decodeDecompressedBinaryNode)(decompBuff, constants);
 };
 exports.decodeBinaryNode = decodeBinaryNode;

@@ -5,10 +5,8 @@ var __importDefault =
 		return mod && mod.__esModule ? mod : { default: mod };
 	};
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.initAuthCreds =
-	exports.addTransactionCapability =
-	exports.makeCacheableSignalKeyStore =
-		void 0;
+exports.initAuthCreds = exports.addTransactionCapability = void 0;
+exports.makeCacheableSignalKeyStore = makeCacheableSignalKeyStore;
 const crypto_1 = require('crypto');
 const node_cache_1 = __importDefault(require('node-cache'));
 const uuid_1 = require('uuid');
@@ -25,7 +23,7 @@ function makeCacheableSignalKeyStore(store, logger, _cache) {
 	const cache =
 		_cache ||
 		new node_cache_1.default({
-			stdTTL: Base_1.DEFAULT_CACHE_TTLS.SIGNAL_STORE,
+			stdTTL: Base_1.DEFAULT_CACHE_TTLS.SIGNAL_STORE, // 5 minutes
 			useClones: false,
 			deleteOnExpire: true,
 		});
@@ -77,7 +75,6 @@ function makeCacheableSignalKeyStore(store, logger, _cache) {
 		},
 	};
 }
-exports.makeCacheableSignalKeyStore = makeCacheableSignalKeyStore;
 /**
  * Adds DB like transaction capability (https://en.wikipedia.org/wiki/Database_transaction) to the SignalKeyStore,
  * this allows batch read & write operations & improves the performance of the lib
@@ -217,6 +214,7 @@ const initAuthCreds = () => {
 		registration: {},
 		pairingCode: undefined,
 		lastPropHash: undefined,
+		routingInfo: undefined,
 	};
 };
 exports.initAuthCreds = initAuthCreds;

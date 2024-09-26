@@ -7,8 +7,9 @@ var __importDefault =
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.makeChatsSocket = void 0;
 const boom_1 = require('@hapi/boom');
-const Binary_1 = require('../Binary');
+const node_cache_1 = __importDefault(require('node-cache'));
 const Base_1 = require('../Base');
+const Binary_1 = require('../Binary');
 const Proto_1 = require('../Proto');
 const Types_1 = require('../Types');
 const Utils_1 = require('../Utils');
@@ -40,6 +41,15 @@ const makeChatsSocket = config => {
 	let pendingAppStateSync = false;
 	/** this mutex ensures that the notifications (receipts, messages etc.) are processed in order */
 	const processingMutex = (0, make_mutex_1.makeMutex)();
+	const placeholderResendCache =
+		config.placeholderResendCache ||
+		new node_cache_1.default({
+			stdTTL: Base_1.DEFAULT_CACHE_TTLS.MSG_RETRY, // 1 hour
+			useClones: false,
+		});
+	if (!config.placeholderResendCache) {
+		config.placeholderResendCache = placeholderResendCache;
+	}
 	/** helper function to fetch the given app state sync key */
 	const getAppStateSyncKey = async keyId => {
 		const { [keyId]: key } = await authState.keys.get('app-state-sync-key', [
@@ -87,6 +97,9 @@ const makeChatsSocket = config => {
 				},
 			],
 		});
+	};
+	const updateCallPrivacy = async value => {
+		await privacyQuery('calladd', value);
 	};
 	const updateLastSeenPrivacy = async value => {
 		await privacyQuery('last', value);
@@ -217,11 +230,24 @@ const makeChatsSocket = config => {
 	};
 	/** update the profile picture for yourself or a group */
 	const updateProfilePicture = async (jid, content) => {
+		let targetJid = '';
+		if (!jid) {
+			throw new boom_1.Boom(
+				'Illegal no-jid profile update. Please specify either your ID or the ID of the chat you wish to update',
+			);
+		}
+		if (
+			(0, Binary_1.jidNormalizedUser)(jid) !==
+			(0, Binary_1.jidNormalizedUser)(authState.creds.me.id)
+		) {
+			targetJid = jid; // in case it is someone other than us
+		}
 		const { img } = await (0, Utils_1.generateProfilePicture)(content);
 		await query({
 			tag: 'iq',
 			attrs: {
-				to: (0, Binary_1.jidNormalizedUser)(jid),
+				target: targetJid,
+				to: Binary_1.S_WHATSAPP_NET,
 				type: 'set',
 				xmlns: 'w:profile:picture',
 			},
@@ -236,10 +262,23 @@ const makeChatsSocket = config => {
 	};
 	/** remove the profile picture for yourself or a group */
 	const removeProfilePicture = async jid => {
+		let targetJid = '';
+		if (!jid) {
+			throw new boom_1.Boom(
+				'Illegal no-jid profile update. Please specify either your ID or the ID of the chat you wish to update',
+			);
+		}
+		if (
+			(0, Binary_1.jidNormalizedUser)(jid) !==
+			(0, Binary_1.jidNormalizedUser)(authState.creds.me.id)
+		) {
+			targetJid = jid; // in case it is someone other than us
+		}
 		await query({
 			tag: 'iq',
 			attrs: {
-				to: (0, Binary_1.jidNormalizedUser)(jid),
+				target: targetJid,
+				to: Binary_1.S_WHATSAPP_NET,
 				type: 'set',
 				xmlns: 'w:profile:picture',
 			},
@@ -588,7 +627,8 @@ const makeChatsSocket = config => {
 			{
 				tag: 'iq',
 				attrs: {
-					to: jid,
+					target: jid,
+					to: Binary_1.S_WHATSAPP_NET,
 					type: 'get',
 					xmlns: 'w:profile:picture',
 				},
@@ -660,7 +700,7 @@ const makeChatsSocket = config => {
 		let presence;
 		const jid = attrs.from;
 		const participant = attrs.participant || attrs.from;
-		if (shouldIgnoreJid(jid)) {
+		if (shouldIgnoreJid(jid) && jid !== '@s.whatsapp.net') {
 			return;
 		}
 		if (tag === 'presence') {
@@ -847,6 +887,19 @@ const makeChatsSocket = config => {
 		);
 	};
 	/**
+	 * Adds label
+	 */
+	const addLabel = (jid, labels) => {
+		return chatModify(
+			{
+				addLabel: {
+					...labels,
+				},
+			},
+			jid,
+		);
+	};
+	/**
 	 * Adds label for the chats
 	 */
 	const addChatLabel = (jid, labelId) => {
@@ -955,6 +1008,7 @@ const makeChatsSocket = config => {
 			})(),
 			(0, process_message_1.default)(msg, {
 				shouldProcessHistoryMsg,
+				placeholderResendCache,
 				ev,
 				creds: authState.creds,
 				keyStore: authState.keys,
@@ -1057,6 +1111,7 @@ const makeChatsSocket = config => {
 		updateProfileStatus,
 		updateProfileName,
 		updateBlockStatus,
+		updateCallPrivacy,
 		updateLastSeenPrivacy,
 		updateOnlinePrivacy,
 		updateProfilePicturePrivacy,
@@ -1068,6 +1123,7 @@ const makeChatsSocket = config => {
 		resyncAppState,
 		chatModify,
 		cleanDirtyBits,
+		addLabel,
 		addChatLabel,
 		removeChatLabel,
 		addMessageLabel,

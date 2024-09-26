@@ -2,8 +2,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.makeNoiseHandler = void 0;
 const boom_1 = require('@hapi/boom');
-const Binary_1 = require('../Binary');
 const Base_1 = require('../Base');
+const Binary_1 = require('../Binary');
 const Proto_1 = require('../Proto');
 const crypto_1 = require('./crypto');
 const generateIV = counter => {
@@ -16,6 +16,7 @@ const makeNoiseHandler = ({
 	NOISE_HEADER,
 	mobile,
 	logger,
+	routingInfo,
 }) => {
 	logger = logger.child({ class: 'ns' });
 	const authenticate = data => {
@@ -119,10 +120,22 @@ const makeNoiseHandler = ({
 			if (isFinished) {
 				data = encrypt(data);
 			}
-			const introSize = sentIntro ? 0 : NOISE_HEADER.length;
+			let header;
+			if (routingInfo) {
+				header = Buffer.alloc(7);
+				header.write('ED', 0, 'utf8');
+				header.writeUint8(0, 2);
+				header.writeUint8(1, 3);
+				header.writeUint8(routingInfo.byteLength >> 16, 4);
+				header.writeUint16BE(routingInfo.byteLength & 65535, 5);
+				header = Buffer.concat([header, routingInfo, NOISE_HEADER]);
+			} else {
+				header = Buffer.from(NOISE_HEADER);
+			}
+			const introSize = sentIntro ? 0 : header.length;
 			const frame = Buffer.alloc(introSize + 3 + data.byteLength);
 			if (!sentIntro) {
-				frame.set(NOISE_HEADER);
+				frame.set(header);
 				sentIntro = true;
 			}
 			frame.writeUInt8(data.byteLength >> 16, introSize);
@@ -130,7 +143,7 @@ const makeNoiseHandler = ({
 			frame.set(data, introSize + 3);
 			return frame;
 		},
-		decodeFrame: (newData, onFrame) => {
+		decodeFrame: async (newData, onFrame) => {
 			var _a;
 			// the binary protocol uses its own framing mechanism
 			// on top of the WS frames
@@ -150,7 +163,7 @@ const makeNoiseHandler = ({
 				inBytes = inBytes.slice(size + 3);
 				if (isFinished) {
 					const result = decrypt(frame);
-					frame = (0, Binary_1.decodeBinaryNode)(result);
+					frame = await (0, Binary_1.decodeBinaryNode)(result);
 				}
 				logger.trace(
 					{

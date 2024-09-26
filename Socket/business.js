@@ -277,6 +277,7 @@ const makeBusinessSocket = config => {
 	};
 	return {
 		...sock,
+		logger: config.logger,
 		getOrderDetails,
 		getCatalog,
 		getCollections,

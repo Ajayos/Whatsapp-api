@@ -8,8 +8,8 @@ exports.encodeSignedDeviceIdentity =
 		void 0;
 const boom_1 = require('@hapi/boom');
 const crypto_1 = require('crypto');
-const Binary_1 = require('../Binary');
 const Base_1 = require('../Base');
+const Binary_1 = require('../Binary');
 const Proto_1 = require('../Proto');
 const crypto_2 = require('./crypto');
 const generics_1 = require('./generics');
@@ -88,7 +88,7 @@ const generateMobileNode = config => {
 			dnsMethod:
 				Proto_1.proto.ClientPayload.DNSSource.DNSResolutionMethod.SYSTEM,
 		},
-		passive: false,
+		passive: false, // XMPP heartbeat setting (false: server actively pings) (true: client actively pings)
 		pushName: 'test',
 		username: Number(
 			`${config.auth.creds.registration.phoneNumberCountryCode}${config.auth.creds.registration.phoneNumberNationalNumber}`,

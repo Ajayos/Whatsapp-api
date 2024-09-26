@@ -47,11 +47,12 @@ Object.defineProperty(exports, '__esModule', { value: true });
 exports.encodeBinaryNode = void 0;
 const constants = __importStar(require('./constants'));
 const jid_utils_1 = require('./jid-utils');
-const encodeBinaryNode = (
-	{ tag, attrs, content },
-	opts = constants,
-	buffer = [0],
-) => {
+const encodeBinaryNode = (node, opts = constants, buffer = [0]) => {
+	const encoded = encodeBinaryNodeInner(node, opts, buffer);
+	return Buffer.from(encoded);
+};
+exports.encodeBinaryNode = encodeBinaryNode;
+const encodeBinaryNodeInner = ({ tag, attrs, content }, opts, buffer) => {
 	const { TAGS, TOKEN_MAP } = opts;
 	const pushByte = value => buffer.push(value & 0xff);
 	const pushInt = (value, n, littleEndian = false) => {
@@ -236,7 +237,7 @@ const encodeBinaryNode = (
 	} else if (Array.isArray(content)) {
 		writeListStart(content.length);
 		for (const item of content) {
-			(0, exports.encodeBinaryNode)(item, opts, buffer);
+			encodeBinaryNodeInner(item, opts, buffer);
 		}
 	} else if (typeof content === 'undefined') {
 		// do nothing
@@ -245,6 +246,5 @@ const encodeBinaryNode = (
 			`invalid children for header "${tag}": ${content} (${typeof content})`,
 		);
 	}
-	return Buffer.from(buffer);
+	return buffer;
 };
-exports.encodeBinaryNode = encodeBinaryNode;

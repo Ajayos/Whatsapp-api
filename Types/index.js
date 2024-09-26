@@ -60,7 +60,4 @@ var DisconnectReason;
 	DisconnectReason[(DisconnectReason['forbidden'] = 403)] = 'forbidden';
 	DisconnectReason[(DisconnectReason['unavailableService'] = 503)] =
 		'unavailableService';
-})(
-	(DisconnectReason =
-		exports.DisconnectReason || (exports.DisconnectReason = {})),
-);
+})(DisconnectReason || (exports.DisconnectReason = DisconnectReason = {}));

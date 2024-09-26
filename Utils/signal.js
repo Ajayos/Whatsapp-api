@@ -10,8 +10,9 @@ exports.getNextPreKeysNode =
 	exports.getPreKeys =
 	exports.createSignalIdentity =
 		void 0;
-const Binary_1 = require('../Binary');
+const lodash_1 = require('lodash');
 const Base_1 = require('../Base');
+const Binary_1 = require('../Binary');
 const crypto_1 = require('./crypto');
 const generics_1 = require('./generics');
 const createSignalIdentity = (wid, accountSignatureKey) => {
@@ -87,28 +88,40 @@ const parseAndInjectE2ESessions = async (node, repository) => {
 	for (const node of nodes) {
 		(0, Binary_1.assertNodeErrorFree)(node);
 	}
-	await Promise.all(
-		nodes.map(async node => {
-			const signedKey = (0, Binary_1.getBinaryNodeChild)(node, 'skey');
-			const key = (0, Binary_1.getBinaryNodeChild)(node, 'key');
-			const identity = (0, Binary_1.getBinaryNodeChildBuffer)(node, 'identity');
-			const jid = node.attrs.jid;
-			const registrationId = (0, Binary_1.getBinaryNodeChildUInt)(
-				node,
-				'registration',
-				4,
-			);
-			await repository.injectE2ESession({
-				jid,
-				session: {
-					registrationId: registrationId,
-					identityKey: (0, crypto_1.generateSignalPubKey)(identity),
-					signedPreKey: extractKey(signedKey),
-					preKey: extractKey(key),
-				},
-			});
-		}),
-	);
+	// Most of the work in repository.injectE2ESession is CPU intensive, not IO
+	// So Promise.all doesn't really help here,
+	// but blocks even loop if we're using it inside keys.transaction, and it makes it "sync" actually
+	// This way we chunk it in smaller parts and between those parts we can yield to the event loop
+	// It's rare case when you need to E2E sessions for so many users, but it's possible
+	const chunkSize = 100;
+	const chunks = (0, lodash_1.chunk)(nodes, chunkSize);
+	for (const nodesChunk of chunks) {
+		await Promise.all(
+			nodesChunk.map(async node => {
+				const signedKey = (0, Binary_1.getBinaryNodeChild)(node, 'skey');
+				const key = (0, Binary_1.getBinaryNodeChild)(node, 'key');
+				const identity = (0, Binary_1.getBinaryNodeChildBuffer)(
+					node,
+					'identity',
+				);
+				const jid = node.attrs.jid;
+				const registrationId = (0, Binary_1.getBinaryNodeChildUInt)(
+					node,
+					'registration',
+					4,
+				);
+				await repository.injectE2ESession({
+					jid,
+					session: {
+						registrationId: registrationId,
+						identityKey: (0, crypto_1.generateSignalPubKey)(identity),
+						signedPreKey: extractKey(signedKey),
+						preKey: extractKey(key),
+					},
+				});
+			}),
+		);
+	}
 };
 exports.parseAndInjectE2ESessions = parseAndInjectE2ESessions;
 const extractDeviceJids = (result, myJid, excludeZeroDevices) => {

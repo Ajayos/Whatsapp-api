@@ -8,13 +8,12 @@ Object.defineProperty(exports, '__esModule', { value: true });
 exports.makeMessagesSocket = void 0;
 const boom_1 = require('@hapi/boom');
 const node_cache_1 = __importDefault(require('node-cache'));
-const Binary_1 = require('../Binary');
 const Base_1 = require('../Base');
+const Binary_1 = require('../Binary');
 const Proto_1 = require('../Proto');
 const Utils_1 = require('../Utils');
 const link_preview_1 = require('../Utils/link-preview');
 const groups_1 = require('./groups');
-var ListType = Proto_1.proto.Message.ListMessage.ListType;
 const makeMessagesSocket = config => {
 	const {
 		logger,
@@ -22,6 +21,7 @@ const makeMessagesSocket = config => {
 		generateHighQualityLinkPreview,
 		options: axiosOptions,
 		patchMessageBeforeSending,
+		cachedGroupMetadata,
 	} = config;
 	const sock = (0, groups_1.makeGroupsSocket)(config);
 	const {
@@ -40,7 +40,7 @@ const makeMessagesSocket = config => {
 	const userDevicesCache =
 		config.userDevicesCache ||
 		new node_cache_1.default({
-			stdTTL: Base_1.DEFAULT_CACHE_TTLS.USER_DEVICES,
+			stdTTL: Base_1.DEFAULT_CACHE_TTLS.USER_DEVICES, // 5 minutes
 			useClones: false,
 		});
 	let mediaConn;
@@ -166,6 +166,9 @@ const makeMessagesSocket = config => {
 				users.push({ tag: 'user', attrs: { jid } });
 			}
 		}
+		if (!users.length) {
+			return deviceResults;
+		}
 		const iq = {
 			tag: 'iq',
 			attrs: {
@@ -258,6 +261,31 @@ const makeMessagesSocket = config => {
 		}
 		return didFetchNewSession;
 	};
+	const sendPeerDataOperationMessage = async pdoMessage => {
+		var _a;
+		//TODO: for later, abstract the logic to send a Peer Message instead of just PDO - useful for App State Key Resync with phone
+		if (
+			!((_a = authState.creds.me) === null || _a === void 0 ? void 0 : _a.id)
+		) {
+			throw new boom_1.Boom('Not authenticated');
+		}
+		const protocolMessage = {
+			protocolMessage: {
+				peerDataOperationRequestMessage: pdoMessage,
+				type: Proto_1.proto.Message.ProtocolMessage.Type
+					.PEER_DATA_OPERATION_REQUEST_MESSAGE,
+			},
+		};
+		const meJid = (0, Binary_1.jidNormalizedUser)(authState.creds.me.id);
+		const msgId = await relayMessage(meJid, protocolMessage, {
+			additionalAttributes: {
+				category: 'peer',
+				// eslint-disable-next-line camelcase
+				push_priority: 'high_force',
+			},
+		});
+		return msgId;
+	};
 	const createParticipantNodes = async (jids, message, extraAttrs) => {
 		const patched = await patchMessageBeforeSending(message, jids);
 		const bytes = (0, Utils_1.encodeWAMessage)(patched);
@@ -298,11 +326,14 @@ const makeMessagesSocket = config => {
 			messageId: msgId,
 			participant,
 			additionalAttributes,
+			additionalNodes,
 			useUserDevicesCache,
 			cachedGroupMetadata,
+			useCachedGroupMetadata,
 			statusJidList,
 		},
 	) => {
+		var _a;
 		const meId = authState.creds.me.id;
 		let shouldIncludeDeviceIdentity = false;
 		const { user, server } = (0, Binary_1.jidDecode)(jid);
@@ -310,8 +341,13 @@ const makeMessagesSocket = config => {
 		const isGroup = server === 'g.us';
 		const isStatus = jid === statusJid;
 		const isLid = server === 'lid';
-		msgId = msgId || (0, Utils_1.generateMessageID)();
+		msgId =
+			msgId ||
+			(0, Utils_1.generateMessageIDV2)(
+				(_a = sock.user) === null || _a === void 0 ? void 0 : _a.id,
+			);
 		useUserDevicesCache = useUserDevicesCache !== false;
+		useCachedGroupMetadata = useCachedGroupMetadata !== false && !isStatus;
 		const participants = [];
 		const destinationJid = !isStatus
 			? (0, Binary_1.jidEncode)(
@@ -327,6 +363,7 @@ const makeMessagesSocket = config => {
 				message,
 			},
 		};
+		const extraAttrs = {};
 		if (participant) {
 			// when the retry request is not for a group
 			// only send to the specific device that asked for a retry
@@ -334,6 +371,7 @@ const makeMessagesSocket = config => {
 			if (!isGroup && !isStatus) {
 				additionalAttributes = {
 					...additionalAttributes,
+					// eslint-disable-next-line camelcase
 					device_fanout: 'false',
 				};
 			}
@@ -341,21 +379,39 @@ const makeMessagesSocket = config => {
 			devices.push({ user, device });
 		}
 		await authState.keys.transaction(async () => {
-			var _a, _b;
+			var _a, _b, _c, _d, _e;
 			const mediaType = getMediaType(message);
+			if (mediaType) {
+				extraAttrs['mediatype'] = mediaType;
+			}
+			if (
+				(_a = (0, Utils_1.normalizeMessageContent)(message)) === null ||
+				_a === void 0
+					? void 0
+					: _a.pinInChatMessage
+			) {
+				extraAttrs['decrypt-fail'] = 'hide';
+			}
 			if (isGroup || isStatus) {
 				const [groupData, senderKeyMap] = await Promise.all([
 					(async () => {
-						let groupData = cachedGroupMetadata
-							? await cachedGroupMetadata(jid)
-							: undefined;
-						if (groupData) {
+						let groupData =
+							useCachedGroupMetadata && cachedGroupMetadata
+								? await cachedGroupMetadata(jid)
+								: undefined;
+						if (
+							groupData &&
+							Array.isArray(
+								groupData === null || groupData === void 0
+									? void 0
+									: groupData.participants,
+							)
+						) {
 							logger.trace(
 								{ jid, participants: groupData.participants.length },
 								'using cached group metadata',
 							);
-						}
-						if (!groupData && !isStatus) {
+						} else if (!isStatus) {
 							groupData = await groupMetadata(jid);
 						}
 						return groupData;
@@ -428,7 +484,7 @@ const makeMessagesSocket = config => {
 					const result = await createParticipantNodes(
 						senderKeyJids,
 						senderKeyMsg,
-						mediaType ? { mediatype: mediaType } : undefined,
+						extraAttrs,
 					);
 					shouldIncludeDeviceIdentity =
 						shouldIncludeDeviceIdentity || result.shouldIncludeDeviceIdentity;
@@ -448,16 +504,24 @@ const makeMessagesSocket = config => {
 				);
 				if (!participant) {
 					devices.push({ user });
-					// do not send message to self if the device is 0 (mobile)
-					if (meDevice !== undefined && meDevice !== 0) {
-						devices.push({ user: meUser });
+					if (
+						!(
+							(additionalAttributes === null || additionalAttributes === void 0
+								? void 0
+								: additionalAttributes['category']) === 'peer' &&
+							user === meUser
+						)
+					) {
+						if (meDevice !== undefined && meDevice !== 0) {
+							devices.push({ user: meUser });
+						}
+						const additionalDevices = await getUSyncDevices(
+							[meId, jid],
+							!!useUserDevicesCache,
+							true,
+						);
+						devices.push(...additionalDevices);
 					}
-					const additionalDevices = await getUSyncDevices(
-						[meId, jid],
-						!!useUserDevicesCache,
-						true,
-					);
-					devices.push(...additionalDevices);
 				}
 				const allJids = [];
 				const meJids = [];
@@ -466,12 +530,12 @@ const makeMessagesSocket = config => {
 					const isMe = user === meUser;
 					const jid = (0, Binary_1.jidEncode)(
 						isMe && isLid
-							? ((_b =
-									(_a = authState.creds) === null || _a === void 0
+							? ((_c =
+									(_b = authState.creds) === null || _b === void 0
 										? void 0
-										: _a.me) === null || _b === void 0
+										: _b.me) === null || _c === void 0
 									? void 0
-									: _b.lid.split(':')[0]) || user
+									: _c.lid.split(':')[0]) || user
 							: user,
 						isLid ? 'lid' : 's.whatsapp.net',
 						device,
@@ -488,16 +552,8 @@ const makeMessagesSocket = config => {
 					{ nodes: meNodes, shouldIncludeDeviceIdentity: s1 },
 					{ nodes: otherNodes, shouldIncludeDeviceIdentity: s2 },
 				] = await Promise.all([
-					createParticipantNodes(
-						meJids,
-						meMsg,
-						mediaType ? { mediatype: mediaType } : undefined,
-					),
-					createParticipantNodes(
-						otherJids,
-						message,
-						mediaType ? { mediatype: mediaType } : undefined,
-					),
+					createParticipantNodes(meJids, meMsg, extraAttrs),
+					createParticipantNodes(otherJids, message, extraAttrs),
 				]);
 				participants.push(...meNodes);
 				participants.push(...otherNodes);
@@ -509,6 +565,28 @@ const makeMessagesSocket = config => {
 					attrs: {},
 					content: participants,
 				});
+				if (
+					(additionalAttributes === null || additionalAttributes === void 0
+						? void 0
+						: additionalAttributes['category']) === 'peer'
+				) {
+					const peerNode =
+						(_e =
+							(_d = participants[0]) === null || _d === void 0
+								? void 0
+								: _d.content) === null || _e === void 0
+							? void 0
+							: _e[0];
+					if (peerNode) {
+						binaryNodeContent.push(peerNode); // push only enc
+					}
+				} else {
+					binaryNodeContent.push({
+						tag: 'participants',
+						attrs: {},
+						content: participants,
+					});
+				}
 			}
 			const stanza = {
 				tag: 'message',
@@ -546,19 +624,8 @@ const makeMessagesSocket = config => {
 				});
 				logger.debug({ jid }, 'adding device identity');
 			}
-			const buttonType = getButtonType(message);
-			if (buttonType) {
-				stanza.content.push({
-					tag: 'biz',
-					attrs: {},
-					content: [
-						{
-							tag: buttonType,
-							attrs: getButtonArgs(message),
-						},
-					],
-				});
-				logger.debug({ jid }, 'adding business node');
+			if (additionalNodes && additionalNodes.length > 0) {
+				stanza.content.push(...additionalNodes);
 			}
 			logger.debug(
 				{ msgId },
@@ -597,33 +664,8 @@ const makeMessagesSocket = config => {
 			return 'product';
 		} else if (message.interactiveResponseMessage) {
 			return 'native_flow_response';
-		}
-	};
-	const getButtonType = message => {
-		if (message.buttonsMessage) {
-			return 'buttons';
-		} else if (message.buttonsResponseMessage) {
-			return 'buttons_response';
-		} else if (message.interactiveResponseMessage) {
-			return 'interactive_response';
-		} else if (message.listMessage) {
-			return 'list';
-		} else if (message.listResponseMessage) {
-			return 'list_response';
-		}
-	};
-	const getButtonArgs = message => {
-		if (message.templateMessage) {
-			// TODO: Add attributes
-			return {};
-		} else if (message.listMessage) {
-			const type = message.listMessage.listType;
-			if (!type) {
-				throw new boom_1.Boom('Expected list type inside message');
-			}
-			return { v: '2', type: ListType[type].toLowerCase() };
-		} else {
-			return {};
+		} else if (message.groupInviteMessage) {
+			return 'url';
 		}
 	};
 	const getPrivacyTokens = async jids => {
@@ -667,11 +709,13 @@ const makeMessagesSocket = config => {
 		relayMessage,
 		sendReceipt,
 		sendReceipts,
-		getButtonArgs,
 		readMessages,
 		refreshMediaConn,
 		waUploadToServer,
+		sendPeerDataOperationMessage,
 		fetchPrivacySettings,
+		createParticipantNodes,
+		getUSyncDevices,
 		updateMediaMessage: async message => {
 			const content = (0, Utils_1.assertMediaContent)(message.message);
 			const mediaKey = content.mediaKey;
@@ -739,7 +783,7 @@ const makeMessagesSocket = config => {
 			return message;
 		},
 		sendMessage: async (jid, content, options = {}) => {
-			var _a, _b;
+			var _a, _b, _c;
 			const userJid = authState.creds.me.id;
 			if (
 				typeof content === 'object' &&
@@ -771,26 +815,32 @@ const makeMessagesSocket = config => {
 								? waUploadToServer
 								: undefined,
 						}),
+					//TODO: CACHE
+					getProfilePicUrl: sock.profilePictureUrl,
 					upload: waUploadToServer,
 					mediaCache: config.mediaCache,
 					options: config.options,
+					messageId: (0, Utils_1.generateMessageIDV2)(
+						(_a = sock.user) === null || _a === void 0 ? void 0 : _a.id,
+					),
 					...options,
 				});
 				const isDeleteMsg = 'delete' in content && !!content.delete;
 				const isEditMsg = 'edit' in content && !!content.edit;
+				const isPinMsg = 'pin' in content && !!content.pin;
 				const additionalAttributes = {};
 				// required for delete
 				if (isDeleteMsg) {
 					// if the chat is a group, and I am not the author, then delete the message as an admin
 					if (
 						(0, Binary_1.isJidGroup)(
-							(_a = content.delete) === null || _a === void 0
+							(_b = content.delete) === null || _b === void 0
 								? void 0
-								: _a.remoteJid,
+								: _b.remoteJid,
 						) &&
-						!((_b = content.delete) === null || _b === void 0
+						!((_c = content.delete) === null || _c === void 0
 							? void 0
-							: _b.fromMe)
+							: _c.fromMe)
 					) {
 						additionalAttributes.edit = '8';
 					} else {
@@ -798,10 +848,17 @@ const makeMessagesSocket = config => {
 					}
 				} else if (isEditMsg) {
 					additionalAttributes.edit = '1';
+				} else if (isPinMsg) {
+					additionalAttributes.edit = '2';
+				}
+				if ('cachedGroupMetadata' in options) {
+					console.warn(
+						'cachedGroupMetadata in sendMessage are deprecated, now cachedGroupMetadata is part of the socket config.',
+					);
 				}
 				await relayMessage(jid, fullMsg.message, {
 					messageId: fullMsg.key.id,
-					cachedGroupMetadata: options.cachedGroupMetadata,
+					useCachedGroupMetadata: options.useCachedGroupMetadata,
 					additionalAttributes,
 					statusJidList: options.statusJidList,
 				});

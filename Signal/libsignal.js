@@ -44,7 +44,7 @@ var __importStar =
 		return result;
 	};
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.makeLibSignalRepository = void 0;
+exports.makeLibSignalRepository = makeLibSignalRepository;
 const libsignal = __importStar(require('@ajayos/libsignal'));
 const Binary_1 = require('../Binary');
 const SignalGroup_1 = require('../SignalGroup');
@@ -131,7 +131,6 @@ function makeLibSignalRepository(auth) {
 		},
 	};
 }
-exports.makeLibSignalRepository = makeLibSignalRepository;
 const jidToSignalProtocolAddress = jid => {
 	const { user, device } = (0, Binary_1.jidDecode)(jid);
 	return new libsignal.ProtocolAddress(user, device || 0);
