@@ -1,11 +1,11 @@
-import { BinaryNode, jidNormalizedUser, S_WHATSAPP_NET } from '../Binary'
-import { getBinaryNodeChild } from '../Binary/generic-utils'
+import { BinaryNode, jidNormalizedUser, S_WHATSAPP_NET } from '../Binary';
+import { getBinaryNodeChild } from '../Binary/generic-utils';
 import {
 	GetCatalogOptions,
 	ProductCreate,
 	ProductUpdate,
 	SocketConfig,
-} from '../Types'
+} from '../Types';
 import {
 	parseCatalogNode,
 	parseCollectionsNode,
@@ -13,16 +13,16 @@ import {
 	parseProductNode,
 	toProductNode,
 	uploadingNecessaryImagesOfProduct,
-} from '../Utils/business'
-import { makeMessagesRecvSocket } from './messages-recv'
+} from '../Utils/business';
+import { makeMessagesRecvSocket } from './messages-recv';
 
 export const makeBusinessSocket = (config: SocketConfig) => {
-	const sock = makeMessagesRecvSocket(config)
-	const { authState, query, waUploadToServer } = sock
+	const sock = makeMessagesRecvSocket(config);
+	const { authState, query, waUploadToServer } = sock;
 
-	const getCatalog = async({ jid, limit, cursor }: GetCatalogOptions) => {
-		jid = jid || authState.creds.me?.id
-		jid = jidNormalizedUser(jid)
+	const getCatalog = async ({ jid, limit, cursor }: GetCatalogOptions) => {
+		jid = jid || authState.creds.me?.id;
+		jid = jidNormalizedUser(jid);
 
 		const queryParamNodes: BinaryNode[] = [
 			{
@@ -40,14 +40,14 @@ export const makeBusinessSocket = (config: SocketConfig) => {
 				attrs: {},
 				content: Buffer.from('100'),
 			},
-		]
+		];
 
-		if(cursor) {
+		if (cursor) {
 			queryParamNodes.push({
 				tag: 'after',
 				attrs: {},
 				content: cursor,
-			})
+			});
 		}
 
 		const result = await query({
@@ -67,13 +67,13 @@ export const makeBusinessSocket = (config: SocketConfig) => {
 					content: queryParamNodes,
 				},
 			],
-		})
-		return parseCatalogNode(result)
-	}
+		});
+		return parseCatalogNode(result);
+	};
 
-	const getCollections = async(jid?: string, limit = 51) => {
-		jid = jid || authState.creds.me?.id
-		jid = jidNormalizedUser(jid)
+	const getCollections = async (jid?: string, limit = 51) => {
+		jid = jid || authState.creds.me?.id;
+		jid = jidNormalizedUser(jid);
 		const result = await query({
 			tag: 'iq',
 			attrs: {
@@ -112,12 +112,12 @@ export const makeBusinessSocket = (config: SocketConfig) => {
 					],
 				},
 			],
-		})
+		});
 
-		return parseCollectionsNode(result)
-	}
+		return parseCollectionsNode(result);
+	};
 
-	const getOrderDetails = async(orderId: string, tokenBase64: string) => {
+	const getOrderDetails = async (orderId: string, tokenBase64: string) => {
 		const result = await query({
 			tag: 'iq',
 			attrs: {
@@ -158,14 +158,14 @@ export const makeBusinessSocket = (config: SocketConfig) => {
 					],
 				},
 			],
-		})
+		});
 
-		return parseOrderDetailsNode(result)
-	}
+		return parseOrderDetailsNode(result);
+	};
 
-	const productUpdate = async(productId: string, update: ProductUpdate) => {
-		update = await uploadingNecessaryImagesOfProduct(update, waUploadToServer)
-		const editNode = toProductNode(productId, update)
+	const productUpdate = async (productId: string, update: ProductUpdate) => {
+		update = await uploadingNecessaryImagesOfProduct(update, waUploadToServer);
+		const editNode = toProductNode(productId, update);
 
 		const result = await query({
 			tag: 'iq',
@@ -193,22 +193,22 @@ export const makeBusinessSocket = (config: SocketConfig) => {
 					],
 				},
 			],
-		})
+		});
 
 		const productCatalogEditNode = getBinaryNodeChild(
 			result,
 			'product_catalog_edit',
-		)
-		const productNode = getBinaryNodeChild(productCatalogEditNode, 'product')
+		);
+		const productNode = getBinaryNodeChild(productCatalogEditNode, 'product');
 
-		return parseProductNode(productNode!)
-	}
+		return parseProductNode(productNode!);
+	};
 
-	const productCreate = async(create: ProductCreate) => {
+	const productCreate = async (create: ProductCreate) => {
 		// ensure isHidden is defined
-		create.isHidden = !!create.isHidden
-		create = await uploadingNecessaryImagesOfProduct(create, waUploadToServer)
-		const createNode = toProductNode(undefined, create)
+		create.isHidden = !!create.isHidden;
+		create = await uploadingNecessaryImagesOfProduct(create, waUploadToServer);
+		const createNode = toProductNode(undefined, create);
 
 		const result = await query({
 			tag: 'iq',
@@ -236,18 +236,18 @@ export const makeBusinessSocket = (config: SocketConfig) => {
 					],
 				},
 			],
-		})
+		});
 
 		const productCatalogAddNode = getBinaryNodeChild(
 			result,
 			'product_catalog_add',
-		)
-		const productNode = getBinaryNodeChild(productCatalogAddNode, 'product')
+		);
+		const productNode = getBinaryNodeChild(productCatalogAddNode, 'product');
 
-		return parseProductNode(productNode!)
-	}
+		return parseProductNode(productNode!);
+	};
 
-	const productDelete = async(productIds: string[]) => {
+	const productDelete = async (productIds: string[]) => {
 		const result = await query({
 			tag: 'iq',
 			attrs: {
@@ -272,16 +272,16 @@ export const makeBusinessSocket = (config: SocketConfig) => {
 					})),
 				},
 			],
-		})
+		});
 
 		const productCatalogDelNode = getBinaryNodeChild(
 			result,
 			'product_catalog_delete',
-		)
+		);
 		return {
 			deleted: +(productCatalogDelNode?.attrs.deleted_count || 0),
-		}
-	}
+		};
+	};
 
 	return {
 		...sock,
@@ -292,5 +292,5 @@ export const makeBusinessSocket = (config: SocketConfig) => {
 		productCreate,
 		productDelete,
 		productUpdate,
-	}
-}
+	};
+};

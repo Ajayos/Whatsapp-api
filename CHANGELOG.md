@@ -1,8 +1,9 @@
-#### [v15.2.3](https://github.com/Ajayos/Whatsapp-api/compare/v15.2.2...v15.2.3)
 
-#### v15.2.2
+#### [v15.3.2](https://github.com/Ajayos/Whatsapp-api/compare/v15.3.1...v15.3.2)
 
-> 14 May 2024
+#### v15.3.1
 
-- build it on 14/05/2024 [`b59271c`](https://github.com/Ajayos/Whatsapp-api/commit/b59271c73a6515521ff1d556510c7cfe15da27fd)
-  **Full Changelog**: https://github.com/Ajayos/Whatsapp-api/compare/v15.2.1...v15.2.2
+> 26 September 2024
+
+- V15.3.1 [`efd5f7d`](https://github.com/Ajayos/Whatsapp-api/commit/efd5f7d47e4732de08b99b493ace2f08eccb8d4b)
+**Full Changelog**: https://github.com/Ajayos/Whatsapp-api/compare/v15.2.2...v15.3.1

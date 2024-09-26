@@ -1,27 +1,27 @@
-import WebSocket from 'ws'
-import { AbstractSocketClient } from './abstract-socket-client'
+import WebSocket from 'ws';
+import { AbstractSocketClient } from './abstract-socket-client';
 
 export class WebSocketClient extends AbstractSocketClient {
-	protected socket: WebSocket | null = null
+	protected socket: WebSocket | null = null;
 
 	get isOpen(): boolean {
-		return this.socket?.readyState === WebSocket.OPEN
+		return this.socket?.readyState === WebSocket.OPEN;
 	}
 	get isClosed(): boolean {
-		return this.socket === null || this.socket?.readyState === WebSocket.CLOSED
+		return this.socket === null || this.socket?.readyState === WebSocket.CLOSED;
 	}
 	get isClosing(): boolean {
 		return (
 			this.socket === null || this.socket?.readyState === WebSocket.CLOSING
-		)
+		);
 	}
 	get isConnecting(): boolean {
-		return this.socket?.readyState === WebSocket.CONNECTING
+		return this.socket?.readyState === WebSocket.CONNECTING;
 	}
 
 	async connect(): Promise<void> {
-		if(this.socket) {
-			return
+		if (this.socket) {
+			return;
 		}
 
 		this.socket = new WebSocket(this.url, {
@@ -30,9 +30,9 @@ export class WebSocketClient extends AbstractSocketClient {
 			handshakeTimeout: 20000,
 			timeout: 20000,
 			agent: undefined,
-		})
+		});
 
-		this.socket.setMaxListeners(0)
+		this.socket.setMaxListeners(0);
 
 		const events = [
 			'close',
@@ -43,24 +43,24 @@ export class WebSocketClient extends AbstractSocketClient {
 			'ping',
 			'pong',
 			'unexpected-response',
-		]
+		];
 
-		for(const event of events) {
-			this.socket?.on(event, (...args: any[]) => this.emit(event, ...args))
+		for (const event of events) {
+			this.socket?.on(event, (...args: any[]) => this.emit(event, ...args));
 		}
 	}
 
 	async close(): Promise<void> {
-		if(!this.socket) {
-			return
+		if (!this.socket) {
+			return;
 		}
 
-		this.socket.close()
-		this.socket = null
+		this.socket.close();
+		this.socket = null;
 	}
 	send(str: string | Uint8Array, cb?: (err?: Error) => void): boolean {
-		this.socket?.send(str, cb)
+		this.socket?.send(str, cb);
 
-		return Boolean(this.socket)
+		return Boolean(this.socket);
 	}
 }
