@@ -3,7 +3,8 @@ export type WACallUpdateType =
 	| 'ringing'
 	| 'timeout'
 	| 'reject'
-	| 'accept';
+	| 'accept'
+	| 'terminate';
 
 export type WACallEvent = {
 	chatId: string

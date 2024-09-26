@@ -3,10 +3,19 @@ import { FullJid, jidDecode } from './jid-utils'
 import type { BinaryNode, BinaryNodeCodingOptions } from './types'
 
 export const encodeBinaryNode = (
-	{ tag, attrs, content }: BinaryNode,
+	node: BinaryNode,
 	opts: Pick<BinaryNodeCodingOptions, 'TAGS' | 'TOKEN_MAP'> = constants,
 	buffer: number[] = [0],
-) => {
+): Buffer => {
+	const encoded = encodeBinaryNodeInner(node, opts, buffer)
+	return Buffer.from(encoded)
+}
+
+const encodeBinaryNodeInner = (
+	{ tag, attrs, content }: BinaryNode,
+	opts: Pick<BinaryNodeCodingOptions, 'TAGS' | 'TOKEN_MAP'>,
+	buffer: number[]
+): number[] => {
 	const { TAGS, TOKEN_MAP } = opts
 
 	const pushByte = (value: number) => buffer.push(value & 0xff)
@@ -225,7 +234,7 @@ export const encodeBinaryNode = (
 	} else if(Array.isArray(content)) {
 		writeListStart(content.length)
 		for(const item of content) {
-			encodeBinaryNode(item, opts, buffer)
+			encodeBinaryNodeInner(item, opts, buffer)
 		}
 	} else if(typeof content === 'undefined') {
 		// do nothing
@@ -235,5 +244,5 @@ export const encodeBinaryNode = (
 		)
 	}
 
-	return Buffer.from(buffer)
+	return buffer
 }

@@ -14,7 +14,7 @@ export type RequestJoinMethod =
 	| 'non_admin_add'
 	| undefined;
 
-export type ParticipantAction = 'add' | 'remove' | 'promote' | 'demote';
+export type ParticipantAction = 'add' | 'remove' | 'promote' | 'demote' | 'modify';
 
 export interface GroupMetadata {
 	id: string

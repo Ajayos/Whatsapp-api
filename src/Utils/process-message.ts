@@ -10,6 +10,7 @@ import { proto } from '../Proto'
 import {
 	AuthenticationCreds,
 	BaileysEventEmitter,
+	CacheStore,
 	Chat,
 	GroupMetadata,
 	ParticipantAction,
@@ -26,6 +27,7 @@ import { downloadAndProcessHistorySyncNotification } from './history'
 
 type ProcessMessageContext = {
 	shouldProcessHistoryMsg: boolean
+	placeholderResendCache?: CacheStore
 	creds: AuthenticationCreds
 	keyStore: SignalKeyStoreWithTransaction
 	ev: BaileysEventEmitter
@@ -163,6 +165,7 @@ const processMessage = async(
 	message: proto.IWebMessageInfo,
 	{
 		shouldProcessHistoryMsg,
+		placeholderResendCache,
 		ev,
 		creds,
 		keyStore,
@@ -216,19 +219,28 @@ const processMessage = async(
 			)
 
 			if(process) {
-				ev.emit('creds.update', {
-					processedHistoryMessages: [
-						...(creds.processedHistoryMessages || []),
-						{ key: message.key, messageTimestamp: message.messageTimestamp },
-					],
-				})
+				if(histNotification.syncType !== proto.HistorySync.HistorySyncType.ON_DEMAND) {
+					ev.emit('creds.update', {
+						processedHistoryMessages: [
+							...(creds.processedHistoryMessages || []),
+							{ key: message.key, messageTimestamp: message.messageTimestamp }
+						]
+					})
+				}
 
 				const data = await downloadAndProcessHistorySyncNotification(
 					histNotification,
 					options,
 				)
 
-				ev.emit('messaging-history.set', { ...data, isLatest })
+				ev.emit('messaging-history.set', {
+					...data,
+					isLatest:
+						histNotification.syncType !== proto.HistorySync.HistorySyncType.ON_DEMAND
+							? isLatest
+							: undefined,
+						peerDataRequestSessionId: histNotification.peerDataRequestSessionId
+				})
 			}
 
 			break
@@ -286,6 +298,8 @@ const processMessage = async(
 			.PEER_DATA_OPERATION_REQUEST_RESPONSE_MESSAGE:
 			const response = protocolMsg.peerDataOperationRequestResponseMessage!
 			if(response) {
+				placeholderResendCache?.del(response.stanzaId!)
+				// TODO: IMPLEMENT HISTORY SYNC ETC (sticker uploads etc.).
 				const { peerDataOperationResult } = response
 				for(const result of peerDataOperationResult!) {
 					const { placeholderMessageResendResponse: retryResponse } = result
@@ -293,12 +307,14 @@ const processMessage = async(
 						const webMessageInfo = proto.WebMessageInfo.decode(
 								retryResponse.webMessageInfoBytes!,
 						)
-						ev.emit('messages.update', [
-							{
-								key: webMessageInfo.key,
-								update: { message: webMessageInfo.message },
-							},
-						])
+						// wait till another upsert event is available, don't want it to be part of the PDO response message
+						setTimeout(() => {
+							ev.emit('messages.upsert', {
+								messages: [webMessageInfo],
+								type: 'notify',
+								requestId: response.stanzaId!
+							})
+						}, 500)
 					}
 				}
 			}
@@ -313,11 +329,11 @@ const processMessage = async(
 		ev.emit('messages.reaction', [
 			{
 				reaction,
-				key: content.reactionMessage.key!,
+				key: content.reactionMessage?.key!,
 			},
 		])
 	} else if(message.messageStubType) {
-		const jid = message.key.remoteJid!
+		const jid = message.key?.remoteJid!
 		//let actor = whatsappID (message.participant)
 		let participants: string[]
 		const emitParticipantsUpdate = (action: ParticipantAction) => ev.emit('group-participants.update', {
@@ -349,6 +365,10 @@ const processMessage = async(
 		const participantsIncludesMe = () => participants.find(jid => areJidsSameUser(meId, jid))
 
 		switch (message.messageStubType) {
+		case WAMessageStubType.GROUP_PARTICIPANT_CHANGE_NUMBER:
+			participants = message.messageStubParameters || []
+			emitParticipantsUpdate('modify')
+			break
 		case WAMessageStubType.GROUP_PARTICIPANT_LEAVE:
 		case WAMessageStubType.GROUP_PARTICIPANT_REMOVE:
 			participants = message.messageStubParameters || []
@@ -393,6 +413,11 @@ const processMessage = async(
 			const name = message.messageStubParameters?.[0]
 			chat.name = name
 			emitGroupUpdate({ subject: name })
+			break
+		case WAMessageStubType.GROUP_CHANGE_DESCRIPTION:
+			const description = message.messageStubParameters?.[0]
+			chat.description = description
+			emitGroupUpdate({ desc: description })
 			break
 		case WAMessageStubType.GROUP_CHANGE_INVITE_LINK:
 			const code = message.messageStubParameters?.[0]

@@ -175,7 +175,7 @@ export const makeNoiseHandler = ({
 
 			return frame
 		},
-		decodeFrame: (
+		decodeFrame: async(
 			newData: Buffer | Uint8Array,
 			onFrame: (buff: Uint8Array | BinaryNode) => void,
 		) => {
@@ -201,7 +201,7 @@ export const makeNoiseHandler = ({
 
 				if(isFinished) {
 					const result = decrypt(frame)
-					frame = decodeBinaryNode(result)
+					frame = await decodeBinaryNode(result)
 				}
 
 				logger.trace({ msg: (frame as any)?.attrs?.id }, 'recv frame')

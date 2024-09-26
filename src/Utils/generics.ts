@@ -9,29 +9,36 @@ import { BinaryNode, getAllBinaryNodeChildren, jidDecode } from '../Binary'
 import {
 	BaileysEventEmitter,
 	BaileysEventMap,
+	BrowsersMap,
 	DisconnectReason,
 	WACallUpdateType,
 } from '../Types'
 type WAVersion = [number, number, number];
 
 const PLATFORM_MAP = {
-	aix: 'AIX',
-	darwin: 'Mac OS',
-	win32: 'Windows',
-	android: 'Android',
+	'aix': 'AIX',
+	'darwin': 'Mac OS',
+	'win32': 'Windows',
+	'android': 'Android',
+	'freebsd': 'FreeBSD',
+	'openbsd': 'OpenBSD',
+	'sunos': 'Solaris'
 }
 
-export const Browsers = {
-	ubuntu: browser => ['Ubuntu', browser, '20.0.04'] as [string, string, string],
-	macOS: browser => ['Mac OS', browser, '10.15.7'] as [string, string, string],
-	baileys: browser => ['Baileys', browser, '4.0.0'] as [string, string, string],
-	aurora: () => ['AURORA', 'Firefox', '10.15.7'] as [string, string, string],
+export const Browsers: BrowsersMap = {
+	ubuntu: browser => ['Ubuntu', browser, '22.04.4'],
+	macOS: browser => ['Mac OS', browser, '14.4.1'],
+	baileys: browser => ['Baileys', browser, '4.0.0'],
+	windows: (browser) => ['Windows', browser, '10.0.22631'],
+	aurora: () => ['AURORA', 'Firefox', '14.4.1'],
+	keerthana: () => ['KEERTHANA', 'Firefox', '14.4.1'],
 	/** The appropriate browser based on your OS & release */
-	appropriate: browser => [PLATFORM_MAP[platform()] || 'Ubuntu', browser, release()] as [
-			string,
-			string,
-			string,
-		],
+	appropriate: browser => [PLATFORM_MAP[platform()] || 'Ubuntu', browser, release()],
+}
+
+export const getPlatformId = (browser: string) => {
+	const platformType = proto.DeviceProps.PlatformType[browser.toUpperCase()]
+	return platformType ? platformType.toString().charCodeAt(0).toString() : '49' //chrome
 }
 
 export const BufferJSON = {
@@ -364,7 +371,8 @@ export const getCallStatusFromNode = ({ tag, attrs }: BinaryNode) => {
 		if(attrs.reason === 'timeout') {
 			status = 'timeout'
 		} else {
-			status = 'reject'
+			//fired when accepted/rejected/timeout/caller hangs up
+			status = 'terminate'
 		}
 
 		break

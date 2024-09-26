@@ -4,6 +4,7 @@ import type { Readable } from 'stream'
 import type { URL } from 'url'
 import { MEDIA_HKDF_KEY_MAPPING } from '../Base'
 import { proto } from '../Proto'
+import { BinaryNode } from '../Binary'
 import type { GroupMetadata } from './GroupMetadata'
 import { CacheStore } from './Socket'
 
@@ -80,28 +81,8 @@ type ViewOnce = {
 	viewOnce?: boolean
 };
 
-type Buttonable = {
-	/** add buttons to the message  */
-	buttons?: proto.Message.ButtonsMessage.IButton[]
-};
-type Templatable = {
-	/** add buttons to the message (conflicts with normal buttons)*/
-	templateButtons?: proto.IHydratedTemplateButton[]
-
-	footer?: string
-};
 type Editable = {
 	edit?: WAMessageKey
-};
-type Listable = {
-	/** Sections of the List */
-	sections?: proto.Message.ListMessage.ISection[]
-
-	/** Title of a List Message only */
-	title?: string
-
-	/** Text of the bnutton on the list (required) */
-	buttonText?: string
 };
 type WithDimensions = {
 	width?: number
@@ -114,6 +95,7 @@ export type PollMessageOptions = {
 	values: string[]
 	/** 32 byte message secret to encrypt poll selections */
 	messageSecret?: Uint8Array
+	toAnnouncementGroup?: boolean
 };
 
 type SharePhoneNumber = {
@@ -132,8 +114,6 @@ export type AnyMediaMessageContent = (
 			jpegThumbnail?: string
 	  } & Mentionable &
 			Contextable &
-			Buttonable &
-			Templatable &
 			WithDimensions)
 	| ({
 			video: WAMediaUpload
@@ -143,8 +123,6 @@ export type AnyMediaMessageContent = (
 			ptv?: boolean
 	  } & Mentionable &
 			Contextable &
-			Buttonable &
-			Templatable &
 			WithDimensions)
 	| {
 			audio: WAMediaUpload
@@ -162,9 +140,7 @@ export type AnyMediaMessageContent = (
 			mimetype: string
 			fileName?: string
 			caption?: string
-	  } & Contextable &
-			Buttonable &
-			Templatable)
+	  } & Contextable)
 ) & { mimetype?: string } & Editable;
 
 export type ButtonReplyInfo = {
@@ -172,6 +148,14 @@ export type ButtonReplyInfo = {
 	id: string
 	index: number
 };
+
+export type GroupInviteInfo = {
+    inviteCode: string
+    inviteExpiration: number
+    text: string
+    jid: string
+    subject: string
+}
 
 export type WASendableProduct = Omit<
 	proto.Message.ProductMessage.IProductSnapshot,
@@ -186,17 +170,12 @@ export type AnyRegularMessageContent = (
 			linkPreview?: WAUrlInfo | null
 	  } & Mentionable &
 			Contextable &
-			Buttonable &
-			Templatable &
-			Listable &
 			Editable)
 	| AnyMediaMessageContent
 	| ({
 			poll: PollMessageOptions
 	  } & Mentionable &
 			Contextable &
-			Buttonable &
-			Templatable &
 			Editable)
 	| {
 			contacts: {
@@ -213,8 +192,19 @@ export type AnyRegularMessageContent = (
 			type: 'template' | 'plain'
 	  }
 	| {
+        groupInvite: GroupInviteInfo
+      }
+	| {
 			listReply: Omit<proto.Message.IListResponseMessage, 'contextInfo'>
 	  }
+	| {
+        pin: WAMessageKey
+        type: proto.PinInChat.Type
+        /**
+         * 24 hours, 7 days, 30 days
+         */
+        time?: 86400 | 604800 | 2592000
+      }
 	| {
 			product: WASendableProduct
 			businessOwnerJid?: string
@@ -245,10 +235,8 @@ export type GroupMetadataParticipants = Pick<GroupMetadata, 'participants'>;
 type MinimalRelayOptions = {
 	/** override the message ID with a custom provided string */
 	messageId?: string
-	/** cached group metadata, use to prevent redundant requests to WA & speed up msg sending */
-	cachedGroupMetadata?: (
-		jid: string,
-	) => Promise<GroupMetadataParticipants | undefined>
+	/** should we use group metadata cache, or fetch afresh from the server; default assumed to be "true" */
+    useCachedGroupMetadata?: boolean
 };
 
 export type MessageRelayOptions = MinimalRelayOptions & {
@@ -256,6 +244,7 @@ export type MessageRelayOptions = MinimalRelayOptions & {
 	participant?: { jid: string, count: number }
 	/** additional attributes to add to the WA binary node */
 	additionalAttributes?: { [_: string]: string }
+	additionalNodes?: BinaryNode[]
 	/** should we use the devices cache, or fetch afresh from the server; default assumed to be "true" */
 	useUserDevicesCache?: boolean
 	/** jid list of participants for status@broadcast */
@@ -307,6 +296,7 @@ export type MediaGenerationOptions = {
 };
 export type MessageContentGenerationOptions = MediaGenerationOptions & {
 	getUrlInfo?: (text: string) => Promise<WAUrlInfo | undefined>
+	getProfilePicUrl?: (jid: string, type: 'image' | 'preview') => Promise<string | undefined>
 };
 export type MessageGenerationOptions = MessageContentGenerationOptions &
 	MessageGenerationOptionsFromContent;
