@@ -65,7 +65,7 @@ export const PROCESSABLE_HISTORY_TYPES = [
 ];
 
 export const DEFAULT_CONNECTION_CONFIG: SocketConfig = {
-	version:  [2, 3000, 1015901307],
+	version: [2, 3000, 1015901307],
 	browser: Browsers.keerthana(),
 	waWebSocketUrl: 'wss://web.whatsapp.com/ws/chat',
 	connectTimeoutMs: 20_000,
