@@ -4,7 +4,7 @@ import { createHash, randomBytes } from 'crypto';
 import { platform, release } from 'os';
 import { Logger } from 'pino';
 import { proto } from '../Proto';
-const baileysVersion = [2, 2402, 5];
+const baileysVersion = [2, 2413,51];
 import { BinaryNode, getAllBinaryNodeChildren, jidDecode } from '../Binary';
 import {
 	BaileysEventEmitter,

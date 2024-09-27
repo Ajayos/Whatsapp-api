@@ -65,8 +65,8 @@ export const PROCESSABLE_HISTORY_TYPES = [
 ];
 
 export const DEFAULT_CONNECTION_CONFIG: SocketConfig = {
-	version: [2, 3000, 1015901307],
-	browser: Browsers.aurora(),
+	version:  [2, 3000, 1015901307],
+	browser: Browsers.keerthana(),
 	waWebSocketUrl: 'wss://web.whatsapp.com/ws/chat',
 	connectTimeoutMs: 20_000,
 	keepAliveIntervalMs: 30_000,
@@ -77,6 +77,7 @@ export const DEFAULT_CONNECTION_CONFIG: SocketConfig = {
 	customUploadHosts: [],
 	retryRequestDelayMs: 250,
 	fireInitQueries: true,
+	maxMsgRetryCount: 5,
 	auth: undefined as unknown as AuthenticationState,
 	markOnlineOnConnect: true,
 	syncFullHistory: false,
