@@ -19,7 +19,13 @@ const make_mutex_1 = require('../Utils/make-mutex');
 const groups_1 = require('./groups');
 const messages_send_1 = require('./messages-send');
 const makeMessagesRecvSocket = config => {
-	const { logger, retryRequestDelayMs, getMessage, shouldIgnoreJid } = config;
+	const {
+		logger,
+		retryRequestDelayMs,
+		maxMsgRetryCount,
+		getMessage,
+		shouldIgnoreJid,
+	} = config;
 	const sock = (0, messages_send_1.makeMessagesSocket)(config);
 	const {
 		ev,
@@ -43,19 +49,19 @@ const makeMessagesRecvSocket = config => {
 	const msgRetryCache =
 		config.msgRetryCounterCache ||
 		new node_cache_1.default({
-			stdTTL: Base_1.DEFAULT_CACHE_TTLS.MSG_RETRY, // 1 hour
+			stdTTL: Base_1.DEFAULT_CACHE_TTLS.MSG_RETRY,
 			useClones: false,
 		});
 	const callOfferCache =
 		config.callOfferCache ||
 		new node_cache_1.default({
-			stdTTL: Base_1.DEFAULT_CACHE_TTLS.CALL_OFFER, // 5 mins
+			stdTTL: Base_1.DEFAULT_CACHE_TTLS.CALL_OFFER,
 			useClones: false,
 		});
 	const placeholderResendCache =
 		config.placeholderResendCache ||
 		new node_cache_1.default({
-			stdTTL: Base_1.DEFAULT_CACHE_TTLS.MSG_RETRY, // 1 hour
+			stdTTL: Base_1.DEFAULT_CACHE_TTLS.MSG_RETRY,
 			useClones: false,
 		});
 	let sendActiveReceipts = false;
@@ -124,7 +130,7 @@ const makeMessagesRecvSocket = config => {
 		const msgId = msgKey.id;
 		const key = `${msgId}:${msgKey === null || msgKey === void 0 ? void 0 : msgKey.participant}`;
 		let retryCount = msgRetryCache.get(key) || 0;
-		if (retryCount >= 5) {
+		if (retryCount >= maxMsgRetryCount) {
 			logger.debug({ retryCount, msgId }, 'reached retry limit, clearing');
 			msgRetryCache.del(key);
 			return;
@@ -616,7 +622,7 @@ const makeMessagesRecvSocket = config => {
 	const willSendMessageAgain = (id, participant) => {
 		const key = `${id}:${participant}`;
 		const retryCount = msgRetryCache.get(key) || 0;
-		return retryCount < 5;
+		return retryCount < maxMsgRetryCount;
 	};
 	const updateSendMessageAgainCount = (id, participant) => {
 		const key = `${id}:${participant}`;
@@ -784,32 +790,35 @@ const makeMessagesRecvSocket = config => {
 			await sendMessageAck(node);
 			return;
 		}
-		await Promise.all([
-			processingMutex.mutex(async () => {
-				var _a;
-				const msg = await processNotification(node);
-				if (msg) {
-					const fromMe = (0, Binary_1.areJidsSameUser)(
-						node.attrs.participant || remoteJid,
-						authState.creds.me.id,
-					);
-					msg.key = {
-						remoteJid,
-						fromMe,
-						participant: node.attrs.participant,
-						id: node.attrs.id,
-						...(msg.key || {}),
-					};
-					(_a = msg.participant) !== null && _a !== void 0
-						? _a
-						: (msg.participant = node.attrs.participant);
-					msg.messageTimestamp = +node.attrs.t;
-					const fullMsg = Proto_1.proto.WebMessageInfo.fromObject(msg);
-					await upsertMessage(fullMsg, 'append');
-				}
-			}),
-			sendMessageAck(node),
-		]);
+		try {
+			await Promise.all([
+				processingMutex.mutex(async () => {
+					var _a;
+					const msg = await processNotification(node);
+					if (msg) {
+						const fromMe = (0, Binary_1.areJidsSameUser)(
+							node.attrs.participant || remoteJid,
+							authState.creds.me.id,
+						);
+						msg.key = {
+							remoteJid,
+							fromMe,
+							participant: node.attrs.participant,
+							id: node.attrs.id,
+							...(msg.key || {}),
+						};
+						(_a = msg.participant) !== null && _a !== void 0
+							? _a
+							: (msg.participant = node.attrs.participant);
+						msg.messageTimestamp = +node.attrs.t;
+						const fullMsg = Proto_1.proto.WebMessageInfo.fromObject(msg);
+						await upsertMessage(fullMsg, 'append');
+					}
+				}),
+			]);
+		} finally {
+			await sendMessageAck(node);
+		}
 	};
 	const handleMessage = async node => {
 		var _a, _b, _c;
@@ -885,58 +894,66 @@ const makeMessagesRecvSocket = config => {
 				});
 			}
 		}
-		await Promise.all([
-			processingMutex.mutex(async () => {
-				await decrypt();
-				// message failed to decrypt
-				if (
-					msg.messageStubType ===
-					Proto_1.proto.WebMessageInfo.StubType.CIPHERTEXT
-				) {
-					retryMutex.mutex(async () => {
-						if (ws.isOpen) {
-							if ((0, Binary_1.getBinaryNodeChild)(node, 'unavailable')) {
-								return;
+		try {
+			await Promise.all([
+				processingMutex.mutex(async () => {
+					await decrypt();
+					// message failed to decrypt
+					if (
+						msg.messageStubType ===
+						Proto_1.proto.WebMessageInfo.StubType.CIPHERTEXT
+					) {
+						retryMutex.mutex(async () => {
+							if (ws.isOpen) {
+								if ((0, Binary_1.getBinaryNodeChild)(node, 'unavailable')) {
+									return;
+								}
+								const encNode = (0, Binary_1.getBinaryNodeChild)(node, 'enc');
+								await sendRetryRequest(node, !encNode);
+								if (retryRequestDelayMs) {
+									await (0, Utils_1.delay)(retryRequestDelayMs);
+								}
+							} else {
+								logger.debug({ node }, 'connection closed, ignoring retry req');
 							}
-							const encNode = (0, Binary_1.getBinaryNodeChild)(node, 'enc');
-							await sendRetryRequest(node, !encNode);
-							if (retryRequestDelayMs) {
-								await (0, Utils_1.delay)(retryRequestDelayMs);
+						});
+					} else {
+						// no type in the receipt => message delivered
+						let type = undefined;
+						let participant = msg.key.participant;
+						if (category === 'peer') {
+							// special peer message
+							type = 'peer_msg';
+						} else if (msg.key.fromMe) {
+							// message was sent by us from a different device
+							type = 'sender';
+							// need to specially handle this case
+							if ((0, Binary_1.isJidUser)(msg.key.remoteJid)) {
+								participant = author;
 							}
-						} else {
-							logger.debug({ node }, 'connection closed, ignoring retry req');
+						} else if (!sendActiveReceipts) {
+							type = 'inactive';
 						}
-					});
-				} else {
-					// no type in the receipt => message delivered
-					let type = undefined;
-					let participant = msg.key.participant;
-					if (category === 'peer') {
-						// special peer message
-						type = 'peer_msg';
-					} else if (msg.key.fromMe) {
-						// message was sent by us from a different device
-						type = 'sender';
-						// need to specially handle this case
-						if ((0, Binary_1.isJidUser)(msg.key.remoteJid)) {
-							participant = author;
+						await sendReceipt(
+							msg.key.remoteJid,
+							participant,
+							[msg.key.id],
+							type,
+						);
+						// send ack for history message
+						const isAnyHistoryMsg = (0, Utils_1.getHistoryMsg)(msg.message);
+						if (isAnyHistoryMsg) {
+							const jid = (0, Binary_1.jidNormalizedUser)(msg.key.remoteJid);
+							await sendReceipt(jid, undefined, [msg.key.id], 'hist_sync');
 						}
-					} else if (!sendActiveReceipts) {
-						type = 'inactive';
 					}
-					await sendReceipt(msg.key.remoteJid, participant, [msg.key.id], type);
-					// send ack for history message
-					const isAnyHistoryMsg = (0, Utils_1.getHistoryMsg)(msg.message);
-					if (isAnyHistoryMsg) {
-						const jid = (0, Binary_1.jidNormalizedUser)(msg.key.remoteJid);
-						await sendReceipt(jid, undefined, [msg.key.id], 'hist_sync');
-					}
-				}
-				(0, Utils_2.cleanMessage)(msg, authState.creds.me.id);
-				await upsertMessage(msg, node.attrs.offline ? 'append' : 'notify');
-			}),
-			sendMessageAck(node),
-		]);
+					(0, Utils_2.cleanMessage)(msg, authState.creds.me.id);
+					await upsertMessage(msg, node.attrs.offline ? 'append' : 'notify');
+				}),
+			]);
+		} finally {
+			await sendMessageAck(node);
+		}
 	};
 	const fetchMessageHistory = async (
 		count,
@@ -1059,11 +1076,7 @@ const makeMessagesRecvSocket = config => {
 		await sendMessageAck(node);
 	};
 	const handleBadAck = async ({ attrs }) => {
-		const key = {
-			remoteJid: attrs.from,
-			fromMe: true,
-			id: attrs.id,
-		};
+		const key = { remoteJid: attrs.from, fromMe: true, id: attrs.id };
 		// current hypothesis is that if pash is sent in the ack
 		// it means -- the message hasn't reached all devices yet
 		// we'll retry sending the message here

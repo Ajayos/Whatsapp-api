@@ -1,7 +1,9 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.decryptMessageNode = exports.NO_MESSAGE_FOUND_ERROR_TEXT = void 0;
-exports.decodeMessageNode = decodeMessageNode;
+exports.decryptMessageNode =
+	exports.decodeMessageNode =
+	exports.NO_MESSAGE_FOUND_ERROR_TEXT =
+		void 0;
 const boom_1 = require('@hapi/boom');
 const Binary_1 = require('../Binary');
 const Proto_1 = require('../Proto');
@@ -103,6 +105,7 @@ function decodeMessageNode(stanza, meId, meLid) {
 		sender: msgType === 'chat' ? author : chatId,
 	};
 }
+exports.decodeMessageNode = decodeMessageNode;
 const decryptMessageNode = (stanza, meId, meLid, repository, logger) => {
 	const { fullMessage, author, sender } = decodeMessageNode(
 		stanza,

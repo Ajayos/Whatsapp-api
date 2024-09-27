@@ -388,9 +388,9 @@ const makeSocket = config => {
 			}
 			const diff = Date.now() - lastDateRecv.getTime();
 			/*
-                check if it's been a suspicious amount of time since the server responded with our last seen
-                it could be that the network is down
-            */
+            check if it's been a suspicious amount of time since the server responded with our last seen
+            it could be that the network is down
+        */
 			if (diff > keepAliveIntervalMs + 5000) {
 				end(
 					new boom_1.Boom('Connection was lost', {

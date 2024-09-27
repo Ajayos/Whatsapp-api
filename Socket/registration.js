@@ -5,13 +5,14 @@ var __importDefault =
 		return mod && mod.__esModule ? mod : { default: mod };
 	};
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.makeRegistrationSocket = void 0;
-exports.registrationParams = registrationParams;
-exports.mobileRegisterCode = mobileRegisterCode;
-exports.mobileRegisterExists = mobileRegisterExists;
-exports.mobileRegister = mobileRegister;
-exports.mobileRegisterEncrypt = mobileRegisterEncrypt;
-exports.mobileRegisterFetch = mobileRegisterFetch;
+exports.mobileRegisterFetch =
+	exports.mobileRegisterEncrypt =
+	exports.mobileRegister =
+	exports.mobileRegisterExists =
+	exports.mobileRegisterCode =
+	exports.registrationParams =
+	exports.makeRegistrationSocket =
+		void 0;
 /* eslint-disable camelcase */
 const axios_1 = __importDefault(require('axios'));
 const Base_1 = require('../Base');
@@ -123,6 +124,7 @@ function registrationParams(params) {
 		fraud_checkpoint_code: params.captcha,
 	};
 }
+exports.registrationParams = registrationParams;
 /**
  * Requests a registration code for the given phone number.
  */
@@ -143,12 +145,14 @@ function mobileRegisterCode(params, fetchOptions) {
 		...fetchOptions,
 	});
 }
+exports.mobileRegisterCode = mobileRegisterCode;
 function mobileRegisterExists(params, fetchOptions) {
 	return mobileRegisterFetch('/exist', {
 		params: registrationParams(params),
 		...fetchOptions,
 	});
 }
+exports.mobileRegisterExists = mobileRegisterExists;
 /**
  * Registers the phone number on whatsapp with the received OTP code.
  */
@@ -162,6 +166,7 @@ async function mobileRegister(params, fetchOptions) {
 		...fetchOptions,
 	});
 }
+exports.mobileRegister = mobileRegister;
 /**
  * Encrypts the given string as AEAD aes-256-gcm with the public whatsapp key and a random keypair.
  */
@@ -181,6 +186,7 @@ function mobileRegisterEncrypt(data) {
 		'base64url',
 	);
 }
+exports.mobileRegisterEncrypt = mobileRegisterEncrypt;
 async function mobileRegisterFetch(path, opts = {}) {
 	let url = `${Base_1.MOBILE_REGISTRATION_ENDPOINT}${path}`;
 	if (opts.params) {
@@ -207,3 +213,4 @@ async function mobileRegisterFetch(path, opts = {}) {
 	}
 	return json;
 }
+exports.mobileRegisterFetch = mobileRegisterFetch;

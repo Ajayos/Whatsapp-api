@@ -98,7 +98,7 @@ exports.PROCESSABLE_HISTORY_TYPES = [
 ];
 exports.DEFAULT_CONNECTION_CONFIG = {
 	version: [2, 3000, 1015901307],
-	browser: Utils_1.Browsers.aurora(),
+	browser: Utils_1.Browsers.keerthana(),
 	waWebSocketUrl: 'wss://web.whatsapp.com/ws/chat',
 	connectTimeoutMs: 20000,
 	keepAliveIntervalMs: 30000,
@@ -109,6 +109,7 @@ exports.DEFAULT_CONNECTION_CONFIG = {
 	customUploadHosts: [],
 	retryRequestDelayMs: 250,
 	fireInitQueries: true,
+	maxMsgRetryCount: 5,
 	auth: undefined,
 	markOnlineOnConnect: true,
 	syncFullHistory: false,
@@ -162,8 +163,8 @@ exports.MEDIA_KEYS = Object.keys(exports.MEDIA_PATH_MAP);
 exports.MIN_PREKEY_COUNT = 5;
 exports.INITIAL_PREKEY_COUNT = 30;
 exports.DEFAULT_CACHE_TTLS = {
-	SIGNAL_STORE: 5 * 60, // 5 minutes
-	MSG_RETRY: 60 * 60, // 1 hour
-	CALL_OFFER: 5 * 60, // 5 minutes
+	SIGNAL_STORE: 5 * 60,
+	MSG_RETRY: 60 * 60,
+	CALL_OFFER: 5 * 60,
 	USER_DEVICES: 5 * 60, // 5 minutes
 };

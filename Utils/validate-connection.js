@@ -88,7 +88,7 @@ const generateMobileNode = config => {
 			dnsMethod:
 				Proto_1.proto.ClientPayload.DNSSource.DNSResolutionMethod.SYSTEM,
 		},
-		passive: false, // XMPP heartbeat setting (false: server actively pings) (true: client actively pings)
+		passive: false,
 		pushName: 'test',
 		username: Number(
 			`${config.auth.creds.registration.phoneNumberCountryCode}${config.auth.creds.registration.phoneNumberNationalNumber}`,

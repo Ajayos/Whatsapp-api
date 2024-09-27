@@ -1,11 +1,11 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.getChatId =
+exports.decryptPollVote =
+	exports.getChatId =
 	exports.shouldIncrementChatUnread =
 	exports.isRealMessage =
 	exports.cleanMessage =
 		void 0;
-exports.decryptPollVote = decryptPollVote;
 const Binary_1 = require('../Binary');
 const Proto_1 = require('../Proto');
 const Types_1 = require('../Types');
@@ -135,6 +135,7 @@ function decryptPollVote(
 		return Buffer.from(txt);
 	}
 }
+exports.decryptPollVote = decryptPollVote;
 const processMessage = async (
 	message,
 	{

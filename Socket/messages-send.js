@@ -40,7 +40,7 @@ const makeMessagesSocket = config => {
 	const userDevicesCache =
 		config.userDevicesCache ||
 		new node_cache_1.default({
-			stdTTL: Base_1.DEFAULT_CACHE_TTLS.USER_DEVICES, // 5 minutes
+			stdTTL: Base_1.DEFAULT_CACHE_TTLS.USER_DEVICES,
 			useClones: false,
 		});
 	let mediaConn;
@@ -328,7 +328,6 @@ const makeMessagesSocket = config => {
 			additionalAttributes,
 			additionalNodes,
 			useUserDevicesCache,
-			cachedGroupMetadata,
 			useCachedGroupMetadata,
 			statusJidList,
 		},
@@ -371,7 +370,6 @@ const makeMessagesSocket = config => {
 			if (!isGroup && !isStatus) {
 				additionalAttributes = {
 					...additionalAttributes,
-					// eslint-disable-next-line camelcase
 					device_fanout: 'false',
 				};
 			}
@@ -504,6 +502,7 @@ const makeMessagesSocket = config => {
 				);
 				if (!participant) {
 					devices.push({ user });
+					// do not send message to self if the device is 0 (mobile)
 					if (
 						!(
 							(additionalAttributes === null || additionalAttributes === void 0
@@ -560,11 +559,6 @@ const makeMessagesSocket = config => {
 				shouldIncludeDeviceIdentity = shouldIncludeDeviceIdentity || s1 || s2;
 			}
 			if (participants.length) {
-				binaryNodeContent.push({
-					tag: 'participants',
-					attrs: {},
-					content: participants,
-				});
 				if (
 					(additionalAttributes === null || additionalAttributes === void 0
 						? void 0
@@ -712,8 +706,8 @@ const makeMessagesSocket = config => {
 		readMessages,
 		refreshMediaConn,
 		waUploadToServer,
-		sendPeerDataOperationMessage,
 		fetchPrivacySettings,
+		sendPeerDataOperationMessage,
 		createParticipantNodes,
 		getUSyncDevices,
 		updateMediaMessage: async message => {

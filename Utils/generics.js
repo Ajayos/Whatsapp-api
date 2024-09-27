@@ -5,7 +5,9 @@ var __importDefault =
 		return mod && mod.__esModule ? mod : { default: mod };
 	};
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.isWABusinessPlatform =
+exports.bytesToCrockford =
+	exports.trimUndefined =
+	exports.isWABusinessPlatform =
 	exports.getCodeFromWSError =
 	exports.getCallStatusFromNode =
 	exports.getErrorCodeFromStreamError =
@@ -14,8 +16,10 @@ exports.isWABusinessPlatform =
 	exports.fetchLatestWaWebVersion =
 	exports.printQRIfNecessaryListener =
 	exports.bindWaitForConnectionUpdate =
+	exports.bindWaitForEvent =
 	exports.generateMessageIDV2 =
 	exports.generateMessageID =
+	exports.promiseTimeout =
 	exports.delayCancellable =
 	exports.delay =
 	exports.debouncedTimeout =
@@ -31,16 +35,12 @@ exports.isWABusinessPlatform =
 	exports.getPlatformId =
 	exports.Browsers =
 		void 0;
-exports.promiseTimeout = promiseTimeout;
-exports.bindWaitForEvent = bindWaitForEvent;
-exports.trimUndefined = trimUndefined;
-exports.bytesToCrockford = bytesToCrockford;
 const boom_1 = require('@hapi/boom');
 const axios_1 = __importDefault(require('axios'));
 const crypto_1 = require('crypto');
 const os_1 = require('os');
 const Proto_1 = require('../Proto');
-const baileysVersion = [2, 2402, 5];
+const baileysVersion = [2, 2413, 51];
 const Binary_1 = require('../Binary');
 const Types_1 = require('../Types');
 const PLATFORM_MAP = {
@@ -224,6 +224,7 @@ async function promiseTimeout(ms, promise) {
 	}).finally(cancel);
 	return p;
 }
+exports.promiseTimeout = promiseTimeout;
 // generate a random ID to attach to a message
 const generateMessageID = () =>
 	'3EB0' + (0, crypto_1.randomBytes)(18).toString('hex').toUpperCase();
@@ -276,6 +277,7 @@ function bindWaitForEvent(ev, event) {
 		});
 	};
 }
+exports.bindWaitForEvent = bindWaitForEvent;
 const bindWaitForConnectionUpdate = ev =>
 	bindWaitForEvent(ev, 'connection.update');
 exports.bindWaitForConnectionUpdate = bindWaitForConnectionUpdate;
@@ -444,6 +446,7 @@ function trimUndefined(obj) {
 	}
 	return obj;
 }
+exports.trimUndefined = trimUndefined;
 const CROCKFORD_CHARACTERS = '123456789ABCDEFGHJKLMNPQRSTVWXYZ';
 function bytesToCrockford(buffer) {
 	let value = 0;
@@ -464,3 +467,4 @@ function bytesToCrockford(buffer) {
 	}
 	return crockford.join('');
 }
+exports.bytesToCrockford = bytesToCrockford;

@@ -7,6 +7,6 @@ var LabelAssociationType;
 	LabelAssociationType['Chat'] = 'label_jid';
 	LabelAssociationType['Message'] = 'label_message';
 })(
-	LabelAssociationType ||
-		(exports.LabelAssociationType = LabelAssociationType = {}),
+	(LabelAssociationType =
+		exports.LabelAssociationType || (exports.LabelAssociationType = {})),
 );

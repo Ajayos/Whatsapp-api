@@ -8,6 +8,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 exports.assertMediaContent =
 	exports.downloadMediaMessage =
 	exports.aggregateMessageKeysNotFromMe =
+	exports.getAggregateVotesInPollMessage =
 	exports.updateMessageWithPollUpdate =
 	exports.updateMessageWithReaction =
 	exports.updateMessageWithReceipt =
@@ -24,7 +25,6 @@ exports.assertMediaContent =
 	exports.generateLinkPreviewIfRequired =
 	exports.extractUrlFromText =
 		void 0;
-exports.getAggregateVotesInPollMessage = getAggregateVotesInPollMessage;
 const boom_1 = require('@hapi/boom');
 const axios_1 = __importDefault(require('axios'));
 const crypto_1 = require('crypto');
@@ -898,6 +898,7 @@ function getAggregateVotesInPollMessage({ message, pollUpdates }, meId) {
 	}
 	return Object.values(voteHashMap);
 }
+exports.getAggregateVotesInPollMessage = getAggregateVotesInPollMessage;
 /** Given a list of message keys, aggregates them by chat & sender. Useful for sending read receipts in bulk */
 const aggregateMessageKeysNotFromMe = keys => {
 	const keyMap = {};

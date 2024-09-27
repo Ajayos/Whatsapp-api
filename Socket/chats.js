@@ -44,7 +44,7 @@ const makeChatsSocket = config => {
 	const placeholderResendCache =
 		config.placeholderResendCache ||
 		new node_cache_1.default({
-			stdTTL: Base_1.DEFAULT_CACHE_TTLS.MSG_RETRY, // 1 hour
+			stdTTL: Base_1.DEFAULT_CACHE_TTLS.MSG_RETRY,
 			useClones: false,
 		});
 	if (!config.placeholderResendCache) {

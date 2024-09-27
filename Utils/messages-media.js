@@ -54,25 +54,25 @@ exports.getStatusCodeForMediaRetry =
 	exports.decodeMediaRetryNode =
 	exports.encryptMediaRetryRequest =
 	exports.getWAUploadToServer =
+	exports.extensionForMediaMessage =
 	exports.downloadEncryptedContent =
 	exports.downloadContentFromMessage =
 	exports.getUrlFromDirectPath =
 	exports.encryptedStream =
 	exports.getHttpStream =
+	exports.generateThumbnail =
 	exports.getStream =
 	exports.toBuffer =
 	exports.toReadable =
+	exports.getAudioWaveform =
+	exports.getAudioDuration =
 	exports.mediaMessageSHA256B64 =
 	exports.generateProfilePicture =
 	exports.encodeBase64EncodedStringForUpload =
 	exports.extractImageThumb =
+	exports.getMediaKeys =
 	exports.hkdfInfoKey =
 		void 0;
-exports.getMediaKeys = getMediaKeys;
-exports.getAudioDuration = getAudioDuration;
-exports.getAudioWaveform = getAudioWaveform;
-exports.generateThumbnail = generateThumbnail;
-exports.extensionForMediaMessage = extensionForMediaMessage;
 const boom_1 = require('@hapi/boom');
 const axios_1 = __importDefault(require('axios'));
 const child_process_1 = require('child_process');
@@ -133,6 +133,7 @@ function getMediaKeys(buffer, mediaType) {
 		macKey: expandedMediaKey.slice(48, 80),
 	};
 }
+exports.getMediaKeys = getMediaKeys;
 /** Extracts video thumb using FFMPEG */
 const extractVideoThumb = async (path, destPath, time, size) =>
 	new Promise((resolve, reject) => {
@@ -275,6 +276,7 @@ async function getAudioDuration(buffer) {
 	}
 	return metadata.format.duration;
 }
+exports.getAudioDuration = getAudioDuration;
 /**
   referenced from and modifying https://github.com/wppconnect-team/wa-js/blob/main/src/chat/functions/prepareAudioWaveform.ts
  */
@@ -321,6 +323,7 @@ async function getAudioWaveform(buffer, logger) {
 			: logger.debug('Failed to generate waveform: ' + e);
 	}
 }
+exports.getAudioWaveform = getAudioWaveform;
 const toReadable = buffer => {
 	const readable = new stream_1.Readable({ read: () => {} });
 	readable.push(buffer);
@@ -394,6 +397,7 @@ async function generateThumbnail(file, mediaType, options) {
 		originalImageDimensions,
 	};
 }
+exports.generateThumbnail = generateThumbnail;
 const getHttpStream = async (url, options = {}) => {
 	const fetched = await axios_1.default.get(url.toString(), {
 		...options,
@@ -637,6 +641,7 @@ function extensionForMediaMessage(message) {
 	}
 	return extension;
 }
+exports.extensionForMediaMessage = extensionForMediaMessage;
 const getWAUploadToServer = (
 	{ customUploadHosts, fetchAgent, logger, options },
 	refreshMediaConn,
