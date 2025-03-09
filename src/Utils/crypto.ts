@@ -1,6 +1,6 @@
 import { createCipheriv, createDecipheriv, createHash, createHmac, randomBytes } from 'crypto'
 import * as libsignal from 'libsignal'
-import { KEY_BUNDLE_TYPE } from '../Defaults'
+import { KEY_BUNDLE_TYPE } from '../Base'
 import { KeyPair } from '../Types'
 
 // insure browser & node compatibility

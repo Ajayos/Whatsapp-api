@@ -9,7 +9,7 @@ import {
 	INITIAL_PREKEY_COUNT,
 	MIN_PREKEY_COUNT,
 	NOISE_WA_HEADER
-} from '../Defaults'
+} from '../Base'
 import { DisconnectReason, SocketConfig } from '../Types'
 import {
 	addTransactionCapability,

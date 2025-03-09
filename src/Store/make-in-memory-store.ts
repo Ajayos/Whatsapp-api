@@ -1,7 +1,7 @@
 import type KeyedDB from '@adiwajshing/keyed-db'
 import type { Comparable } from '@adiwajshing/keyed-db/lib/Types'
 import { proto } from '../../WAProto'
-import { DEFAULT_CONNECTION_CONFIG } from '../Defaults'
+import { DEFAULT_CONNECTION_CONFIG } from '../Base'
 import type makeMDSocket from '../Socket'
 import type { BaileysEventEmitter, Chat, ConnectionState, Contact, GroupMetadata, PresenceData, WAMessage, WAMessageCursor, WAMessageKey } from '../Types'
 import { Label } from '../Types/Label'
