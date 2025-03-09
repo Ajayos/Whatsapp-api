@@ -269,6 +269,25 @@
 								>BaileysBufferableEventEmitter</span
 							><span class="tsd-signature-symbol">; </span><br /><span
 								>    </span
+							><span class="tsd-kind-property">executeUSyncQuery</span
+							><span class="tsd-signature-symbol">: </span
+							><span class="tsd-signature-symbol">(</span
+							><span class="tsd-signature-symbol">(</span
+							><span class="tsd-kind-parameter">usyncQuery</span
+							><span class="tsd-signature-symbol">)</span
+							><span class="tsd-signature-symbol"> =&gt; </span
+							><span class="tsd-signature-type">Promise</span
+							><span class="tsd-signature-symbol">&lt;</span
+							><span class="tsd-signature-type">undefined</span
+							><span class="tsd-signature-symbol"> | </span
+							><a
+								href="../types/USyncQueryResult.html"
+								class="tsd-signature-type tsd-kind-type-alias"
+								>USyncQueryResult</a
+							><span class="tsd-signature-symbol">&gt;</span
+							><span class="tsd-signature-symbol">)</span
+							><span class="tsd-signature-symbol">; </span><br /><span
+								>    </span
 							><span class="tsd-kind-property">fetchBlocklist</span
 							><span class="tsd-signature-symbol">: </span
 							><span class="tsd-signature-symbol">(</span
@@ -278,6 +297,27 @@
 							><span class="tsd-signature-type">Promise</span
 							><span class="tsd-signature-symbol">&lt;</span
 							><span class="tsd-signature-type">string</span
+							><span class="tsd-signature-symbol">[]</span
+							><span class="tsd-signature-symbol">&gt;</span
+							><span class="tsd-signature-symbol">)</span
+							><span class="tsd-signature-symbol">; </span><br /><span
+								>    </span
+							><span class="tsd-kind-property">fetchDisappearingDuration</span
+							><span class="tsd-signature-symbol">: </span
+							><span class="tsd-signature-symbol">(</span
+							><span class="tsd-signature-symbol">(</span
+							><span class="tsd-signature-symbol">...</span
+							><span class="tsd-kind-parameter">jids</span
+							><span class="tsd-signature-symbol">)</span
+							><span class="tsd-signature-symbol"> =&gt; </span
+							><span class="tsd-signature-type">Promise</span
+							><span class="tsd-signature-symbol">&lt;</span
+							><span class="tsd-signature-type">undefined</span
+							><span class="tsd-signature-symbol"> | </span
+							><a
+								href="../types/USyncQueryResultList.html"
+								class="tsd-signature-type tsd-kind-type-alias"
+								>USyncQueryResultList</a
 							><span class="tsd-signature-symbol">[]</span
 							><span class="tsd-signature-symbol">&gt;</span
 							><span class="tsd-signature-symbol">)</span
@@ -327,28 +367,19 @@
 							><span class="tsd-signature-symbol">: </span
 							><span class="tsd-signature-symbol">(</span
 							><span class="tsd-signature-symbol">(</span
-							><span class="tsd-kind-parameter">jid</span
+							><span class="tsd-signature-symbol">...</span
+							><span class="tsd-kind-parameter">jids</span
 							><span class="tsd-signature-symbol">)</span
 							><span class="tsd-signature-symbol"> =&gt; </span
 							><span class="tsd-signature-type">Promise</span
 							><span class="tsd-signature-symbol">&lt;</span
 							><span class="tsd-signature-type">undefined</span
 							><span class="tsd-signature-symbol"> | </span
-							><span class="tsd-signature-symbol">{ </span><br /><span
-								>        </span
-							><span class="tsd-kind-property">setAt</span
-							><span class="tsd-signature-symbol">: </span
-							><span class="tsd-signature-type">Date</span
-							><span class="tsd-signature-symbol">; </span><br /><span
-								>        </span
-							><span class="tsd-kind-property">status</span
-							><span class="tsd-signature-symbol">: </span
-							><span class="tsd-signature-type">undefined</span
-							><span class="tsd-signature-symbol"> | </span
-							><span class="tsd-signature-type">string</span
-							><span class="tsd-signature-symbol">; </span><br /><span
-								>    </span
-							><span class="tsd-signature-symbol">}</span
+							><a
+								href="../types/USyncQueryResultList.html"
+								class="tsd-signature-type tsd-kind-type-alias"
+								>USyncQueryResultList</a
+							><span class="tsd-signature-symbol">[]</span
 							><span class="tsd-signature-symbol">&gt;</span
 							><span class="tsd-signature-symbol">)</span
 							><span class="tsd-signature-symbol">; </span><br /><span
@@ -851,10 +882,7 @@
 								>    </span
 							><span class="tsd-kind-property">logger</span
 							><span class="tsd-signature-symbol">: </span
-							><span class="tsd-signature-type">Logger</span
-							><span class="tsd-signature-symbol">&lt;</span
-							><span class="tsd-signature-type">LoggerOptions</span
-							><span class="tsd-signature-symbol">&gt;</span
+							><span class="tsd-signature-type">ILogger</span
 							><span class="tsd-signature-symbol">; </span><br /><span
 								>    </span
 							><span class="tsd-kind-property">logout</span
@@ -894,11 +922,13 @@
 							><span class="tsd-signature-symbol"> =&gt; </span
 							><span class="tsd-signature-type">Promise</span
 							><span class="tsd-signature-symbol">&lt;</span
+							><span class="tsd-signature-type">undefined</span
+							><span class="tsd-signature-symbol"> | </span
 							><span class="tsd-signature-symbol">{ </span><br /><span
 								>        </span
 							><span class="tsd-kind-property">exists</span
 							><span class="tsd-signature-symbol">: </span
-							><span class="tsd-signature-type">boolean</span
+							><span class="tsd-signature-type">unknown</span
 							><span class="tsd-signature-symbol">; </span><br /><span
 								>        </span
 							><span class="tsd-kind-property">jid</span
@@ -1076,20 +1106,6 @@
 							><span class="tsd-signature-symbol">)</span
 							><span class="tsd-signature-symbol">; </span><br /><span
 								>    </span
-							><span class="tsd-kind-property">register</span
-							><span class="tsd-signature-symbol">: </span
-							><span class="tsd-signature-symbol">(</span
-							><span class="tsd-signature-symbol">(</span
-							><span class="tsd-kind-parameter">code</span
-							><span class="tsd-signature-symbol">)</span
-							><span class="tsd-signature-symbol"> =&gt; </span
-							><span class="tsd-signature-type">Promise</span
-							><span class="tsd-signature-symbol">&lt;</span
-							><span class="tsd-signature-type">ExistsResponse</span
-							><span class="tsd-signature-symbol">&gt;</span
-							><span class="tsd-signature-symbol">)</span
-							><span class="tsd-signature-symbol">; </span><br /><span
-								>    </span
 							><span class="tsd-kind-property">rejectCall</span
 							><span class="tsd-signature-symbol">: </span
 							><span class="tsd-signature-symbol">(</span
@@ -1196,21 +1212,6 @@
 							><span class="tsd-signature-symbol">)</span
 							><span class="tsd-signature-symbol">; </span><br /><span
 								>    </span
-							><span class="tsd-kind-property">requestRegistrationCode</span
-							><span class="tsd-signature-symbol">: </span
-							><span class="tsd-signature-symbol">(</span
-							><span class="tsd-signature-symbol">(</span
-							><span class="tsd-kind-parameter">registrationOptions</span
-							><span class="tsd-signature-symbol">?</span
-							><span class="tsd-signature-symbol">)</span
-							><span class="tsd-signature-symbol"> =&gt; </span
-							><span class="tsd-signature-type">Promise</span
-							><span class="tsd-signature-symbol">&lt;</span
-							><span class="tsd-signature-type">ExistsResponse</span
-							><span class="tsd-signature-symbol">&gt;</span
-							><span class="tsd-signature-symbol">)</span
-							><span class="tsd-signature-symbol">; </span><br /><span
-								>    </span
 							><span class="tsd-kind-property">resyncAppState</span
 							><span class="tsd-signature-symbol">: </span
 							><span class="tsd-signature-symbol">(</span
@@ -1252,7 +1253,9 @@
 							><span class="tsd-signature-symbol">: </span
 							><span class="tsd-signature-symbol">(</span
 							><span class="tsd-signature-symbol">(</span
-							><span class="tsd-kind-parameter">__namedParameters</span
+							><span class="tsd-kind-parameter">__namedParameters</span>,
+							<span class="tsd-kind-parameter">errorCode</span
+							><span class="tsd-signature-symbol">?</span
 							><span class="tsd-signature-symbol">)</span
 							><span class="tsd-signature-symbol"> =&gt; </span
 							><span class="tsd-signature-type">Promise</span
@@ -1504,6 +1507,20 @@
 							><span class="tsd-signature-symbol">)</span
 							><span class="tsd-signature-symbol">; </span><br /><span
 								>    </span
+							><span class="tsd-kind-property">updateMessagesPrivacy</span
+							><span class="tsd-signature-symbol">: </span
+							><span class="tsd-signature-symbol">(</span
+							><span class="tsd-signature-symbol">(</span
+							><span class="tsd-kind-parameter">value</span
+							><span class="tsd-signature-symbol">)</span
+							><span class="tsd-signature-symbol"> =&gt; </span
+							><span class="tsd-signature-type">Promise</span
+							><span class="tsd-signature-symbol">&lt;</span
+							><span class="tsd-signature-type">void</span
+							><span class="tsd-signature-symbol">&gt;</span
+							><span class="tsd-signature-symbol">)</span
+							><span class="tsd-signature-symbol">; </span><br /><span
+								>    </span
 							><span class="tsd-kind-property">updateOnlinePrivacy</span
 							><span class="tsd-signature-symbol">: </span
 							><span class="tsd-signature-symbol">(</span
@@ -1715,7 +1732,7 @@
 								>    </span
 							><span class="tsd-kind-property">ws</span
 							><span class="tsd-signature-symbol">: </span
-							><span class="tsd-signature-type">any</span
+							><span class="tsd-signature-type">WebSocketClient</span
 							><span class="tsd-signature-symbol">; </span><br /><span
 								class="tsd-signature-symbol"
 								>}</span
@@ -1941,6 +1958,25 @@
 									>BaileysBufferableEventEmitter</span
 								><span class="tsd-signature-symbol">; </span><br /><span
 									>    </span
+								><span class="tsd-kind-property">executeUSyncQuery</span
+								><span class="tsd-signature-symbol">: </span
+								><span class="tsd-signature-symbol">(</span
+								><span class="tsd-signature-symbol">(</span
+								><span class="tsd-kind-parameter">usyncQuery</span
+								><span class="tsd-signature-symbol">)</span
+								><span class="tsd-signature-symbol"> =&gt; </span
+								><span class="tsd-signature-type">Promise</span
+								><span class="tsd-signature-symbol">&lt;</span
+								><span class="tsd-signature-type">undefined</span
+								><span class="tsd-signature-symbol"> | </span
+								><a
+									href="../types/USyncQueryResult.html"
+									class="tsd-signature-type tsd-kind-type-alias"
+									>USyncQueryResult</a
+								><span class="tsd-signature-symbol">&gt;</span
+								><span class="tsd-signature-symbol">)</span
+								><span class="tsd-signature-symbol">; </span><br /><span
+									>    </span
 								><span class="tsd-kind-property">fetchBlocklist</span
 								><span class="tsd-signature-symbol">: </span
 								><span class="tsd-signature-symbol">(</span
@@ -1950,6 +1986,27 @@
 								><span class="tsd-signature-type">Promise</span
 								><span class="tsd-signature-symbol">&lt;</span
 								><span class="tsd-signature-type">string</span
+								><span class="tsd-signature-symbol">[]</span
+								><span class="tsd-signature-symbol">&gt;</span
+								><span class="tsd-signature-symbol">)</span
+								><span class="tsd-signature-symbol">; </span><br /><span
+									>    </span
+								><span class="tsd-kind-property">fetchDisappearingDuration</span
+								><span class="tsd-signature-symbol">: </span
+								><span class="tsd-signature-symbol">(</span
+								><span class="tsd-signature-symbol">(</span
+								><span class="tsd-signature-symbol">...</span
+								><span class="tsd-kind-parameter">jids</span
+								><span class="tsd-signature-symbol">)</span
+								><span class="tsd-signature-symbol"> =&gt; </span
+								><span class="tsd-signature-type">Promise</span
+								><span class="tsd-signature-symbol">&lt;</span
+								><span class="tsd-signature-type">undefined</span
+								><span class="tsd-signature-symbol"> | </span
+								><a
+									href="../types/USyncQueryResultList.html"
+									class="tsd-signature-type tsd-kind-type-alias"
+									>USyncQueryResultList</a
 								><span class="tsd-signature-symbol">[]</span
 								><span class="tsd-signature-symbol">&gt;</span
 								><span class="tsd-signature-symbol">)</span
@@ -1999,28 +2056,19 @@
 								><span class="tsd-signature-symbol">: </span
 								><span class="tsd-signature-symbol">(</span
 								><span class="tsd-signature-symbol">(</span
-								><span class="tsd-kind-parameter">jid</span
+								><span class="tsd-signature-symbol">...</span
+								><span class="tsd-kind-parameter">jids</span
 								><span class="tsd-signature-symbol">)</span
 								><span class="tsd-signature-symbol"> =&gt; </span
 								><span class="tsd-signature-type">Promise</span
 								><span class="tsd-signature-symbol">&lt;</span
 								><span class="tsd-signature-type">undefined</span
 								><span class="tsd-signature-symbol"> | </span
-								><span class="tsd-signature-symbol">{ </span><br /><span
-									>        </span
-								><span class="tsd-kind-property">setAt</span
-								><span class="tsd-signature-symbol">: </span
-								><span class="tsd-signature-type">Date</span
-								><span class="tsd-signature-symbol">; </span><br /><span
-									>        </span
-								><span class="tsd-kind-property">status</span
-								><span class="tsd-signature-symbol">: </span
-								><span class="tsd-signature-type">undefined</span
-								><span class="tsd-signature-symbol"> | </span
-								><span class="tsd-signature-type">string</span
-								><span class="tsd-signature-symbol">; </span><br /><span
-									>    </span
-								><span class="tsd-signature-symbol">}</span
+								><a
+									href="../types/USyncQueryResultList.html"
+									class="tsd-signature-type tsd-kind-type-alias"
+									>USyncQueryResultList</a
+								><span class="tsd-signature-symbol">[]</span
 								><span class="tsd-signature-symbol">&gt;</span
 								><span class="tsd-signature-symbol">)</span
 								><span class="tsd-signature-symbol">; </span><br /><span
@@ -2524,10 +2572,7 @@
 									>    </span
 								><span class="tsd-kind-property">logger</span
 								><span class="tsd-signature-symbol">: </span
-								><span class="tsd-signature-type">Logger</span
-								><span class="tsd-signature-symbol">&lt;</span
-								><span class="tsd-signature-type">LoggerOptions</span
-								><span class="tsd-signature-symbol">&gt;</span
+								><span class="tsd-signature-type">ILogger</span
 								><span class="tsd-signature-symbol">; </span><br /><span
 									>    </span
 								><span class="tsd-kind-property">logout</span
@@ -2567,11 +2612,13 @@
 								><span class="tsd-signature-symbol"> =&gt; </span
 								><span class="tsd-signature-type">Promise</span
 								><span class="tsd-signature-symbol">&lt;</span
+								><span class="tsd-signature-type">undefined</span
+								><span class="tsd-signature-symbol"> | </span
 								><span class="tsd-signature-symbol">{ </span><br /><span
 									>        </span
 								><span class="tsd-kind-property">exists</span
 								><span class="tsd-signature-symbol">: </span
-								><span class="tsd-signature-type">boolean</span
+								><span class="tsd-signature-type">unknown</span
 								><span class="tsd-signature-symbol">; </span><br /><span
 									>        </span
 								><span class="tsd-kind-property">jid</span
@@ -2751,20 +2798,6 @@
 								><span class="tsd-signature-symbol">)</span
 								><span class="tsd-signature-symbol">; </span><br /><span
 									>    </span
-								><span class="tsd-kind-property">register</span
-								><span class="tsd-signature-symbol">: </span
-								><span class="tsd-signature-symbol">(</span
-								><span class="tsd-signature-symbol">(</span
-								><span class="tsd-kind-parameter">code</span
-								><span class="tsd-signature-symbol">)</span
-								><span class="tsd-signature-symbol"> =&gt; </span
-								><span class="tsd-signature-type">Promise</span
-								><span class="tsd-signature-symbol">&lt;</span
-								><span class="tsd-signature-type">ExistsResponse</span
-								><span class="tsd-signature-symbol">&gt;</span
-								><span class="tsd-signature-symbol">)</span
-								><span class="tsd-signature-symbol">; </span><br /><span
-									>    </span
 								><span class="tsd-kind-property">rejectCall</span
 								><span class="tsd-signature-symbol">: </span
 								><span class="tsd-signature-symbol">(</span
@@ -2871,21 +2904,6 @@
 								><span class="tsd-signature-symbol">)</span
 								><span class="tsd-signature-symbol">; </span><br /><span
 									>    </span
-								><span class="tsd-kind-property">requestRegistrationCode</span
-								><span class="tsd-signature-symbol">: </span
-								><span class="tsd-signature-symbol">(</span
-								><span class="tsd-signature-symbol">(</span
-								><span class="tsd-kind-parameter">registrationOptions</span
-								><span class="tsd-signature-symbol">?</span
-								><span class="tsd-signature-symbol">)</span
-								><span class="tsd-signature-symbol"> =&gt; </span
-								><span class="tsd-signature-type">Promise</span
-								><span class="tsd-signature-symbol">&lt;</span
-								><span class="tsd-signature-type">ExistsResponse</span
-								><span class="tsd-signature-symbol">&gt;</span
-								><span class="tsd-signature-symbol">)</span
-								><span class="tsd-signature-symbol">; </span><br /><span
-									>    </span
 								><span class="tsd-kind-property">resyncAppState</span
 								><span class="tsd-signature-symbol">: </span
 								><span class="tsd-signature-symbol">(</span
@@ -2927,7 +2945,9 @@
 								><span class="tsd-signature-symbol">: </span
 								><span class="tsd-signature-symbol">(</span
 								><span class="tsd-signature-symbol">(</span
-								><span class="tsd-kind-parameter">__namedParameters</span
+								><span class="tsd-kind-parameter">__namedParameters</span>,
+								<span class="tsd-kind-parameter">errorCode</span
+								><span class="tsd-signature-symbol">?</span
 								><span class="tsd-signature-symbol">)</span
 								><span class="tsd-signature-symbol"> =&gt; </span
 								><span class="tsd-signature-type">Promise</span
@@ -3179,6 +3199,20 @@
 								><span class="tsd-signature-symbol">)</span
 								><span class="tsd-signature-symbol">; </span><br /><span
 									>    </span
+								><span class="tsd-kind-property">updateMessagesPrivacy</span
+								><span class="tsd-signature-symbol">: </span
+								><span class="tsd-signature-symbol">(</span
+								><span class="tsd-signature-symbol">(</span
+								><span class="tsd-kind-parameter">value</span
+								><span class="tsd-signature-symbol">)</span
+								><span class="tsd-signature-symbol"> =&gt; </span
+								><span class="tsd-signature-type">Promise</span
+								><span class="tsd-signature-symbol">&lt;</span
+								><span class="tsd-signature-type">void</span
+								><span class="tsd-signature-symbol">&gt;</span
+								><span class="tsd-signature-symbol">)</span
+								><span class="tsd-signature-symbol">; </span><br /><span
+									>    </span
 								><span class="tsd-kind-property">updateOnlinePrivacy</span
 								><span class="tsd-signature-symbol">: </span
 								><span class="tsd-signature-symbol">(</span
@@ -3393,7 +3427,7 @@
 									>    </span
 								><span class="tsd-kind-property">ws</span
 								><span class="tsd-signature-symbol">: </span
-								><span class="tsd-signature-type">any</span
+								><span class="tsd-signature-type">WebSocketClient</span
 								><span class="tsd-signature-symbol">; </span><br /><span
 									class="tsd-signature-symbol"
 									>}</span
@@ -4172,6 +4206,83 @@
 								</li>
 								<li class="tsd-parameter">
 									<h5>
+										<span class="tsd-kind-property"
+											>executeUSync<wbr />Query</span
+										><span class="tsd-signature-symbol">: </span
+										><span class="tsd-signature-symbol">(</span
+										><span class="tsd-signature-symbol">(</span
+										><span class="tsd-kind-parameter">usyncQuery</span
+										><span class="tsd-signature-symbol">)</span
+										><span class="tsd-signature-symbol"> =&gt; </span
+										><span class="tsd-signature-type">Promise</span
+										><span class="tsd-signature-symbol">&lt;</span
+										><span class="tsd-signature-type">undefined</span
+										><span class="tsd-signature-symbol"> | </span
+										><a
+											href="../types/USyncQueryResult.html"
+											class="tsd-signature-type tsd-kind-type-alias"
+											>USyncQueryResult</a
+										><span class="tsd-signature-symbol">&gt;</span
+										><span class="tsd-signature-symbol">)</span>
+									</h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures">
+												<li
+													class="tsd-signature"
+													id="makeWASocket.__type.executeUSyncQuery.__type-20.__type-21"
+												>
+													<span class="tsd-signature-symbol">(</span
+													><span class="tsd-kind-parameter">usyncQuery</span
+													><span class="tsd-signature-symbol">)</span
+													><span class="tsd-signature-symbol">: </span
+													><span class="tsd-signature-type">Promise</span
+													><span class="tsd-signature-symbol">&lt;</span
+													><span class="tsd-signature-type">undefined</span
+													><span class="tsd-signature-symbol"> | </span
+													><a
+														href="../types/USyncQueryResult.html"
+														class="tsd-signature-type tsd-kind-type-alias"
+														>USyncQueryResult</a
+													><span class="tsd-signature-symbol">&gt;</span>
+												</li>
+												<li class="tsd-description">
+													<div class="tsd-parameters">
+														<h4 class="tsd-parameters-title">Parameters</h4>
+														<ul class="tsd-parameter-list">
+															<li>
+																<h5>
+																	<span class="tsd-kind-parameter"
+																		>usyncQuery</span
+																	>:
+																	<a
+																		href="../classes/USyncQuery.html"
+																		class="tsd-signature-type tsd-kind-class"
+																		>USyncQuery</a
+																	>
+																</h5>
+															</li>
+														</ul>
+													</div>
+													<h4 class="tsd-returns-title">
+														Returns
+														<span class="tsd-signature-type">Promise</span
+														><span class="tsd-signature-symbol">&lt;</span
+														><span class="tsd-signature-type">undefined</span
+														><span class="tsd-signature-symbol"> | </span
+														><a
+															href="../types/USyncQueryResult.html"
+															class="tsd-signature-type tsd-kind-type-alias"
+															>USyncQueryResult</a
+														><span class="tsd-signature-symbol">&gt;</span>
+													</h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+								<li class="tsd-parameter">
+									<h5>
 										<span class="tsd-kind-property">fetch<wbr />Blocklist</span
 										><span class="tsd-signature-symbol">: </span
 										><span class="tsd-signature-symbol">(</span
@@ -4190,7 +4301,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.fetchBlocklist.__type-20.__type-21"
+													id="makeWASocket.__type.fetchBlocklist.__type-22.__type-23"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-signature-symbol">)</span
@@ -4207,6 +4318,85 @@
 														<span class="tsd-signature-type">Promise</span
 														><span class="tsd-signature-symbol">&lt;</span
 														><span class="tsd-signature-type">string</span
+														><span class="tsd-signature-symbol">[]</span
+														><span class="tsd-signature-symbol">&gt;</span>
+													</h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+								<li class="tsd-parameter">
+									<h5>
+										<span class="tsd-kind-property"
+											>fetch<wbr />Disappearing<wbr />Duration</span
+										><span class="tsd-signature-symbol">: </span
+										><span class="tsd-signature-symbol">(</span
+										><span class="tsd-signature-symbol">(</span
+										><span class="tsd-signature-symbol">...</span
+										><span class="tsd-kind-parameter">jids</span
+										><span class="tsd-signature-symbol">)</span
+										><span class="tsd-signature-symbol"> =&gt; </span
+										><span class="tsd-signature-type">Promise</span
+										><span class="tsd-signature-symbol">&lt;</span
+										><span class="tsd-signature-type">undefined</span
+										><span class="tsd-signature-symbol"> | </span
+										><a
+											href="../types/USyncQueryResultList.html"
+											class="tsd-signature-type tsd-kind-type-alias"
+											>USyncQueryResultList</a
+										><span class="tsd-signature-symbol">[]</span
+										><span class="tsd-signature-symbol">&gt;</span
+										><span class="tsd-signature-symbol">)</span>
+									</h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures">
+												<li
+													class="tsd-signature"
+													id="makeWASocket.__type.fetchDisappearingDuration.__type-24.__type-25"
+												>
+													<span class="tsd-signature-symbol">(</span
+													><span class="tsd-signature-symbol">...</span
+													><span class="tsd-kind-parameter">jids</span
+													><span class="tsd-signature-symbol">)</span
+													><span class="tsd-signature-symbol">: </span
+													><span class="tsd-signature-type">Promise</span
+													><span class="tsd-signature-symbol">&lt;</span
+													><span class="tsd-signature-type">undefined</span
+													><span class="tsd-signature-symbol"> | </span
+													><a
+														href="../types/USyncQueryResultList.html"
+														class="tsd-signature-type tsd-kind-type-alias"
+														>USyncQueryResultList</a
+													><span class="tsd-signature-symbol">[]</span
+													><span class="tsd-signature-symbol">&gt;</span>
+												</li>
+												<li class="tsd-description">
+													<div class="tsd-parameters">
+														<h4 class="tsd-parameters-title">Parameters</h4>
+														<ul class="tsd-parameter-list">
+															<li>
+																<h5>
+																	<code class="tsd-tag ts-flagRest">Rest</code>
+																	<span class="tsd-signature-symbol">...</span
+																	><span class="tsd-kind-parameter">jids</span>:
+																	<span class="tsd-signature-type">string</span
+																	><span class="tsd-signature-symbol">[]</span>
+																</h5>
+															</li>
+														</ul>
+													</div>
+													<h4 class="tsd-returns-title">
+														Returns
+														<span class="tsd-signature-type">Promise</span
+														><span class="tsd-signature-symbol">&lt;</span
+														><span class="tsd-signature-type">undefined</span
+														><span class="tsd-signature-symbol"> | </span
+														><a
+															href="../types/USyncQueryResultList.html"
+															class="tsd-signature-type tsd-kind-type-alias"
+															>USyncQueryResultList</a
 														><span class="tsd-signature-symbol">[]</span
 														><span class="tsd-signature-symbol">&gt;</span>
 													</h4>
@@ -4238,7 +4428,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.fetchMessageHistory.__type-22.__type-23"
+													id="makeWASocket.__type.fetchMessageHistory.__type-26.__type-27"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">count</span>,
@@ -4334,7 +4524,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.fetchPrivacySettings.__type-24.__type-25"
+													id="makeWASocket.__type.fetchPrivacySettings.__type-28.__type-29"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">force</span
@@ -4399,28 +4589,19 @@
 										><span class="tsd-signature-symbol">: </span
 										><span class="tsd-signature-symbol">(</span
 										><span class="tsd-signature-symbol">(</span
-										><span class="tsd-kind-parameter">jid</span
+										><span class="tsd-signature-symbol">...</span
+										><span class="tsd-kind-parameter">jids</span
 										><span class="tsd-signature-symbol">)</span
 										><span class="tsd-signature-symbol"> =&gt; </span
 										><span class="tsd-signature-type">Promise</span
 										><span class="tsd-signature-symbol">&lt;</span
 										><span class="tsd-signature-type">undefined</span
 										><span class="tsd-signature-symbol"> | </span
-										><span class="tsd-signature-symbol">{ </span><br /><span
-											>    </span
-										><span class="tsd-kind-property">setAt</span
-										><span class="tsd-signature-symbol">: </span
-										><span class="tsd-signature-type">Date</span
-										><span class="tsd-signature-symbol">; </span><br /><span
-											>    </span
-										><span class="tsd-kind-property">status</span
-										><span class="tsd-signature-symbol">: </span
-										><span class="tsd-signature-type">undefined</span
-										><span class="tsd-signature-symbol"> | </span
-										><span class="tsd-signature-type">string</span
-										><span class="tsd-signature-symbol">; </span><br /><span
-											class="tsd-signature-symbol"
-											>}</span
+										><a
+											href="../types/USyncQueryResultList.html"
+											class="tsd-signature-type tsd-kind-type-alias"
+											>USyncQueryResultList</a
+										><span class="tsd-signature-symbol">[]</span
 										><span class="tsd-signature-symbol">&gt;</span
 										><span class="tsd-signature-symbol">)</span>
 									</h5>
@@ -4429,30 +4610,22 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.fetchStatus.__type-26.__type-27"
+													id="makeWASocket.__type.fetchStatus.__type-30.__type-31"
 												>
 													<span class="tsd-signature-symbol">(</span
-													><span class="tsd-kind-parameter">jid</span
+													><span class="tsd-signature-symbol">...</span
+													><span class="tsd-kind-parameter">jids</span
 													><span class="tsd-signature-symbol">)</span
 													><span class="tsd-signature-symbol">: </span
 													><span class="tsd-signature-type">Promise</span
 													><span class="tsd-signature-symbol">&lt;</span
 													><span class="tsd-signature-type">undefined</span
 													><span class="tsd-signature-symbol"> | </span
-													><span class="tsd-signature-symbol">{ </span
-													><br /><span>    </span
-													><span class="tsd-kind-property">setAt</span
-													><span class="tsd-signature-symbol">: </span
-													><span class="tsd-signature-type">Date</span
-													><span class="tsd-signature-symbol">; </span
-													><br /><span>    </span
-													><span class="tsd-kind-property">status</span
-													><span class="tsd-signature-symbol">: </span
-													><span class="tsd-signature-type">undefined</span
-													><span class="tsd-signature-symbol"> | </span
-													><span class="tsd-signature-type">string</span
-													><span class="tsd-signature-symbol">; </span
-													><br /><span class="tsd-signature-symbol">}</span
+													><a
+														href="../types/USyncQueryResultList.html"
+														class="tsd-signature-type tsd-kind-type-alias"
+														>USyncQueryResultList</a
+													><span class="tsd-signature-symbol">[]</span
 													><span class="tsd-signature-symbol">&gt;</span>
 												</li>
 												<li class="tsd-description">
@@ -4461,8 +4634,11 @@
 														<ul class="tsd-parameter-list">
 															<li>
 																<h5>
-																	<span class="tsd-kind-parameter">jid</span>:
-																	<span class="tsd-signature-type">string</span>
+																	<code class="tsd-tag ts-flagRest">Rest</code>
+																	<span class="tsd-signature-symbol">...</span
+																	><span class="tsd-kind-parameter">jids</span>:
+																	<span class="tsd-signature-type">string</span
+																	><span class="tsd-signature-symbol">[]</span>
 																</h5>
 															</li>
 														</ul>
@@ -4473,20 +4649,11 @@
 														><span class="tsd-signature-symbol">&lt;</span
 														><span class="tsd-signature-type">undefined</span
 														><span class="tsd-signature-symbol"> | </span
-														><span class="tsd-signature-symbol">{ </span
-														><br /><span>    </span
-														><span class="tsd-kind-property">setAt</span
-														><span class="tsd-signature-symbol">: </span
-														><span class="tsd-signature-type">Date</span
-														><span class="tsd-signature-symbol">; </span
-														><br /><span>    </span
-														><span class="tsd-kind-property">status</span
-														><span class="tsd-signature-symbol">: </span
-														><span class="tsd-signature-type">undefined</span
-														><span class="tsd-signature-symbol"> | </span
-														><span class="tsd-signature-type">string</span
-														><span class="tsd-signature-symbol">; </span
-														><br /><span class="tsd-signature-symbol">}</span
+														><a
+															href="../types/USyncQueryResultList.html"
+															class="tsd-signature-type tsd-kind-type-alias"
+															>USyncQueryResultList</a
+														><span class="tsd-signature-symbol">[]</span
 														><span class="tsd-signature-symbol">&gt;</span>
 													</h4>
 												</li>
@@ -4511,7 +4678,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.generateMessageTag.__type-28.__type-29"
+													id="makeWASocket.__type.generateMessageTag.__type-32.__type-33"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-signature-symbol">)</span
@@ -4554,7 +4721,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.getBusinessProfile.__type-30.__type-31"
+													id="makeWASocket.__type.getBusinessProfile.__type-34.__type-35"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span
@@ -4637,7 +4804,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.getCatalog.__type-32.__type-33"
+													id="makeWASocket.__type.getCatalog.__type-36.__type-37"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter"
@@ -4748,7 +4915,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.getCollections.__type-34.__type-35"
+													id="makeWASocket.__type.getCollections.__type-38.__type-39"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span
@@ -4843,7 +5010,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.getOrderDetails.__type-36.__type-37"
+													id="makeWASocket.__type.getOrderDetails.__type-40.__type-41"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">orderId</span>,
@@ -4918,7 +5085,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.getPrivacyTokens.__type-38.__type-39"
+													id="makeWASocket.__type.getPrivacyTokens.__type-42.__type-43"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jids</span
@@ -4986,7 +5153,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.getUSyncDevices.__type-40.__type-41"
+													id="makeWASocket.__type.getUSyncDevices.__type-44.__type-45"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jids</span>,
@@ -5083,7 +5250,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupAcceptInvite.__type-42.__type-43"
+													id="makeWASocket.__type.groupAcceptInvite.__type-46.__type-47"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">code</span
@@ -5144,7 +5311,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupAcceptInviteV4.__type-44.__type-45"
+													id="makeWASocket.__type.groupAcceptInviteV4.__type-48.__type-49"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-signature-symbol">...</span
@@ -5232,7 +5399,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupCreate.__type-46.__type-47"
+													id="makeWASocket.__type.groupCreate.__type-50.__type-51"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">subject</span>,
@@ -5316,7 +5483,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupFetchAllParticipating.__type-48.__type-49"
+													id="makeWASocket.__type.groupFetchAllParticipating.__type-52.__type-53"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-signature-symbol">)</span
@@ -5389,7 +5556,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupGetInviteInfo.__type-50.__type-51"
+													id="makeWASocket.__type.groupGetInviteInfo.__type-54.__type-55"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">code</span
@@ -5453,7 +5620,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupInviteCode.__type-52.__type-53"
+													id="makeWASocket.__type.groupInviteCode.__type-56.__type-57"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span
@@ -5514,7 +5681,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupJoinApprovalMode.__type-54.__type-55"
+													id="makeWASocket.__type.groupJoinApprovalMode.__type-58.__type-59"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span>,
@@ -5581,7 +5748,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupLeave.__type-56.__type-57"
+													id="makeWASocket.__type.groupLeave.__type-60.__type-61"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">id</span
@@ -5638,7 +5805,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupMemberAddMode.__type-58.__type-59"
+													id="makeWASocket.__type.groupMemberAddMode.__type-62.__type-63"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span>,
@@ -5708,7 +5875,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupMetadata.__type-60.__type-61"
+													id="makeWASocket.__type.groupMetadata.__type-64.__type-65"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span
@@ -5793,7 +5960,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupParticipantsUpdate.__type-62.__type-63"
+													id="makeWASocket.__type.groupParticipantsUpdate.__type-66.__type-67"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span>,
@@ -5921,7 +6088,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupRequestParticipantsList.__type-64.__type-65"
+													id="makeWASocket.__type.groupRequestParticipantsList.__type-68.__type-69"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span
@@ -6014,7 +6181,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupRequestParticipantsUpdate.__type-66.__type-67"
+													id="makeWASocket.__type.groupRequestParticipantsUpdate.__type-70.__type-71"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span>,
@@ -6119,7 +6286,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupRevokeInvite.__type-68.__type-69"
+													id="makeWASocket.__type.groupRevokeInvite.__type-72.__type-73"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span
@@ -6180,7 +6347,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupRevokeInviteV4.__type-70.__type-71"
+													id="makeWASocket.__type.groupRevokeInviteV4.__type-74.__type-75"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">groupJid</span>,
@@ -6262,7 +6429,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupSettingUpdate.__type-72.__type-73"
+													id="makeWASocket.__type.groupSettingUpdate.__type-76.__type-77"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span>,
@@ -6338,7 +6505,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupToggleEphemeral.__type-74.__type-75"
+													id="makeWASocket.__type.groupToggleEphemeral.__type-78.__type-79"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span>,
@@ -6406,7 +6573,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupUpdateDescription.__type-76.__type-77"
+													id="makeWASocket.__type.groupUpdateDescription.__type-80.__type-81"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span>,
@@ -6476,7 +6643,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.groupUpdateSubject.__type-78.__type-79"
+													id="makeWASocket.__type.groupUpdateSubject.__type-82.__type-83"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span>,
@@ -6523,10 +6690,7 @@
 									<h5>
 										<span class="tsd-kind-property">logger</span
 										><span class="tsd-signature-symbol">: </span
-										><span class="tsd-signature-type">Logger</span
-										><span class="tsd-signature-symbol">&lt;</span
-										><span class="tsd-signature-type">LoggerOptions</span
-										><span class="tsd-signature-symbol">&gt;</span>
+										><span class="tsd-signature-type">ILogger</span>
 									</h5>
 								</li>
 								<li class="tsd-parameter">
@@ -6550,7 +6714,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.logout.__type-80.__type-81"
+													id="makeWASocket.__type.logout.__type-84.__type-85"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">msg</span
@@ -6612,7 +6776,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.onUnexpectedError.__type-82.__type-83"
+													id="makeWASocket.__type.onUnexpectedError.__type-86.__type-87"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">err</span>,
@@ -6671,11 +6835,13 @@
 										><span class="tsd-signature-symbol"> =&gt; </span
 										><span class="tsd-signature-type">Promise</span
 										><span class="tsd-signature-symbol">&lt;</span
+										><span class="tsd-signature-type">undefined</span
+										><span class="tsd-signature-symbol"> | </span
 										><span class="tsd-signature-symbol">{ </span><br /><span
 											>    </span
 										><span class="tsd-kind-property">exists</span
 										><span class="tsd-signature-symbol">: </span
-										><span class="tsd-signature-type">boolean</span
+										><span class="tsd-signature-type">unknown</span
 										><span class="tsd-signature-symbol">; </span><br /><span
 											>    </span
 										><span class="tsd-kind-property">jid</span
@@ -6693,7 +6859,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.onWhatsApp.__type-84.__type-85"
+													id="makeWASocket.__type.onWhatsApp.__type-88.__type-89"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-signature-symbol">...</span
@@ -6702,11 +6868,13 @@
 													><span class="tsd-signature-symbol">: </span
 													><span class="tsd-signature-type">Promise</span
 													><span class="tsd-signature-symbol">&lt;</span
+													><span class="tsd-signature-type">undefined</span
+													><span class="tsd-signature-symbol"> | </span
 													><span class="tsd-signature-symbol">{ </span
 													><br /><span>    </span
 													><span class="tsd-kind-property">exists</span
 													><span class="tsd-signature-symbol">: </span
-													><span class="tsd-signature-type">boolean</span
+													><span class="tsd-signature-type">unknown</span
 													><span class="tsd-signature-symbol">; </span
 													><br /><span>    </span
 													><span class="tsd-kind-property">jid</span
@@ -6736,11 +6904,13 @@
 														Returns
 														<span class="tsd-signature-type">Promise</span
 														><span class="tsd-signature-symbol">&lt;</span
+														><span class="tsd-signature-type">undefined</span
+														><span class="tsd-signature-symbol"> | </span
 														><span class="tsd-signature-symbol">{ </span
 														><br /><span>    </span
 														><span class="tsd-kind-property">exists</span
 														><span class="tsd-signature-symbol">: </span
-														><span class="tsd-signature-type">boolean</span
+														><span class="tsd-signature-type">unknown</span
 														><span class="tsd-signature-symbol">; </span
 														><br /><span>    </span
 														><span class="tsd-kind-property">jid</span
@@ -6779,7 +6949,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.presenceSubscribe.__type-86.__type-87"
+													id="makeWASocket.__type.presenceSubscribe.__type-90.__type-91"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">toJid</span>,
@@ -6869,7 +7039,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature tsd-anchor-link"
-													id="makeWASocket.__type.processingMutex.__type-88.mutex.mutex-1"
+													id="makeWASocket.__type.processingMutex.__type-92.mutex.mutex-1"
 												>
 													<span class="tsd-kind-call-signature">mutex</span
 													><span class="tsd-signature-symbol">&lt;</span
@@ -6888,7 +7058,7 @@
 														>T</span
 													><span class="tsd-signature-symbol">&gt;</span
 													><a
-														href="#makeWASocket.__type.processingMutex.__type-88.mutex.mutex-1"
+														href="#makeWASocket.__type.processingMutex.__type-92.mutex.mutex-1"
 														aria-label="Permalink"
 														class="tsd-anchor-icon"
 														><svg viewBox="0 0 24 24">
@@ -6996,8 +7166,8 @@
 															<li>
 																Defined in
 																<a
-																	href="https://github.com/Ajayos/Whatsapp-api/blob/27d7f8f/src/Utils/make-mutex.ts#L7"
-																	>Utils/make-mutex.ts:7</a
+																	href="https://github.com/Ajayos/Whatsapp-api/blob/4516eec/src/Utils/make-mutex.ts#L8"
+																	>src/Utils/make-mutex.ts:8</a
 																>
 															</li>
 														</ul>
@@ -7030,7 +7200,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.productCreate.__type-89.__type-90"
+													id="makeWASocket.__type.productCreate.__type-93.__type-94"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">create</span
@@ -7103,7 +7273,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.productDelete.__type-91.__type-92"
+													id="makeWASocket.__type.productDelete.__type-95.__type-96"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">productIds</span
@@ -7177,7 +7347,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.productUpdate.__type-93.__type-94"
+													id="makeWASocket.__type.productUpdate.__type-97.__type-98"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">productId</span>,
@@ -7259,7 +7429,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.profilePictureUrl.__type-95.__type-96"
+													id="makeWASocket.__type.profilePictureUrl.__type-99.__type-100"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span>,
@@ -7359,7 +7529,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.query.__type-97.__type-98"
+													id="makeWASocket.__type.query.__type-101.__type-102"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">node</span>,
@@ -7444,7 +7614,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.readMessages.__type-99.__type-100"
+													id="makeWASocket.__type.readMessages.__type-103.__type-104"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">keys</span
@@ -7520,7 +7690,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.refreshMediaConn.__type-101.__type-102"
+													id="makeWASocket.__type.refreshMediaConn.__type-105.__type-106"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">forceGet</span
@@ -7569,62 +7739,6 @@
 								</li>
 								<li class="tsd-parameter">
 									<h5>
-										<span class="tsd-kind-property">register</span
-										><span class="tsd-signature-symbol">: </span
-										><span class="tsd-signature-symbol">(</span
-										><span class="tsd-signature-symbol">(</span
-										><span class="tsd-kind-parameter">code</span
-										><span class="tsd-signature-symbol">)</span
-										><span class="tsd-signature-symbol"> =&gt; </span
-										><span class="tsd-signature-type">Promise</span
-										><span class="tsd-signature-symbol">&lt;</span
-										><span class="tsd-signature-type">ExistsResponse</span
-										><span class="tsd-signature-symbol">&gt;</span
-										><span class="tsd-signature-symbol">)</span>
-									</h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures">
-												<li
-													class="tsd-signature"
-													id="makeWASocket.__type.register.__type-103.__type-104"
-												>
-													<span class="tsd-signature-symbol">(</span
-													><span class="tsd-kind-parameter">code</span
-													><span class="tsd-signature-symbol">)</span
-													><span class="tsd-signature-symbol">: </span
-													><span class="tsd-signature-type">Promise</span
-													><span class="tsd-signature-symbol">&lt;</span
-													><span class="tsd-signature-type">ExistsResponse</span
-													><span class="tsd-signature-symbol">&gt;</span>
-												</li>
-												<li class="tsd-description">
-													<div class="tsd-parameters">
-														<h4 class="tsd-parameters-title">Parameters</h4>
-														<ul class="tsd-parameter-list">
-															<li>
-																<h5>
-																	<span class="tsd-kind-parameter">code</span>:
-																	<span class="tsd-signature-type">string</span>
-																</h5>
-															</li>
-														</ul>
-													</div>
-													<h4 class="tsd-returns-title">
-														Returns
-														<span class="tsd-signature-type">Promise</span
-														><span class="tsd-signature-symbol">&lt;</span
-														><span class="tsd-signature-type"
-															>ExistsResponse</span
-														><span class="tsd-signature-symbol">&gt;</span>
-													</h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-								<li class="tsd-parameter">
-									<h5>
 										<span class="tsd-kind-property">reject<wbr />Call</span
 										><span class="tsd-signature-symbol">: </span
 										><span class="tsd-signature-symbol">(</span
@@ -7644,7 +7758,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.rejectCall.__type-105.__type-106"
+													id="makeWASocket.__type.rejectCall.__type-107.__type-108"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">callId</span>,
@@ -7711,7 +7825,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.relayMessage.__type-107.__type-108"
+													id="makeWASocket.__type.relayMessage.__type-109.__type-110"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span>,
@@ -7794,7 +7908,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.removeChatLabel.__type-109.__type-110"
+													id="makeWASocket.__type.removeChatLabel.__type-111.__type-112"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span>,
@@ -7864,7 +7978,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.removeMessageLabel.__type-111.__type-112"
+													id="makeWASocket.__type.removeMessageLabel.__type-113.__type-114"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span>,
@@ -7941,7 +8055,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.removeProfilePicture.__type-113.__type-114"
+													id="makeWASocket.__type.removeProfilePicture.__type-115.__type-116"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span
@@ -8003,7 +8117,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.requestPairingCode.__type-115.__type-116"
+													id="makeWASocket.__type.requestPairingCode.__type-117.__type-118"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">phoneNumber</span
@@ -8063,7 +8177,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.requestPlaceholderResend.__type-117.__type-118"
+													id="makeWASocket.__type.requestPlaceholderResend.__type-119.__type-120"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">messageKey</span
@@ -8116,73 +8230,6 @@
 								<li class="tsd-parameter">
 									<h5>
 										<span class="tsd-kind-property"
-											>request<wbr />Registration<wbr />Code</span
-										><span class="tsd-signature-symbol">: </span
-										><span class="tsd-signature-symbol">(</span
-										><span class="tsd-signature-symbol">(</span
-										><span class="tsd-kind-parameter">registrationOptions</span
-										><span class="tsd-signature-symbol">?</span
-										><span class="tsd-signature-symbol">)</span
-										><span class="tsd-signature-symbol"> =&gt; </span
-										><span class="tsd-signature-type">Promise</span
-										><span class="tsd-signature-symbol">&lt;</span
-										><span class="tsd-signature-type">ExistsResponse</span
-										><span class="tsd-signature-symbol">&gt;</span
-										><span class="tsd-signature-symbol">)</span>
-									</h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures">
-												<li
-													class="tsd-signature"
-													id="makeWASocket.__type.requestRegistrationCode.__type-119.__type-120"
-												>
-													<span class="tsd-signature-symbol">(</span
-													><span class="tsd-kind-parameter"
-														>registrationOptions</span
-													><span class="tsd-signature-symbol">?</span
-													><span class="tsd-signature-symbol">)</span
-													><span class="tsd-signature-symbol">: </span
-													><span class="tsd-signature-type">Promise</span
-													><span class="tsd-signature-symbol">&lt;</span
-													><span class="tsd-signature-type">ExistsResponse</span
-													><span class="tsd-signature-symbol">&gt;</span>
-												</li>
-												<li class="tsd-description">
-													<div class="tsd-parameters">
-														<h4 class="tsd-parameters-title">Parameters</h4>
-														<ul class="tsd-parameter-list">
-															<li>
-																<h5>
-																	<code class="tsd-tag ts-flagOptional"
-																		>Optional</code
-																	>
-																	<span class="tsd-kind-parameter"
-																		>registrationOptions</span
-																	>:
-																	<span class="tsd-signature-type"
-																		>RegistrationOptions</span
-																	>
-																</h5>
-															</li>
-														</ul>
-													</div>
-													<h4 class="tsd-returns-title">
-														Returns
-														<span class="tsd-signature-type">Promise</span
-														><span class="tsd-signature-symbol">&lt;</span
-														><span class="tsd-signature-type"
-															>ExistsResponse</span
-														><span class="tsd-signature-symbol">&gt;</span>
-													</h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-								<li class="tsd-parameter">
-									<h5>
-										<span class="tsd-kind-property"
 											>resync<wbr />App<wbr />State</span
 										><span class="tsd-signature-symbol">: </span
 										><span class="tsd-signature-symbol">(</span
@@ -8215,9 +8262,6 @@
 													><span class="tsd-signature-symbol">&gt;</span>
 												</li>
 												<li class="tsd-description">
-													<div class="tsd-comment tsd-typography">
-														<p>buffers all events till the promise completes</p>
-													</div>
 													<div class="tsd-parameters">
 														<h4 class="tsd-parameters-title">Parameters</h4>
 														<ul class="tsd-parameter-list">
@@ -8266,7 +8310,6 @@
 														><span class="tsd-signature-type">void</span
 														><span class="tsd-signature-symbol">&gt;</span>
 													</h4>
-													<div class="tsd-comment tsd-typography"></div>
 												</li>
 											</ul>
 										</li>
@@ -8379,7 +8422,9 @@
 										><span class="tsd-signature-symbol">: </span
 										><span class="tsd-signature-symbol">(</span
 										><span class="tsd-signature-symbol">(</span
-										><span class="tsd-kind-parameter">__namedParameters</span
+										><span class="tsd-kind-parameter">__namedParameters</span>,
+										<span class="tsd-kind-parameter">errorCode</span
+										><span class="tsd-signature-symbol">?</span
 										><span class="tsd-signature-symbol">)</span
 										><span class="tsd-signature-symbol"> =&gt; </span
 										><span class="tsd-signature-type">Promise</span
@@ -8398,6 +8443,8 @@
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter"
 														>__namedParameters</span
+													>, <span class="tsd-kind-parameter">errorCode</span
+													><span class="tsd-signature-symbol">?</span
 													><span class="tsd-signature-symbol">)</span
 													><span class="tsd-signature-symbol">: </span
 													><span class="tsd-signature-type">Promise</span
@@ -8419,6 +8466,17 @@
 																		class="tsd-signature-type tsd-kind-type-alias"
 																		>BinaryNode</a
 																	>
+																</h5>
+															</li>
+															<li>
+																<h5>
+																	<code class="tsd-tag ts-flagOptional"
+																		>Optional</code
+																	>
+																	<span class="tsd-kind-parameter"
+																		>errorCode</span
+																	>:
+																	<span class="tsd-signature-type">number</span>
 																</h5>
 															</li>
 														</ul>
@@ -9515,6 +9573,66 @@
 								<li class="tsd-parameter">
 									<h5>
 										<span class="tsd-kind-property"
+											>update<wbr />Messages<wbr />Privacy</span
+										><span class="tsd-signature-symbol">: </span
+										><span class="tsd-signature-symbol">(</span
+										><span class="tsd-signature-symbol">(</span
+										><span class="tsd-kind-parameter">value</span
+										><span class="tsd-signature-symbol">)</span
+										><span class="tsd-signature-symbol"> =&gt; </span
+										><span class="tsd-signature-type">Promise</span
+										><span class="tsd-signature-symbol">&lt;</span
+										><span class="tsd-signature-type">void</span
+										><span class="tsd-signature-symbol">&gt;</span
+										><span class="tsd-signature-symbol">)</span>
+									</h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures">
+												<li
+													class="tsd-signature"
+													id="makeWASocket.__type.updateMessagesPrivacy.__type-157.__type-158"
+												>
+													<span class="tsd-signature-symbol">(</span
+													><span class="tsd-kind-parameter">value</span
+													><span class="tsd-signature-symbol">)</span
+													><span class="tsd-signature-symbol">: </span
+													><span class="tsd-signature-type">Promise</span
+													><span class="tsd-signature-symbol">&lt;</span
+													><span class="tsd-signature-type">void</span
+													><span class="tsd-signature-symbol">&gt;</span>
+												</li>
+												<li class="tsd-description">
+													<div class="tsd-parameters">
+														<h4 class="tsd-parameters-title">Parameters</h4>
+														<ul class="tsd-parameter-list">
+															<li>
+																<h5>
+																	<span class="tsd-kind-parameter">value</span>:
+																	<a
+																		href="../types/WAPrivacyMessagesValue.html"
+																		class="tsd-signature-type tsd-kind-type-alias"
+																		>WAPrivacyMessagesValue</a
+																	>
+																</h5>
+															</li>
+														</ul>
+													</div>
+													<h4 class="tsd-returns-title">
+														Returns
+														<span class="tsd-signature-type">Promise</span
+														><span class="tsd-signature-symbol">&lt;</span
+														><span class="tsd-signature-type">void</span
+														><span class="tsd-signature-symbol">&gt;</span>
+													</h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+								<li class="tsd-parameter">
+									<h5>
+										<span class="tsd-kind-property"
 											>update<wbr />Online<wbr />Privacy</span
 										><span class="tsd-signature-symbol">: </span
 										><span class="tsd-signature-symbol">(</span
@@ -9533,7 +9651,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.updateOnlinePrivacy.__type-157.__type-158"
+													id="makeWASocket.__type.updateOnlinePrivacy.__type-159.__type-160"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">value</span
@@ -9593,7 +9711,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.updateProfileName.__type-159.__type-160"
+													id="makeWASocket.__type.updateProfileName.__type-161.__type-162"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">name</span
@@ -9650,7 +9768,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.updateProfilePicture.__type-161.__type-162"
+													id="makeWASocket.__type.updateProfilePicture.__type-163.__type-164"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">jid</span>,
@@ -9724,7 +9842,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.updateProfilePicturePrivacy.__type-163.__type-164"
+													id="makeWASocket.__type.updateProfilePicturePrivacy.__type-165.__type-166"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">value</span
@@ -9784,7 +9902,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.updateProfileStatus.__type-165.__type-166"
+													id="makeWASocket.__type.updateProfileStatus.__type-167.__type-168"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">status</span
@@ -9845,7 +9963,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.updateReadReceiptsPrivacy.__type-167.__type-168"
+													id="makeWASocket.__type.updateReadReceiptsPrivacy.__type-169.__type-170"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">value</span
@@ -9905,7 +10023,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.updateStatusPrivacy.__type-169.__type-170"
+													id="makeWASocket.__type.updateStatusPrivacy.__type-171.__type-172"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">value</span
@@ -9966,7 +10084,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.uploadPreKeys.__type-171.__type-172"
+													id="makeWASocket.__type.uploadPreKeys.__type-173.__type-174"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">count</span
@@ -10032,7 +10150,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.uploadPreKeysToServerIfRequired.__type-173.__type-174"
+													id="makeWASocket.__type.uploadPreKeysToServerIfRequired.__type-175.__type-176"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-signature-symbol">)</span
@@ -10076,7 +10194,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.upsertMessage.__type-175.__type-176"
+													id="makeWASocket.__type.upsertMessage.__type-177.__type-178"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-signature-symbol">...</span
@@ -10089,9 +10207,6 @@
 													><span class="tsd-signature-symbol">&gt;</span>
 												</li>
 												<li class="tsd-description">
-													<div class="tsd-comment tsd-typography">
-														<p>buffers all events till the promise completes</p>
-													</div>
 													<div class="tsd-parameters">
 														<h4 class="tsd-parameters-title">Parameters</h4>
 														<ul class="tsd-parameter-list">
@@ -10126,7 +10241,6 @@
 														><span class="tsd-signature-type">void</span
 														><span class="tsd-signature-symbol">&gt;</span>
 													</h4>
-													<div class="tsd-comment tsd-typography"></div>
 												</li>
 											</ul>
 										</li>
@@ -10180,7 +10294,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.waitForConnectionUpdate.__type-177.__type-178"
+													id="makeWASocket.__type.waitForConnectionUpdate.__type-179.__type-180"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-kind-parameter">check</span>,
@@ -10212,10 +10326,14 @@
 																	><span class="tsd-signature-symbol">
 																		=&gt; </span
 																	><span class="tsd-signature-type"
+																		>Promise</span
+																	><span class="tsd-signature-symbol">&lt;</span
+																	><span class="tsd-signature-type"
 																		>undefined</span
 																	><span class="tsd-signature-symbol"> | </span
 																	><span class="tsd-signature-type"
 																		>boolean</span
+																	><span class="tsd-signature-symbol">&gt;</span
 																	><span class="tsd-signature-symbol">)</span>
 																</h5>
 																<ul class="tsd-parameters">
@@ -10231,11 +10349,17 @@
 																				><span class="tsd-signature-symbol"
 																					>: </span
 																				><span class="tsd-signature-type"
+																					>Promise</span
+																				><span class="tsd-signature-symbol"
+																					>&lt;</span
+																				><span class="tsd-signature-type"
 																					>undefined</span
 																				><span class="tsd-signature-symbol">
 																					| </span
 																				><span class="tsd-signature-type"
 																					>boolean</span
+																				><span class="tsd-signature-symbol"
+																					>&gt;</span
 																				>
 																			</li>
 																			<li class="tsd-description">
@@ -10269,11 +10393,17 @@
 																				<h4 class="tsd-returns-title">
 																					Returns
 																					<span class="tsd-signature-type"
+																						>Promise</span
+																					><span class="tsd-signature-symbol"
+																						>&lt;</span
+																					><span class="tsd-signature-type"
 																						>undefined</span
 																					><span class="tsd-signature-symbol">
 																						| </span
 																					><span class="tsd-signature-type"
 																						>boolean</span
+																					><span class="tsd-signature-symbol"
+																						>&gt;</span
 																					>
 																				</h4>
 																			</li>
@@ -10335,7 +10465,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.waitForMessage.__type-179.__type-180"
+													id="makeWASocket.__type.waitForMessage.__type-181.__type-182"
 												>
 													<span class="tsd-signature-symbol">&lt;</span
 													><span
@@ -10442,7 +10572,7 @@
 											<ul class="tsd-signatures">
 												<li
 													class="tsd-signature"
-													id="makeWASocket.__type.waitForSocketOpen.__type-181.__type-182"
+													id="makeWASocket.__type.waitForSocketOpen.__type-183.__type-184"
 												>
 													<span class="tsd-signature-symbol">(</span
 													><span class="tsd-signature-symbol">)</span
@@ -10469,7 +10599,7 @@
 									<h5>
 										<span class="tsd-kind-property">ws</span
 										><span class="tsd-signature-symbol">: </span
-										><span class="tsd-signature-type">any</span>
+										><span class="tsd-signature-type">WebSocketClient</span>
 									</h5>
 								</li>
 							</ul>
@@ -10478,8 +10608,8 @@
 									<li>
 										Defined in
 										<a
-											href="https://github.com/Ajayos/Whatsapp-api/blob/27d7f8f/src/Socket/index.ts#L6"
-											>Socket/index.ts:6</a
+											href="https://github.com/Ajayos/Whatsapp-api/blob/4516eec/src/Socket/index.ts#L6"
+											>src/Socket/index.ts:6</a
 										>
 									</li>
 								</ul>
@@ -10671,6 +10801,50 @@
 											></path>
 										</g></svg
 									><span>Binary<wbr />Info</span></a
+								>
+							</li>
+							<li>
+								<a href="../classes/USyncContactProtocol.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-128"></use></svg
+									><span>USync<wbr />Contact<wbr />Protocol</span></a
+								>
+							</li>
+							<li>
+								<a href="../classes/USyncDeviceProtocol.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-128"></use></svg
+									><span>USync<wbr />Device<wbr />Protocol</span></a
+								>
+							</li>
+							<li>
+								<a href="../classes/USyncDisappearingModeProtocol.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-128"></use></svg
+									><span
+										>USync<wbr />Disappearing<wbr />Mode<wbr />Protocol</span
+									></a
+								>
+							</li>
+							<li>
+								<a href="../classes/USyncQuery.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-128"></use></svg
+									><span>USync<wbr />Query</span></a
+								>
+							</li>
+							<li>
+								<a href="../classes/USyncStatusProtocol.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-128"></use></svg
+									><span>USync<wbr />Status<wbr />Protocol</span></a
+								>
+							</li>
+							<li>
+								<a href="../classes/USyncUser.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-128"></use></svg
+									><span>USync<wbr />User</span></a
 								>
 							</li>
 							<li>
@@ -10949,6 +11123,20 @@
 								>
 							</li>
 							<li>
+								<a href="../types/DeviceListData.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-4194304"></use></svg
+									><span>Device<wbr />List<wbr />Data</span></a
+								>
+							</li>
+							<li>
+								<a href="../types/DisappearingModeData.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-4194304"></use></svg
+									><span>Disappearing<wbr />Mode<wbr />Data</span></a
+								>
+							</li>
+							<li>
 								<a href="../types/DownloadableMessage.html"
 									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
 										<use href="#icon-4194304"></use></svg
@@ -11041,6 +11229,13 @@
 									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
 										<use href="#icon-4194304"></use></svg
 									><span>Jid<wbr />With<wbr />Device</span></a
+								>
+							</li>
+							<li>
+								<a href="../types/KeyIndexData.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-4194304"></use></svg
+									><span>Key<wbr />Index<wbr />Data</span></a
 								>
 							</li>
 							<li>
@@ -11204,6 +11399,13 @@
 								>
 							</li>
 							<li>
+								<a href="../types/ParsedDeviceInfo.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-4194304"></use></svg
+									><span>Parsed<wbr />Device<wbr />Info</span></a
+								>
+							</li>
+							<li>
 								<a href="../types/ParticipantAction.html"
 									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
 										<use href="#icon-4194304"></use></svg
@@ -11353,6 +11555,13 @@
 								>
 							</li>
 							<li>
+								<a href="../types/StatusData.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-4194304"></use></svg
+									><span>Status<wbr />Data</span></a
+								>
+							</li>
+							<li>
 								<a href="../types/TransactionCapabilityOptions.html"
 									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
 										<use href="#icon-4194304"></use></svg
@@ -11367,10 +11576,31 @@
 								>
 							</li>
 							<li>
+								<a href="../types/USyncQueryResult.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-4194304"></use></svg
+									><span>USync<wbr />Query<wbr />Result</span></a
+								>
+							</li>
+							<li>
+								<a href="../types/USyncQueryResultList.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-4194304"></use></svg
+									><span>USync<wbr />Query<wbr />Result<wbr />List</span></a
+								>
+							</li>
+							<li>
 								<a href="../types/UserFacingSocketConfig.html"
 									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
 										<use href="#icon-4194304"></use></svg
 									><span>User<wbr />Facing<wbr />Socket<wbr />Config</span></a
+								>
+							</li>
+							<li>
+								<a href="../types/Value.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-4194304"></use></svg
+									><span>Value</span></a
 								>
 							</li>
 							<li>
@@ -11458,6 +11688,20 @@
 								>
 							</li>
 							<li>
+								<a href="../types/WAMediaPayloadStream.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-4194304"></use></svg
+									><span>WAMedia<wbr />Payload<wbr />Stream</span></a
+								>
+							</li>
+							<li>
+								<a href="../types/WAMediaPayloadURL.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-4194304"></use></svg
+									><span>WAMedia<wbr />PayloadURL</span></a
+								>
+							</li>
+							<li>
 								<a href="../types/WAMediaUpload.html"
 									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
 										<use href="#icon-4194304"></use></svg
@@ -11539,6 +11783,13 @@
 									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
 										<use href="#icon-4194304"></use></svg
 									><span>WAPrivacy<wbr />Group<wbr />Add<wbr />Value</span></a
+								>
+							</li>
+							<li>
+								<a href="../types/WAPrivacyMessagesValue.html"
+									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
+										<use href="#icon-4194304"></use></svg
+									><span>WAPrivacy<wbr />Messages<wbr />Value</span></a
 								>
 							</li>
 							<li>
@@ -11760,45 +12011,17 @@
 								>
 							</li>
 							<li>
-								<a href="../variables/MOBILE_ENDPOINT.html"
+								<a href="../variables/MISSING_KEYS_ERROR_TEXT.html"
 									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
 										<use href="#icon-32"></use></svg
-									><span>MOBILE_<wbr />ENDPOINT</span></a
+									><span>MISSING_<wbr />KEYS_<wbr />ERROR_<wbr />TEXT</span></a
 								>
 							</li>
 							<li>
-								<a href="../variables/MOBILE_NOISE_HEADER.html"
+								<a href="../variables/NACK_REASONS.html"
 									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
 										<use href="#icon-32"></use></svg
-									><span>MOBILE_<wbr />NOISE_<wbr />HEADER</span></a
-								>
-							</li>
-							<li>
-								<a href="../variables/MOBILE_PORT.html"
-									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-										<use href="#icon-32"></use></svg
-									><span>MOBILE_<wbr />PORT</span></a
-								>
-							</li>
-							<li>
-								<a href="../variables/MOBILE_REGISTRATION_ENDPOINT.html"
-									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-										<use href="#icon-32"></use></svg
-									><span>MOBILE_<wbr />REGISTRATION_<wbr />ENDPOINT</span></a
-								>
-							</li>
-							<li>
-								<a href="../variables/MOBILE_TOKEN.html"
-									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-										<use href="#icon-32"></use></svg
-									><span>MOBILE_<wbr />TOKEN</span></a
-								>
-							</li>
-							<li>
-								<a href="../variables/MOBILE_USERAGENT.html"
-									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-										<use href="#icon-32"></use></svg
-									><span>MOBILE_<wbr />USERAGENT</span></a
+									><span>NACK_<wbr />REASONS</span></a
 								>
 							</li>
 							<li>
@@ -11832,27 +12055,6 @@
 								>
 							</li>
 							<li>
-								<a href="../variables/OFFICIAL_DEV_JID.html"
-									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-										<use href="#icon-32"></use></svg
-									><span>OFFICIAL_<wbr />DEV_<wbr />JID</span></a
-								>
-							</li>
-							<li>
-								<a href="../variables/OFFICIAL_USE_JID.html"
-									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-										<use href="#icon-32"></use></svg
-									><span>OFFICIAL_<wbr />USE_<wbr />JID</span></a
-								>
-							</li>
-							<li>
-								<a href="../variables/PHONENUMBER_MCC.html"
-									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-										<use href="#icon-32"></use></svg
-									><span>PHONENUMBER_<wbr />MCC</span></a
-								>
-							</li>
-							<li>
 								<a href="../variables/PHONE_CONNECTION_CB.html"
 									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
 										<use href="#icon-32"></use></svg
@@ -11867,24 +12069,10 @@
 								>
 							</li>
 							<li>
-								<a href="../variables/PROTOCOL_VERSION.html"
-									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-										<use href="#icon-32"></use></svg
-									><span>PROTOCOL_<wbr />VERSION</span></a
-								>
-							</li>
-							<li>
 								<a href="../variables/PSA_WID.html"
 									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
 										<use href="#icon-32"></use></svg
 									><span>PSA_<wbr />WID</span></a
-								>
-							</li>
-							<li>
-								<a href="../variables/REGISTRATION_PUBLIC_KEY.html"
-									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-										<use href="#icon-32"></use></svg
-									><span>REGISTRATION_<wbr />PUBLIC_<wbr />KEY</span></a
 								>
 							</li>
 							<li>
@@ -11913,13 +12101,6 @@
 									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
 										<use href="#icon-32"></use></svg
 									><span>UNAUTHORIZED_<wbr />CODES</span></a
-								>
-							</li>
-							<li>
-								<a href="../variables/URL_EXCLUDE_REGEX.html"
-									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-										<use href="#icon-32"></use></svg
-									><span>URL_<wbr />EXCLUDE_<wbr />REGEX</span></a
 								>
 							</li>
 							<li>
@@ -12409,15 +12590,6 @@
 								>
 							</li>
 							<li>
-								<a href="fetchLatestWaWebVersion.html"
-									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-										<use href="#icon-64"></use></svg
-									><span
-										>fetch<wbr />Latest<wbr />Wa<wbr />Web<wbr />Version</span
-									></a
-								>
-							</li>
-							<li>
 								<a href="generateForwardMessageContent.html"
 									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
 										<use href="#icon-64"></use></svg
@@ -12461,13 +12633,6 @@
 									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
 										<use href="#icon-64"></use></svg
 									><span>generate<wbr />MessageIDV2</span></a
-								>
-							</li>
-							<li>
-								<a href="generateMobileNode.html"
-									><svg class="tsd-kind-icon" viewBox="0 0 24 24">
-										<use href="#icon-64"></use></svg
-									><span>generate<wbr />Mobile<wbr />Node</span></a
 								>
 							</li>
 							<li>
