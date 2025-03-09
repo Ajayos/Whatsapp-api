@@ -13,15 +13,11 @@ exports.jidNormalizedUser =
 	exports.STORIES_JID =
 	exports.PSA_WID =
 	exports.SERVER_JID =
-	exports.OFFICIAL_USE_JID =
-	exports.OFFICIAL_DEV_JID =
 	exports.OFFICIAL_BIZ_JID =
 	exports.S_WHATSAPP_NET =
 		void 0;
 exports.S_WHATSAPP_NET = '@s.whatsapp.net';
 exports.OFFICIAL_BIZ_JID = '16505361212@c.us';
-exports.OFFICIAL_DEV_JID = '919188346721' + exports.S_WHATSAPP_NET;
-exports.OFFICIAL_USE_JID = '917510153501' + exports.S_WHATSAPP_NET;
 exports.SERVER_JID = 'server@c.us';
 exports.PSA_WID = '0@c.us';
 exports.STORIES_JID = 'status@broadcast';
@@ -39,7 +35,7 @@ const jidDecode = jid => {
 	const [userAgent, device] = userCombined.split(':');
 	const user = userAgent.split('_')[0];
 	return {
-		server,
+		server: server,
 		user,
 		domainType: server === 'lid' ? 1 : 0,
 		device: device ? +device : undefined,

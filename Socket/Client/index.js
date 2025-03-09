@@ -30,6 +30,5 @@ var __exportStar =
 				__createBinding(exports, m, p);
 	};
 Object.defineProperty(exports, '__esModule', { value: true });
-__exportStar(require('./abstract-socket-client'), exports);
-__exportStar(require('./mobile-socket-client'), exports);
-__exportStar(require('./web-socket-client'), exports);
+__exportStar(require('./types'), exports);
+__exportStar(require('./websocket'), exports);

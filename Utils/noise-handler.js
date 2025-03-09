@@ -2,9 +2,9 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.makeNoiseHandler = void 0;
 const boom_1 = require('@hapi/boom');
+const WAProto_1 = require('../../WAProto');
 const Base_1 = require('../Base');
-const Binary_1 = require('../Binary');
-const Proto_1 = require('../Proto');
+const WABinary_1 = require('../WABinary');
 const crypto_1 = require('./crypto');
 const generateIV = counter => {
 	const iv = new ArrayBuffer(12);
@@ -14,7 +14,6 @@ const generateIV = counter => {
 const makeNoiseHandler = ({
 	keyPair: { private: privateKey, public: publicKey },
 	NOISE_HEADER,
-	mobile,
 	logger,
 	routingInfo,
 }) => {
@@ -48,20 +47,23 @@ const makeNoiseHandler = ({
 		authenticate(ciphertext);
 		return result;
 	};
-	const localHKDF = data => {
-		const key = (0, crypto_1.hkdf)(Buffer.from(data), 64, { salt, info: '' });
+	const localHKDF = async data => {
+		const key = await (0, crypto_1.hkdf)(Buffer.from(data), 64, {
+			salt,
+			info: '',
+		});
 		return [key.slice(0, 32), key.slice(32)];
 	};
-	const mixIntoKey = data => {
-		const [write, read] = localHKDF(data);
+	const mixIntoKey = async data => {
+		const [write, read] = await localHKDF(data);
 		salt = write;
 		encKey = read;
 		decKey = read;
 		readCounter = 0;
 		writeCounter = 0;
 	};
-	const finishInit = () => {
-		const [write, read] = localHKDF(new Uint8Array(0));
+	const finishInit = async () => {
+		const [write, read] = await localHKDF(new Uint8Array(0));
 		encKey = write;
 		decKey = read;
 		hash = Buffer.from([]);
@@ -70,9 +72,7 @@ const makeNoiseHandler = ({
 		isFinished = true;
 	};
 	const data = Buffer.from(Base_1.NOISE_MODE);
-	let hash = Buffer.from(
-		data.byteLength === 32 ? data : (0, crypto_1.sha256)(data),
-	);
+	let hash = data.byteLength === 32 ? data : (0, crypto_1.sha256)(data);
 	let salt = hash;
 	let encKey = hash;
 	let decKey = hash;
@@ -89,29 +89,27 @@ const makeNoiseHandler = ({
 		authenticate,
 		mixIntoKey,
 		finishInit,
-		processHandshake: ({ serverHello }, noiseKey) => {
+		processHandshake: async ({ serverHello }, noiseKey) => {
 			authenticate(serverHello.ephemeral);
-			mixIntoKey(crypto_1.Curve.sharedKey(privateKey, serverHello.ephemeral));
+			await mixIntoKey(
+				crypto_1.Curve.sharedKey(privateKey, serverHello.ephemeral),
+			);
 			const decStaticContent = decrypt(serverHello.static);
-			mixIntoKey(crypto_1.Curve.sharedKey(privateKey, decStaticContent));
+			await mixIntoKey(crypto_1.Curve.sharedKey(privateKey, decStaticContent));
 			const certDecoded = decrypt(serverHello.payload);
-			if (mobile) {
-				Proto_1.proto.CertChain.NoiseCertificate.decode(certDecoded);
-			} else {
-				const { intermediate: certIntermediate } =
-					Proto_1.proto.CertChain.decode(certDecoded);
-				const { issuerSerial } =
-					Proto_1.proto.CertChain.NoiseCertificate.Details.decode(
-						certIntermediate.details,
-					);
-				if (issuerSerial !== Base_1.WA_CERT_DETAILS.SERIAL) {
-					throw new boom_1.Boom('certification match failed', {
-						statusCode: 400,
-					});
-				}
+			const { intermediate: certIntermediate } =
+				WAProto_1.proto.CertChain.decode(certDecoded);
+			const { issuerSerial } =
+				WAProto_1.proto.CertChain.NoiseCertificate.Details.decode(
+					certIntermediate.details,
+				);
+			if (issuerSerial !== Base_1.WA_CERT_DETAILS.SERIAL) {
+				throw new boom_1.Boom('certification match failed', {
+					statusCode: 400,
+				});
 			}
 			const keyEnc = encrypt(noiseKey.public);
-			mixIntoKey(
+			await mixIntoKey(
 				crypto_1.Curve.sharedKey(noiseKey.private, serverHello.ephemeral),
 			);
 			return keyEnc;
@@ -163,7 +161,7 @@ const makeNoiseHandler = ({
 				inBytes = inBytes.slice(size + 3);
 				if (isFinished) {
 					const result = decrypt(frame);
-					frame = await (0, Binary_1.decodeBinaryNode)(result);
+					frame = await (0, WABinary_1.decodeBinaryNode)(result);
 				}
 				logger.trace(
 					{

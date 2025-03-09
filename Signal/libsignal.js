@@ -46,21 +46,21 @@ var __importStar =
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.makeLibSignalRepository = void 0;
 const libsignal = __importStar(require('@ajayos/libsignal'));
-const Binary_1 = require('../Binary');
-const SignalGroup_1 = require('../SignalGroup');
+const WASignalGroup_1 = require('../../WASignalGroup');
 const Utils_1 = require('../Utils');
+const WABinary_1 = require('../WABinary');
 function makeLibSignalRepository(auth) {
 	const storage = signalStorage(auth);
 	return {
 		decryptGroupMessage({ group, authorJid, msg }) {
 			const senderName = jidToSignalSenderKeyName(group, authorJid);
-			const cipher = new SignalGroup_1.GroupCipher(storage, senderName);
+			const cipher = new WASignalGroup_1.GroupCipher(storage, senderName);
 			return cipher.decrypt(msg);
 		},
 		async processSenderKeyDistributionMessage({ item, authorJid }) {
-			const builder = new SignalGroup_1.GroupSessionBuilder(storage);
+			const builder = new WASignalGroup_1.GroupSessionBuilder(storage);
 			const senderName = jidToSignalSenderKeyName(item.groupId, authorJid);
-			const senderMsg = new SignalGroup_1.SenderKeyDistributionMessage(
+			const senderMsg = new WASignalGroup_1.SenderKeyDistributionMessage(
 				null,
 				null,
 				null,
@@ -73,7 +73,7 @@ function makeLibSignalRepository(auth) {
 			if (!senderKey) {
 				await storage.storeSenderKey(
 					senderName,
-					new SignalGroup_1.SenderKeyRecord(),
+					new WASignalGroup_1.SenderKeyRecord(),
 				);
 			}
 			await builder.process(senderName, senderMsg);
@@ -101,18 +101,18 @@ function makeLibSignalRepository(auth) {
 		},
 		async encryptGroupMessage({ group, meId, data }) {
 			const senderName = jidToSignalSenderKeyName(group, meId);
-			const builder = new SignalGroup_1.GroupSessionBuilder(storage);
+			const builder = new WASignalGroup_1.GroupSessionBuilder(storage);
 			const { [senderName]: senderKey } = await auth.keys.get('sender-key', [
 				senderName,
 			]);
 			if (!senderKey) {
 				await storage.storeSenderKey(
 					senderName,
-					new SignalGroup_1.SenderKeyRecord(),
+					new WASignalGroup_1.SenderKeyRecord(),
 				);
 			}
 			const senderKeyDistributionMessage = await builder.create(senderName);
-			const session = new SignalGroup_1.GroupCipher(storage, senderName);
+			const session = new WASignalGroup_1.GroupCipher(storage, senderName);
 			const ciphertext = await session.encrypt(data);
 			return {
 				ciphertext,
@@ -133,11 +133,11 @@ function makeLibSignalRepository(auth) {
 }
 exports.makeLibSignalRepository = makeLibSignalRepository;
 const jidToSignalProtocolAddress = jid => {
-	const { user, device } = (0, Binary_1.jidDecode)(jid);
+	const { user, device } = (0, WABinary_1.jidDecode)(jid);
 	return new libsignal.ProtocolAddress(user, device || 0);
 };
 const jidToSignalSenderKeyName = (group, user) => {
-	return new SignalGroup_1.SenderKeyName(
+	return new WASignalGroup_1.SenderKeyName(
 		group,
 		jidToSignalProtocolAddress(user),
 	).toString();
@@ -177,7 +177,7 @@ function signalStorage({ creds, keys }) {
 		loadSenderKey: async keyId => {
 			const { [keyId]: key } = await keys.get('sender-key', [keyId]);
 			if (key) {
-				return new SignalGroup_1.SenderKeyRecord(key);
+				return new WASignalGroup_1.SenderKeyRecord(key);
 			}
 		},
 		storeSenderKey: async (keyId, key) => {

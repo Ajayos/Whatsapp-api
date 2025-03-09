@@ -2,13 +2,31 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.decryptMessageNode =
 	exports.decodeMessageNode =
+	exports.NACK_REASONS =
+	exports.MISSING_KEYS_ERROR_TEXT =
 	exports.NO_MESSAGE_FOUND_ERROR_TEXT =
 		void 0;
 const boom_1 = require('@hapi/boom');
-const Binary_1 = require('../Binary');
-const Proto_1 = require('../Proto');
+const WAProto_1 = require('../../WAProto');
+const WABinary_1 = require('../WABinary');
 const generics_1 = require('./generics');
 exports.NO_MESSAGE_FOUND_ERROR_TEXT = 'Message absent from node';
+exports.MISSING_KEYS_ERROR_TEXT = 'Key used already or never filled';
+exports.NACK_REASONS = {
+	ParsingError: 487,
+	UnrecognizedStanza: 488,
+	UnrecognizedStanzaClass: 489,
+	UnrecognizedStanzaType: 490,
+	InvalidProtobuf: 491,
+	InvalidHostedCompanionStanza: 493,
+	MissingMessageSecret: 495,
+	SignalErrorOldCounter: 496,
+	MessageDeletedOnPeer: 499,
+	UnhandledError: 500,
+	UnsupportedAdminRevoke: 550,
+	UnsupportedLIDGroup: 551,
+	DBOperationFailed: 552,
+};
 /**
  * Decode the received node as a message.
  * @note this will only parse the message, not decrypt it
@@ -22,9 +40,9 @@ function decodeMessageNode(stanza, meId, meLid) {
 	const from = stanza.attrs.from;
 	const participant = stanza.attrs.participant;
 	const recipient = stanza.attrs.recipient;
-	const isMe = jid => (0, Binary_1.areJidsSameUser)(jid, meId);
-	const isMeLid = jid => (0, Binary_1.areJidsSameUser)(jid, meLid);
-	if ((0, Binary_1.isJidUser)(from)) {
+	const isMe = jid => (0, WABinary_1.areJidsSameUser)(jid, meId);
+	const isMeLid = jid => (0, WABinary_1.areJidsSameUser)(jid, meLid);
+	if ((0, WABinary_1.isJidUser)(from)) {
 		if (recipient) {
 			if (!isMe(from)) {
 				throw new boom_1.Boom('receipient present, but msg not from me', {
@@ -37,7 +55,7 @@ function decodeMessageNode(stanza, meId, meLid) {
 		}
 		msgType = 'chat';
 		author = from;
-	} else if ((0, Binary_1.isLidUser)(from)) {
+	} else if ((0, WABinary_1.isLidUser)(from)) {
 		if (recipient) {
 			if (!isMeLid(from)) {
 				throw new boom_1.Boom('receipient present, but msg not from me', {
@@ -50,33 +68,33 @@ function decodeMessageNode(stanza, meId, meLid) {
 		}
 		msgType = 'chat';
 		author = from;
-	} else if ((0, Binary_1.isJidGroup)(from)) {
+	} else if ((0, WABinary_1.isJidGroup)(from)) {
 		if (!participant) {
 			throw new boom_1.Boom('No participant in group message');
 		}
 		msgType = 'group';
 		author = participant;
 		chatId = from;
-	} else if ((0, Binary_1.isJidBroadcast)(from)) {
+	} else if ((0, WABinary_1.isJidBroadcast)(from)) {
 		if (!participant) {
 			throw new boom_1.Boom('No participant in group message');
 		}
 		const isParticipantMe = isMe(participant);
-		if ((0, Binary_1.isJidStatusBroadcast)(from)) {
+		if ((0, WABinary_1.isJidStatusBroadcast)(from)) {
 			msgType = isParticipantMe ? 'direct_peer_status' : 'other_status';
 		} else {
 			msgType = isParticipantMe ? 'peer_broadcast' : 'other_broadcast';
 		}
 		chatId = from;
 		author = participant;
-	} else if ((0, Binary_1.isJidNewsletter)(from)) {
+	} else if ((0, WABinary_1.isJidNewsletter)(from)) {
 		msgType = 'newsletter';
 		chatId = from;
 		author = from;
 	} else {
 		throw new boom_1.Boom('Unknown message type', { data: stanza });
 	}
-	const fromMe = ((0, Binary_1.isLidUser)(from) ? isMeLid : isMe)(
+	const fromMe = ((0, WABinary_1.isLidUser)(from) ? isMeLid : isMe)(
 		stanza.attrs.participant || stanza.attrs.from,
 	);
 	const pushname =
@@ -94,10 +112,10 @@ function decodeMessageNode(stanza, meId, meLid) {
 		key,
 		messageTimestamp: +stanza.attrs.t,
 		pushName: pushname,
-		broadcast: (0, Binary_1.isJidBroadcast)(from),
+		broadcast: (0, WABinary_1.isJidBroadcast)(from),
 	};
 	if (key.fromMe) {
-		fullMessage.status = Proto_1.proto.WebMessageInfo.Status.SERVER_ACK;
+		fullMessage.status = WAProto_1.proto.WebMessageInfo.Status.SERVER_ACK;
 	}
 	return {
 		fullMessage,
@@ -122,9 +140,10 @@ const decryptMessageNode = (stanza, meId, meLid, repository, logger) => {
 			if (Array.isArray(stanza.content)) {
 				for (const { tag, attrs, content } of stanza.content) {
 					if (tag === 'verified_name' && content instanceof Uint8Array) {
-						const cert = Proto_1.proto.VerifiedNameCertificate.decode(content);
+						const cert =
+							WAProto_1.proto.VerifiedNameCertificate.decode(content);
 						const details =
-							Proto_1.proto.VerifiedNameCertificate.Details.decode(
+							WAProto_1.proto.VerifiedNameCertificate.Details.decode(
 								cert.details,
 							);
 						fullMessage.verifiedBizName = details.verifiedName;
@@ -149,7 +168,9 @@ const decryptMessageNode = (stanza, meId, meLid, repository, logger) => {
 								break;
 							case 'pkmsg':
 							case 'msg':
-								const user = (0, Binary_1.isJidUser)(sender) ? sender : author;
+								const user = (0, WABinary_1.isJidUser)(sender)
+									? sender
+									: author;
 								msgBuffer = await repository.decryptMessage({
 									jid: user,
 									type: e2eType,
@@ -162,7 +183,7 @@ const decryptMessageNode = (stanza, meId, meLid, repository, logger) => {
 							default:
 								throw new Error(`Unknown e2e type: ${e2eType}`);
 						}
-						let msg = Proto_1.proto.Message.decode(
+						let msg = WAProto_1.proto.Message.decode(
 							e2eType !== 'plaintext'
 								? (0, generics_1.unpadRandomMax16)(msgBuffer)
 								: msgBuffer,
@@ -172,6 +193,7 @@ const decryptMessageNode = (stanza, meId, meLid, repository, logger) => {
 								? void 0
 								: _a.message) || msg;
 						if (msg.senderKeyDistributionMessage) {
+							//eslint-disable-next-line max-depth
 							try {
 								await repository.processSenderKeyDistributionMessage({
 									authorJid: author,
@@ -195,7 +217,7 @@ const decryptMessageNode = (stanza, meId, meLid, repository, logger) => {
 							'failed to decrypt message',
 						);
 						fullMessage.messageStubType =
-							Proto_1.proto.WebMessageInfo.StubType.CIPHERTEXT;
+							WAProto_1.proto.WebMessageInfo.StubType.CIPHERTEXT;
 						fullMessage.messageStubParameters = [err.message];
 					}
 				}
@@ -203,7 +225,7 @@ const decryptMessageNode = (stanza, meId, meLid, repository, logger) => {
 			// if nothing was found to decrypt
 			if (!decryptables) {
 				fullMessage.messageStubType =
-					Proto_1.proto.WebMessageInfo.StubType.CIPHERTEXT;
+					WAProto_1.proto.WebMessageInfo.StubType.CIPHERTEXT;
 				fullMessage.messageStubParameters = [
 					exports.NO_MESSAGE_FOUND_ERROR_TEXT,
 				];

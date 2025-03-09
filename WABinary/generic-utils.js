@@ -12,7 +12,7 @@ exports.binaryNodeToString =
 	exports.getBinaryNodeChildren =
 		void 0;
 const boom_1 = require('@hapi/boom');
-const Proto_1 = require('../Proto');
+const WAProto_1 = require('../../WAProto');
 // some extra useful utilities
 const getBinaryNodeChildren = (node, childTag) => {
 	if (Array.isArray(node === null || node === void 0 ? void 0 : node.content)) {
@@ -92,7 +92,7 @@ const getBinaryNodeMessages = ({ content }) => {
 	if (Array.isArray(content)) {
 		for (const item of content) {
 			if (item.tag === 'message') {
-				msgs.push(Proto_1.proto.WebMessageInfo.decode(item.content));
+				msgs.push(WAProto_1.proto.WebMessageInfo.decode(item.content));
 			}
 		}
 	}

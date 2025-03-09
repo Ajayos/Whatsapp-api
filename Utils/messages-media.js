@@ -82,9 +82,9 @@ const fs_1 = require('fs');
 const os_1 = require('os');
 const path_1 = require('path');
 const stream_1 = require('stream');
+const WAProto_1 = require('../../WAProto');
 const Base_1 = require('../Base');
-const Binary_1 = require('../Binary');
-const Proto_1 = require('../Proto');
+const WABinary_1 = require('../WABinary');
 const crypto_1 = require('./crypto');
 const generics_1 = require('./generics');
 const getTmpFilesDirectory = () => (0, os_1.tmpdir)();
@@ -102,9 +102,8 @@ const getImageProcessingLibrary = async () => {
 	if (sharp) {
 		return { sharp };
 	}
-	// @ts-ignore
-	const jimp =
-		(_jimp === null || _jimp === void 0 ? void 0 : _jimp.default) || _jimp;
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const jimp = _jimp;
 	if (jimp) {
 		return { jimp };
 	}
@@ -116,7 +115,7 @@ const hkdfInfoKey = type => {
 };
 exports.hkdfInfoKey = hkdfInfoKey;
 /** generates all the keys required to encrypt/decrypt & sign a media message */
-function getMediaKeys(buffer, mediaType) {
+async function getMediaKeys(buffer, mediaType) {
 	if (!buffer) {
 		throw new boom_1.Boom('Cannot derive from empty media key');
 	}
@@ -124,7 +123,7 @@ function getMediaKeys(buffer, mediaType) {
 		buffer = Buffer.from(buffer.replace('data:;base64,', ''), 'base64');
 	}
 	// expand using HKDF to 112 bytes, also pass in the relevant app info
-	const expandedMediaKey = (0, crypto_1.hkdf)(buffer, 112, {
+	const expandedMediaKey = await (0, crypto_1.hkdf)(buffer, 112, {
 		info: (0, exports.hkdfInfoKey)(mediaType),
 	});
 	return {
@@ -142,13 +141,12 @@ const extractVideoThumb = async (path, destPath, time, size) =>
 			if (err) {
 				reject(err);
 			} else {
-				// @ts-ignore
 				resolve();
 			}
 		});
 	});
 const extractImageThumb = async (bufferOrFilePath, width = 32) => {
-	var _a, _b;
+	var _a;
 	if (bufferOrFilePath instanceof stream_1.Readable) {
 		bufferOrFilePath = await (0, exports.toBuffer)(bufferOrFilePath);
 	}
@@ -169,25 +167,6 @@ const extractImageThumb = async (bufferOrFilePath, width = 32) => {
 				height: dimensions.height,
 			},
 		};
-	} else if (
-		'jimp' in lib &&
-		typeof ((_b = lib.jimp) === null || _b === void 0 ? void 0 : _b.read) ===
-			'function'
-	) {
-		const { read, MIME_JPEG, RESIZE_BILINEAR, AUTO } = lib.jimp;
-		const jimp = await read(bufferOrFilePath);
-		const dimensions = {
-			width: jimp.getWidth(),
-			height: jimp.getHeight(),
-		};
-		const buffer = await jimp
-			.quality(50)
-			.resize(width, AUTO, RESIZE_BILINEAR)
-			.getBufferAsync(MIME_JPEG);
-		return {
-			buffer,
-			original: dimensions,
-		};
 	} else {
 		throw new boom_1.Boom('No image processing library available');
 	}
@@ -199,7 +178,7 @@ const encodeBase64EncodedStringForUpload = b64 =>
 	);
 exports.encodeBase64EncodedStringForUpload = encodeBase64EncodedStringForUpload;
 const generateProfilePicture = async mediaUpload => {
-	var _a, _b;
+	var _a;
 	let bufferOrFilePath;
 	if (Buffer.isBuffer(mediaUpload)) {
 		bufferOrFilePath = mediaUpload;
@@ -223,19 +202,6 @@ const generateProfilePicture = async mediaUpload => {
 				quality: 50,
 			})
 			.toBuffer();
-	} else if (
-		'jimp' in lib &&
-		typeof ((_b = lib.jimp) === null || _b === void 0 ? void 0 : _b.read) ===
-			'function'
-	) {
-		const { read, MIME_JPEG, RESIZE_BILINEAR } = lib.jimp;
-		const jimp = await read(bufferOrFilePath);
-		const min = Math.min(jimp.getWidth(), jimp.getHeight());
-		const cropped = jimp.crop(0, 0, min, min);
-		img = cropped
-			.quality(50)
-			.resize(640, 640, RESIZE_BILINEAR)
-			.getBufferAsync(MIME_JPEG);
 	} else {
 		throw new boom_1.Boom('No image processing library available');
 	}
@@ -282,11 +248,7 @@ exports.getAudioDuration = getAudioDuration;
  */
 async function getAudioWaveform(buffer, logger) {
 	try {
-		// @ts-ignore
-		const audioDecode = buffer =>
-			import('audio-decode').then(({ default: audioDecode }) =>
-				audioDecode(buffer),
-			);
+		const { default: decoder } = await eval("import('audio-decode')");
 		let audioData;
 		if (Buffer.isBuffer(buffer)) {
 			audioData = buffer;
@@ -296,7 +258,7 @@ async function getAudioWaveform(buffer, logger) {
 		} else {
 			audioData = await (0, exports.toBuffer)(buffer);
 		}
-		const audioBuffer = await audioDecode(audioData);
+		const audioBuffer = await decoder(audioData);
 		const rawData = audioBuffer.getChannelData(0); // We only need to work with one channel of data
 		const samples = 64; // Number of samples we want to have in our final data set
 		const blockSize = Math.floor(rawData.length / samples); // the number of samples in each subdivision
@@ -416,13 +378,13 @@ const encryptedStream = async (
 		? void 0
 		: logger.debug('fetched media stream');
 	const mediaKey = Crypto.randomBytes(32);
-	const { cipherKey, iv, macKey } = getMediaKeys(mediaKey, mediaType);
+	const { cipherKey, iv, macKey } = await getMediaKeys(mediaKey, mediaType);
 	const encWriteStream = new stream_1.Readable({ read: () => {} });
 	let bodyPath;
 	let writeStream;
 	let didSaveToTmpPath = false;
 	if (type === 'file') {
-		bodyPath = media.url;
+		bodyPath = media.url.toString();
 	} else if (saveOriginalFileIfRequired) {
 		bodyPath = (0, path_1.join)(
 			getTmpFilesDirectory(),
@@ -452,10 +414,8 @@ const encryptedStream = async (
 				);
 			}
 			sha256Plain = sha256Plain.update(data);
-			if (writeStream) {
-				if (!writeStream.write(data)) {
-					await (0, events_1.once)(writeStream, 'drain');
-				}
+			if (writeStream && !writeStream.write(data)) {
+				await (0, events_1.once)(writeStream, 'drain');
 			}
 			onChunk(aes.update(data));
 		}
@@ -517,13 +477,13 @@ const toSmallestChunkSize = num => {
 };
 const getUrlFromDirectPath = directPath => `https://${DEF_HOST}${directPath}`;
 exports.getUrlFromDirectPath = getUrlFromDirectPath;
-const downloadContentFromMessage = (
+const downloadContentFromMessage = async (
 	{ mediaKey, directPath, url },
 	type,
 	opts = {},
 ) => {
 	const downloadUrl = url || (0, exports.getUrlFromDirectPath)(directPath);
-	const keys = getMediaKeys(mediaKey, type);
+	const keys = await getMediaKeys(mediaKey, type);
 	return (0, exports.downloadEncryptedContent)(downloadUrl, keys, opts);
 };
 exports.downloadContentFromMessage = downloadContentFromMessage;
@@ -659,11 +619,11 @@ const getWAUploadToServer = (
 			logger.debug(`uploading to "${hostname}"`);
 			const auth = encodeURIComponent(uploadInfo.auth); // the auth token
 			const url = `https://${hostname}${Base_1.MEDIA_PATH_MAP[mediaType]}/${fileEncSha256B64}?auth=${auth}&token=${fileEncSha256B64}`;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			let result;
 			try {
 				const body = await axios_1.default.post(url, stream, {
 					...options,
-					// @ts-ignore
 					headers: {
 						...(options.headers || {}),
 						'Content-Type': 'application/octet-stream',
@@ -722,11 +682,11 @@ const getMediaRetryKey = mediaKey => {
 /**
  * Generate a binary node that will request the phone to re-upload the media & return the newly uploaded URL
  */
-const encryptMediaRetryRequest = (key, mediaKey, meId) => {
+const encryptMediaRetryRequest = async (key, mediaKey, meId) => {
 	const recp = { stanzaId: key.id };
-	const recpBuffer = Proto_1.proto.ServerErrorReceipt.encode(recp).finish();
+	const recpBuffer = WAProto_1.proto.ServerErrorReceipt.encode(recp).finish();
 	const iv = Crypto.randomBytes(12);
-	const retryKey = getMediaRetryKey(mediaKey);
+	const retryKey = await getMediaRetryKey(mediaKey);
 	const ciphertext = (0, crypto_1.aesEncryptGCM)(
 		recpBuffer,
 		retryKey,
@@ -737,7 +697,7 @@ const encryptMediaRetryRequest = (key, mediaKey, meId) => {
 		tag: 'receipt',
 		attrs: {
 			id: key.id,
-			to: (0, Binary_1.jidNormalizedUser)(meId),
+			to: (0, WABinary_1.jidNormalizedUser)(meId),
 			type: 'server-error',
 		},
 		content: [
@@ -767,7 +727,7 @@ const encryptMediaRetryRequest = (key, mediaKey, meId) => {
 };
 exports.encryptMediaRetryRequest = encryptMediaRetryRequest;
 const decodeMediaRetryNode = node => {
-	const rmrNode = (0, Binary_1.getBinaryNodeChild)(node, 'rmr');
+	const rmrNode = (0, WABinary_1.getBinaryNodeChild)(node, 'rmr');
 	const event = {
 		key: {
 			id: node.attrs.id,
@@ -776,7 +736,7 @@ const decodeMediaRetryNode = node => {
 			participant: rmrNode.attrs.participant,
 		},
 	};
-	const errorNode = (0, Binary_1.getBinaryNodeChild)(node, 'error');
+	const errorNode = (0, WABinary_1.getBinaryNodeChild)(node, 'error');
 	if (errorNode) {
 		const errorCode = +errorNode.attrs.code;
 		event.error = new boom_1.Boom(`Failed to re-upload media (${errorCode})`, {
@@ -784,12 +744,15 @@ const decodeMediaRetryNode = node => {
 			statusCode: (0, exports.getStatusCodeForMediaRetry)(errorCode),
 		});
 	} else {
-		const encryptedInfoNode = (0, Binary_1.getBinaryNodeChild)(node, 'encrypt');
-		const ciphertext = (0, Binary_1.getBinaryNodeChildBuffer)(
+		const encryptedInfoNode = (0, WABinary_1.getBinaryNodeChild)(
+			node,
+			'encrypt',
+		);
+		const ciphertext = (0, WABinary_1.getBinaryNodeChildBuffer)(
 			encryptedInfoNode,
 			'enc_p',
 		);
-		const iv = (0, Binary_1.getBinaryNodeChildBuffer)(
+		const iv = (0, WABinary_1.getBinaryNodeChildBuffer)(
 			encryptedInfoNode,
 			'enc_iv',
 		);
@@ -807,26 +770,22 @@ const decodeMediaRetryNode = node => {
 	return event;
 };
 exports.decodeMediaRetryNode = decodeMediaRetryNode;
-const decryptMediaRetryData = ({ ciphertext, iv }, mediaKey, msgId) => {
-	const retryKey = getMediaRetryKey(mediaKey);
+const decryptMediaRetryData = async ({ ciphertext, iv }, mediaKey, msgId) => {
+	const retryKey = await getMediaRetryKey(mediaKey);
 	const plaintext = (0, crypto_1.aesDecryptGCM)(
 		ciphertext,
 		retryKey,
 		iv,
 		Buffer.from(msgId),
 	);
-	return Proto_1.proto.MediaRetryNotification.decode(plaintext);
+	return WAProto_1.proto.MediaRetryNotification.decode(plaintext);
 };
 exports.decryptMediaRetryData = decryptMediaRetryData;
 const getStatusCodeForMediaRetry = code => MEDIA_RETRY_STATUS_MAP[code];
 exports.getStatusCodeForMediaRetry = getStatusCodeForMediaRetry;
 const MEDIA_RETRY_STATUS_MAP = {
-	[Proto_1.proto.MediaRetryNotification.ResultType.SUCCESS]: 200,
-	[Proto_1.proto.MediaRetryNotification.ResultType.DECRYPTION_ERROR]: 412,
-	[Proto_1.proto.MediaRetryNotification.ResultType.NOT_FOUND]: 404,
-	[Proto_1.proto.MediaRetryNotification.ResultType.GENERAL_ERROR]: 418,
+	[WAProto_1.proto.MediaRetryNotification.ResultType.SUCCESS]: 200,
+	[WAProto_1.proto.MediaRetryNotification.ResultType.DECRYPTION_ERROR]: 412,
+	[WAProto_1.proto.MediaRetryNotification.ResultType.NOT_FOUND]: 404,
+	[WAProto_1.proto.MediaRetryNotification.ResultType.GENERAL_ERROR]: 418,
 };
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function __importStar(arg0) {
-	throw new Error('Function not implemented.');
-}

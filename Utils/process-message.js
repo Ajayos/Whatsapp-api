@@ -6,10 +6,10 @@ exports.decryptPollVote =
 	exports.isRealMessage =
 	exports.cleanMessage =
 		void 0;
-const Binary_1 = require('../Binary');
-const Proto_1 = require('../Proto');
+const WAProto_1 = require('../../WAProto');
 const Types_1 = require('../Types');
 const messages_1 = require('../Utils/messages');
+const WABinary_1 = require('../WABinary');
 const crypto_1 = require('./crypto');
 const generics_1 = require('./generics');
 const history_1 = require('./history');
@@ -25,11 +25,11 @@ const REAL_MSG_REQ_ME_STUB_TYPES = new Set([
 /** Cleans a received message to further processing */
 const cleanMessage = (message, meId) => {
 	// ensure remoteJid and participant doesn't have device or agent in it
-	message.key.remoteJid = (0, Binary_1.jidNormalizedUser)(
+	message.key.remoteJid = (0, WABinary_1.jidNormalizedUser)(
 		message.key.remoteJid,
 	);
 	message.key.participant = message.key.participant
-		? (0, Binary_1.jidNormalizedUser)(message.key.participant)
+		? (0, WABinary_1.jidNormalizedUser)(message.key.participant)
 		: undefined;
 	const content = (0, messages_1.normalizeMessageContent)(message.message);
 	// if the message has a reaction, ensure fromMe & remoteJid are from our perspective
@@ -50,7 +50,7 @@ const cleanMessage = (message, meId) => {
 			// if the sender believed the message being reacted to is not from them
 			// we've to correct the key to be from them, or some other participant
 			msgKey.fromMe = !msgKey.fromMe
-				? (0, Binary_1.areJidsSameUser)(
+				? (0, WABinary_1.areJidsSameUser)(
 						msgKey.participant || msgKey.remoteJid,
 						meId,
 					)
@@ -77,7 +77,7 @@ const isRealMessage = (message, meId) => {
 			(REAL_MSG_REQ_ME_STUB_TYPES.has(message.messageStubType) &&
 				((_a = message.messageStubParameters) === null || _a === void 0
 					? void 0
-					: _a.some(p => (0, Binary_1.areJidsSameUser)(meId, p))))) &&
+					: _a.some(p => (0, WABinary_1.areJidsSameUser)(meId, p))))) &&
 		hasSomeContent &&
 		!(normalizedContent === null || normalizedContent === void 0
 			? void 0
@@ -100,8 +100,8 @@ exports.shouldIncrementChatUnread = shouldIncrementChatUnread;
  */
 const getChatId = ({ remoteJid, participant, fromMe }) => {
 	if (
-		(0, Binary_1.isJidBroadcast)(remoteJid) &&
-		!(0, Binary_1.isJidStatusBroadcast)(remoteJid) &&
+		(0, WABinary_1.isJidBroadcast)(remoteJid) &&
+		!(0, WABinary_1.isJidStatusBroadcast)(remoteJid) &&
 		!fromMe
 	) {
 		return participant;
@@ -130,7 +130,7 @@ function decryptPollVote(
 	const decKey = (0, crypto_1.hmacSign)(sign, key0, 'sha256');
 	const aad = toBinary(`${pollMsgId}\u0000${voterJid}`);
 	const decrypted = (0, crypto_1.aesDecryptGCM)(encPayload, decKey, encIv, aad);
-	return Proto_1.proto.Message.PollVoteMessage.decode(decrypted);
+	return WAProto_1.proto.Message.PollVoteMessage.decode(decrypted);
 	function toBinary(txt) {
 		return Buffer.from(txt);
 	}
@@ -149,14 +149,15 @@ const processMessage = async (
 		getMessage,
 	},
 ) => {
-	var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
+	var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
 	const meId = creds.me.id;
 	const { accountSettings } = creds;
 	const chat = {
-		id: (0, Binary_1.jidNormalizedUser)((0, exports.getChatId)(message.key)),
+		id: (0, WABinary_1.jidNormalizedUser)((0, exports.getChatId)(message.key)),
 	};
 	const isRealMsg = (0, exports.isRealMessage)(message, meId);
 	if (isRealMsg) {
+		chat.messages = [{ message }];
 		chat.conversationTimestamp = (0, generics_1.toNumber)(
 			message.messageTimestamp,
 		);
@@ -190,7 +191,8 @@ const processMessage = async (
 		content === null || content === void 0 ? void 0 : content.protocolMessage;
 	if (protocolMsg) {
 		switch (protocolMsg.type) {
-			case Proto_1.proto.Message.ProtocolMessage.Type.HISTORY_SYNC_NOTIFICATION:
+			case WAProto_1.proto.Message.ProtocolMessage.Type
+				.HISTORY_SYNC_NOTIFICATION:
 				const histNotification = protocolMsg.historySyncNotification;
 				const process = shouldProcessHistoryMsg;
 				const isLatest = !((_c = creds.processedHistoryMessages) === null ||
@@ -211,7 +213,7 @@ const processMessage = async (
 				if (process) {
 					if (
 						histNotification.syncType !==
-						Proto_1.proto.HistorySync.HistorySyncType.ON_DEMAND
+						WAProto_1.proto.HistorySync.HistorySyncType.ON_DEMAND
 					) {
 						ev.emit('creds.update', {
 							processedHistoryMessages: [
@@ -232,14 +234,15 @@ const processMessage = async (
 						...data,
 						isLatest:
 							histNotification.syncType !==
-							Proto_1.proto.HistorySync.HistorySyncType.ON_DEMAND
+							WAProto_1.proto.HistorySync.HistorySyncType.ON_DEMAND
 								? isLatest
 								: undefined,
 						peerDataRequestSessionId: histNotification.peerDataRequestSessionId,
 					});
 				}
 				break;
-			case Proto_1.proto.Message.ProtocolMessage.Type.APP_STATE_SYNC_KEY_SHARE:
+			case WAProto_1.proto.Message.ProtocolMessage.Type
+				.APP_STATE_SYNC_KEY_SHARE:
 				const keys = protocolMsg.appStateSyncKeyShare.keys;
 				if (keys === null || keys === void 0 ? void 0 : keys.length) {
 					let newAppStateSyncKeyId = '';
@@ -267,7 +270,7 @@ const processMessage = async (
 						: logger.info({ protocolMsg }, 'recv app state sync with 0 keys');
 				}
 				break;
-			case Proto_1.proto.Message.ProtocolMessage.Type.REVOKE:
+			case WAProto_1.proto.Message.ProtocolMessage.Type.REVOKE:
 				ev.emit('messages.update', [
 					{
 						key: {
@@ -282,7 +285,7 @@ const processMessage = async (
 					},
 				]);
 				break;
-			case Proto_1.proto.Message.ProtocolMessage.Type.EPHEMERAL_SETTING:
+			case WAProto_1.proto.Message.ProtocolMessage.Type.EPHEMERAL_SETTING:
 				Object.assign(chat, {
 					ephemeralSettingTimestamp: (0, generics_1.toNumber)(
 						message.messageTimestamp,
@@ -290,7 +293,7 @@ const processMessage = async (
 					ephemeralExpiration: protocolMsg.ephemeralExpiration || null,
 				});
 				break;
-			case Proto_1.proto.Message.ProtocolMessage.Type
+			case WAProto_1.proto.Message.ProtocolMessage.Type
 				.PEER_DATA_OPERATION_REQUEST_RESPONSE_MESSAGE:
 				const response = protocolMsg.peerDataOperationRequestResponseMessage;
 				if (response) {
@@ -301,8 +304,9 @@ const processMessage = async (
 					const { peerDataOperationResult } = response;
 					for (const result of peerDataOperationResult) {
 						const { placeholderMessageResendResponse: retryResponse } = result;
+						//eslint-disable-next-line max-depth
 						if (retryResponse) {
-							const webMessageInfo = Proto_1.proto.WebMessageInfo.decode(
+							const webMessageInfo = WAProto_1.proto.WebMessageInfo.decode(
 								retryResponse.webMessageInfoBytes,
 							);
 							// wait till another upsert event is available, don't want it to be part of the PDO response message
@@ -316,6 +320,31 @@ const processMessage = async (
 						}
 					}
 				}
+			case WAProto_1.proto.Message.ProtocolMessage.Type.MESSAGE_EDIT:
+				ev.emit('messages.update', [
+					{
+						// flip the sender / fromMe properties because they're in the perspective of the sender
+						key: {
+							...message.key,
+							id:
+								(_d = protocolMsg.key) === null || _d === void 0
+									? void 0
+									: _d.id,
+						},
+						update: {
+							message: {
+								editedMessage: {
+									message: protocolMsg.editedMessage,
+								},
+							},
+							messageTimestamp: protocolMsg.timestampMs
+								? Math.floor(
+										(0, generics_1.toNumber)(protocolMsg.timestampMs) / 1000,
+									)
+								: message.messageTimestamp,
+						},
+					},
+				]);
 				break;
 		}
 	} else if (
@@ -329,14 +358,14 @@ const processMessage = async (
 			{
 				reaction,
 				key:
-					(_d = content.reactionMessage) === null || _d === void 0
+					(_e = content.reactionMessage) === null || _e === void 0
 						? void 0
-						: _d.key,
+						: _e.key,
 			},
 		]);
 	} else if (message.messageStubType) {
 		const jid =
-			(_e = message.key) === null || _e === void 0 ? void 0 : _e.remoteJid;
+			(_f = message.key) === null || _f === void 0 ? void 0 : _f.remoteJid;
 		//let actor = whatsappID (message.participant)
 		let participants;
 		const emitParticipantsUpdate = action =>
@@ -369,7 +398,7 @@ const processMessage = async (
 			});
 		};
 		const participantsIncludesMe = () =>
-			participants.find(jid => (0, Binary_1.areJidsSameUser)(meId, jid));
+			participants.find(jid => (0, WABinary_1.areJidsSameUser)(meId, jid));
 		switch (message.messageStubType) {
 			case Types_1.WAMessageStubType.GROUP_PARTICIPANT_CHANGE_NUMBER:
 				participants = message.messageStubParameters || [];
@@ -403,73 +432,73 @@ const processMessage = async (
 				break;
 			case Types_1.WAMessageStubType.GROUP_CHANGE_ANNOUNCE:
 				const announceValue =
-					(_f = message.messageStubParameters) === null || _f === void 0
+					(_g = message.messageStubParameters) === null || _g === void 0
 						? void 0
-						: _f[0];
+						: _g[0];
 				emitGroupUpdate({
 					announce: announceValue === 'true' || announceValue === 'on',
 				});
 				break;
 			case Types_1.WAMessageStubType.GROUP_CHANGE_RESTRICT:
 				const restrictValue =
-					(_g = message.messageStubParameters) === null || _g === void 0
+					(_h = message.messageStubParameters) === null || _h === void 0
 						? void 0
-						: _g[0];
+						: _h[0];
 				emitGroupUpdate({
 					restrict: restrictValue === 'true' || restrictValue === 'on',
 				});
 				break;
 			case Types_1.WAMessageStubType.GROUP_CHANGE_SUBJECT:
 				const name =
-					(_h = message.messageStubParameters) === null || _h === void 0
+					(_j = message.messageStubParameters) === null || _j === void 0
 						? void 0
-						: _h[0];
+						: _j[0];
 				chat.name = name;
 				emitGroupUpdate({ subject: name });
 				break;
 			case Types_1.WAMessageStubType.GROUP_CHANGE_DESCRIPTION:
 				const description =
-					(_j = message.messageStubParameters) === null || _j === void 0
+					(_k = message.messageStubParameters) === null || _k === void 0
 						? void 0
-						: _j[0];
+						: _k[0];
 				chat.description = description;
 				emitGroupUpdate({ desc: description });
 				break;
 			case Types_1.WAMessageStubType.GROUP_CHANGE_INVITE_LINK:
 				const code =
-					(_k = message.messageStubParameters) === null || _k === void 0
+					(_l = message.messageStubParameters) === null || _l === void 0
 						? void 0
-						: _k[0];
+						: _l[0];
 				emitGroupUpdate({ inviteCode: code });
 				break;
 			case Types_1.WAMessageStubType.GROUP_MEMBER_ADD_MODE:
 				const memberAddValue =
-					(_l = message.messageStubParameters) === null || _l === void 0
+					(_m = message.messageStubParameters) === null || _m === void 0
 						? void 0
-						: _l[0];
+						: _m[0];
 				emitGroupUpdate({ memberAddMode: memberAddValue === 'all_member_add' });
 				break;
 			case Types_1.WAMessageStubType.GROUP_MEMBERSHIP_JOIN_APPROVAL_MODE:
 				const approvalMode =
-					(_m = message.messageStubParameters) === null || _m === void 0
+					(_o = message.messageStubParameters) === null || _o === void 0
 						? void 0
-						: _m[0];
+						: _o[0];
 				emitGroupUpdate({ joinApprovalMode: approvalMode === 'on' });
 				break;
 			case Types_1.WAMessageStubType
 				.GROUP_MEMBERSHIP_JOIN_APPROVAL_REQUEST_NON_ADMIN_ADD:
 				const participant =
-					(_o = message.messageStubParameters) === null || _o === void 0
-						? void 0
-						: _o[0];
-				const action =
 					(_p = message.messageStubParameters) === null || _p === void 0
 						? void 0
-						: _p[1];
-				const method =
+						: _p[0];
+				const action =
 					(_q = message.messageStubParameters) === null || _q === void 0
 						? void 0
-						: _q[2];
+						: _q[1];
+				const method =
+					(_r = message.messageStubParameters) === null || _r === void 0
+						? void 0
+						: _r[2];
 				emitGroupRequestJoin(participant, action, method);
 				break;
 		}
@@ -480,7 +509,7 @@ const processMessage = async (
 		// we need to fetch the poll creation message to get the poll enc key
 		const pollMsg = await getMessage(creationMsgKey);
 		if (pollMsg) {
-			const meIdNormalised = (0, Binary_1.jidNormalizedUser)(meId);
+			const meIdNormalised = (0, WABinary_1.jidNormalizedUser)(meId);
 			const pollCreatorJid = (0, generics_1.getKeyAuthor)(
 				creationMsgKey,
 				meIdNormalised,
@@ -490,9 +519,9 @@ const processMessage = async (
 				meIdNormalised,
 			);
 			const pollEncKey =
-				(_r = pollMsg.messageContextInfo) === null || _r === void 0
+				(_s = pollMsg.messageContextInfo) === null || _s === void 0
 					? void 0
-					: _r.messageSecret;
+					: _s.messageSecret;
 			try {
 				const voteMsg = decryptPollVote(content.pollUpdateMessage.vote, {
 					pollEncKey,

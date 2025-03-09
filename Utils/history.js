@@ -7,9 +7,9 @@ exports.getHistoryMsg =
 		void 0;
 const util_1 = require('util');
 const zlib_1 = require('zlib');
-const Binary_1 = require('../Binary');
-const Proto_1 = require('../Proto');
+const WAProto_1 = require('../../WAProto');
 const Types_1 = require('../Types');
+const WABinary_1 = require('../WABinary');
 const generics_1 = require('./generics');
 const messages_1 = require('./messages');
 const messages_media_1 = require('./messages-media');
@@ -18,9 +18,7 @@ const downloadHistory = async (msg, options) => {
 	const stream = await (0, messages_media_1.downloadContentFromMessage)(
 		msg,
 		'md-msg-hist',
-		{
-			options,
-		},
+		{ options },
 	);
 	const bufferArray = [];
 	for await (const chunk of stream) {
@@ -29,7 +27,7 @@ const downloadHistory = async (msg, options) => {
 	let buffer = Buffer.concat(bufferArray);
 	// decompress buffer
 	buffer = await inflatePromise(buffer);
-	const syncData = Proto_1.proto.HistorySync.decode(buffer);
+	const syncData = WAProto_1.proto.HistorySync.decode(buffer);
 	return syncData;
 };
 exports.downloadHistory = downloadHistory;
@@ -39,10 +37,10 @@ const processHistoryMessage = item => {
 	const contacts = [];
 	const chats = [];
 	switch (item.syncType) {
-		case Proto_1.proto.HistorySync.HistorySyncType.INITIAL_BOOTSTRAP:
-		case Proto_1.proto.HistorySync.HistorySyncType.RECENT:
-		case Proto_1.proto.HistorySync.HistorySyncType.FULL:
-		case Proto_1.proto.HistorySync.HistorySyncType.ON_DEMAND:
+		case WAProto_1.proto.HistorySync.HistorySyncType.INITIAL_BOOTSTRAP:
+		case WAProto_1.proto.HistorySync.HistorySyncType.RECENT:
+		case WAProto_1.proto.HistorySync.HistorySyncType.FULL:
+		case WAProto_1.proto.HistorySync.HistorySyncType.ON_DEMAND:
 			for (const chat of item.conversations) {
 				contacts.push({ id: chat.id, name: chat.name || undefined });
 				const msgs = chat.messages || [];
@@ -85,7 +83,7 @@ const processHistoryMessage = item => {
 					}
 				}
 				if (
-					(0, Binary_1.isJidUser)(chat.id) &&
+					(0, WABinary_1.isJidUser)(chat.id) &&
 					chat.readOnly &&
 					chat.archived
 				) {
@@ -94,7 +92,7 @@ const processHistoryMessage = item => {
 				chats.push({ ...chat });
 			}
 			break;
-		case Proto_1.proto.HistorySync.HistorySyncType.PUSH_NAME:
+		case WAProto_1.proto.HistorySync.HistorySyncType.PUSH_NAME:
 			for (const c of item.pushnames) {
 				contacts.push({ id: c.id, notify: c.pushname });
 			}

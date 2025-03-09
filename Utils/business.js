@@ -10,32 +10,41 @@ exports.uploadingNecessaryImages =
 		void 0;
 const boom_1 = require('@hapi/boom');
 const crypto_1 = require('crypto');
-const Binary_1 = require('../Binary');
+const WABinary_1 = require('../WABinary');
 const messages_media_1 = require('./messages-media');
 const parseCatalogNode = node => {
-	const catalogNode = (0, Binary_1.getBinaryNodeChild)(node, 'product_catalog');
-	const products = (0, Binary_1.getBinaryNodeChildren)(
+	const catalogNode = (0, WABinary_1.getBinaryNodeChild)(
+		node,
+		'product_catalog',
+	);
+	const products = (0, WABinary_1.getBinaryNodeChildren)(
 		catalogNode,
 		'product',
 	).map(exports.parseProductNode);
-	const paging = (0, Binary_1.getBinaryNodeChild)(catalogNode, 'paging');
+	const paging = (0, WABinary_1.getBinaryNodeChild)(catalogNode, 'paging');
 	return {
 		products,
 		nextPageCursor: paging
-			? (0, Binary_1.getBinaryNodeChildString)(paging, 'after')
+			? (0, WABinary_1.getBinaryNodeChildString)(paging, 'after')
 			: undefined,
 	};
 };
 exports.parseCatalogNode = parseCatalogNode;
 const parseCollectionsNode = node => {
-	const collectionsNode = (0, Binary_1.getBinaryNodeChild)(node, 'collections');
-	const collections = (0, Binary_1.getBinaryNodeChildren)(
+	const collectionsNode = (0, WABinary_1.getBinaryNodeChild)(
+		node,
+		'collections',
+	);
+	const collections = (0, WABinary_1.getBinaryNodeChildren)(
 		collectionsNode,
 		'collection',
 	).map(collectionNode => {
-		const id = (0, Binary_1.getBinaryNodeChildString)(collectionNode, 'id');
-		const name = (0, Binary_1.getBinaryNodeChildString)(collectionNode, 'name');
-		const products = (0, Binary_1.getBinaryNodeChildren)(
+		const id = (0, WABinary_1.getBinaryNodeChildString)(collectionNode, 'id');
+		const name = (0, WABinary_1.getBinaryNodeChildString)(
+			collectionNode,
+			'name',
+		);
+		const products = (0, WABinary_1.getBinaryNodeChildren)(
 			collectionNode,
 			'product',
 		).map(exports.parseProductNode);
@@ -52,29 +61,32 @@ const parseCollectionsNode = node => {
 };
 exports.parseCollectionsNode = parseCollectionsNode;
 const parseOrderDetailsNode = node => {
-	const orderNode = (0, Binary_1.getBinaryNodeChild)(node, 'order');
-	const products = (0, Binary_1.getBinaryNodeChildren)(
+	const orderNode = (0, WABinary_1.getBinaryNodeChild)(node, 'order');
+	const products = (0, WABinary_1.getBinaryNodeChildren)(
 		orderNode,
 		'product',
 	).map(productNode => {
-		const imageNode = (0, Binary_1.getBinaryNodeChild)(productNode, 'image');
+		const imageNode = (0, WABinary_1.getBinaryNodeChild)(productNode, 'image');
 		return {
-			id: (0, Binary_1.getBinaryNodeChildString)(productNode, 'id'),
-			name: (0, Binary_1.getBinaryNodeChildString)(productNode, 'name'),
-			imageUrl: (0, Binary_1.getBinaryNodeChildString)(imageNode, 'url'),
-			price: +(0, Binary_1.getBinaryNodeChildString)(productNode, 'price'),
-			currency: (0, Binary_1.getBinaryNodeChildString)(productNode, 'currency'),
-			quantity: +(0, Binary_1.getBinaryNodeChildString)(
+			id: (0, WABinary_1.getBinaryNodeChildString)(productNode, 'id'),
+			name: (0, WABinary_1.getBinaryNodeChildString)(productNode, 'name'),
+			imageUrl: (0, WABinary_1.getBinaryNodeChildString)(imageNode, 'url'),
+			price: +(0, WABinary_1.getBinaryNodeChildString)(productNode, 'price'),
+			currency: (0, WABinary_1.getBinaryNodeChildString)(
+				productNode,
+				'currency',
+			),
+			quantity: +(0, WABinary_1.getBinaryNodeChildString)(
 				productNode,
 				'quantity',
 			),
 		};
 	});
-	const priceNode = (0, Binary_1.getBinaryNodeChild)(orderNode, 'price');
+	const priceNode = (0, WABinary_1.getBinaryNodeChild)(orderNode, 'price');
 	const orderDetails = {
 		price: {
-			total: +(0, Binary_1.getBinaryNodeChildString)(priceNode, 'total'),
-			currency: (0, Binary_1.getBinaryNodeChildString)(priceNode, 'currency'),
+			total: +(0, WABinary_1.getBinaryNodeChildString)(priceNode, 'total'),
+			currency: (0, WABinary_1.getBinaryNodeChildString)(priceNode, 'currency'),
 		},
 		products,
 	};
@@ -120,9 +132,7 @@ const toProductNode = (productId, product) => {
 				if (!('url' in img)) {
 					throw new boom_1.Boom(
 						'Expected img for product to already be uploaded',
-						{
-							statusCode: 400,
-						},
+						{ statusCode: 400 },
 					);
 				}
 				return {
@@ -183,9 +193,9 @@ const toProductNode = (productId, product) => {
 exports.toProductNode = toProductNode;
 const parseProductNode = productNode => {
 	const isHidden = productNode.attrs.is_hidden === 'true';
-	const id = (0, Binary_1.getBinaryNodeChildString)(productNode, 'id');
-	const mediaNode = (0, Binary_1.getBinaryNodeChild)(productNode, 'media');
-	const statusInfoNode = (0, Binary_1.getBinaryNodeChild)(
+	const id = (0, WABinary_1.getBinaryNodeChildString)(productNode, 'id');
+	const mediaNode = (0, WABinary_1.getBinaryNodeChild)(productNode, 'media');
+	const statusInfoNode = (0, WABinary_1.getBinaryNodeChild)(
 		productNode,
 		'status_info',
 	);
@@ -193,24 +203,24 @@ const parseProductNode = productNode => {
 		id,
 		imageUrls: parseImageUrls(mediaNode),
 		reviewStatus: {
-			whatsapp: (0, Binary_1.getBinaryNodeChildString)(
+			whatsapp: (0, WABinary_1.getBinaryNodeChildString)(
 				statusInfoNode,
 				'status',
 			),
 		},
 		availability: 'in stock',
-		name: (0, Binary_1.getBinaryNodeChildString)(productNode, 'name'),
-		retailerId: (0, Binary_1.getBinaryNodeChildString)(
+		name: (0, WABinary_1.getBinaryNodeChildString)(productNode, 'name'),
+		retailerId: (0, WABinary_1.getBinaryNodeChildString)(
 			productNode,
 			'retailer_id',
 		),
-		url: (0, Binary_1.getBinaryNodeChildString)(productNode, 'url'),
-		description: (0, Binary_1.getBinaryNodeChildString)(
+		url: (0, WABinary_1.getBinaryNodeChildString)(productNode, 'url'),
+		description: (0, WABinary_1.getBinaryNodeChildString)(
 			productNode,
 			'description',
 		),
-		price: +(0, Binary_1.getBinaryNodeChildString)(productNode, 'price'),
-		currency: (0, Binary_1.getBinaryNodeChildString)(productNode, 'currency'),
+		price: +(0, WABinary_1.getBinaryNodeChildString)(productNode, 'price'),
+		currency: (0, WABinary_1.getBinaryNodeChildString)(productNode, 'currency'),
 		isHidden,
 	};
 	return product;
@@ -276,23 +286,23 @@ const uploadingNecessaryImages = async (
 };
 exports.uploadingNecessaryImages = uploadingNecessaryImages;
 const parseImageUrls = mediaNode => {
-	const imgNode = (0, Binary_1.getBinaryNodeChild)(mediaNode, 'image');
+	const imgNode = (0, WABinary_1.getBinaryNodeChild)(mediaNode, 'image');
 	return {
-		requested: (0, Binary_1.getBinaryNodeChildString)(
+		requested: (0, WABinary_1.getBinaryNodeChildString)(
 			imgNode,
 			'request_image_url',
 		),
-		original: (0, Binary_1.getBinaryNodeChildString)(
+		original: (0, WABinary_1.getBinaryNodeChildString)(
 			imgNode,
 			'original_image_url',
 		),
 	};
 };
 const parseStatusInfo = mediaNode => {
-	const node = (0, Binary_1.getBinaryNodeChild)(mediaNode, 'status_info');
+	const node = (0, WABinary_1.getBinaryNodeChild)(mediaNode, 'status_info');
 	return {
-		status: (0, Binary_1.getBinaryNodeChildString)(node, 'status'),
+		status: (0, WABinary_1.getBinaryNodeChildString)(node, 'status'),
 		canAppeal:
-			(0, Binary_1.getBinaryNodeChildString)(node, 'can_appeal') === 'true',
+			(0, WABinary_1.getBinaryNodeChildString)(node, 'can_appeal') === 'true',
 	};
 };

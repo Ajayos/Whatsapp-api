@@ -4,59 +4,41 @@ exports.encodeSignedDeviceIdentity =
 	exports.configureSuccessfulPairing =
 	exports.generateRegistrationNode =
 	exports.generateLoginNode =
-	exports.generateMobileNode =
 		void 0;
 const boom_1 = require('@hapi/boom');
 const crypto_1 = require('crypto');
+const WAProto_1 = require('../../WAProto');
 const Base_1 = require('../Base');
-const Binary_1 = require('../Binary');
-const Proto_1 = require('../Proto');
+const WABinary_1 = require('../WABinary');
 const crypto_2 = require('./crypto');
 const generics_1 = require('./generics');
 const signal_1 = require('./signal');
 const getUserAgent = config => {
-	var _a, _b;
-	const osVersion = config.mobile ? '15.3.1' : '0.1';
-	const version = config.mobile ? [2, 24, 26] : config.version;
-	const device = config.mobile ? 'iPhone_7' : 'Desktop';
-	const manufacturer = config.mobile ? 'Apple' : '';
-	const platform = config.mobile
-		? Proto_1.proto.ClientPayload.UserAgent.Platform.IOS
-		: Proto_1.proto.ClientPayload.UserAgent.Platform.WEB;
-	const phoneId = config.mobile ? { phoneId: config.auth.creds.phoneId } : {};
 	return {
 		appVersion: {
-			primary: version[0],
-			secondary: version[1],
-			tertiary: version[2],
+			primary: config.version[0],
+			secondary: config.version[1],
+			tertiary: config.version[2],
 		},
-		platform,
+		platform: WAProto_1.proto.ClientPayload.UserAgent.Platform.WEB,
 		releaseChannel:
-			Proto_1.proto.ClientPayload.UserAgent.ReleaseChannel.RELEASE,
-		mcc:
-			((_a = config.auth.creds.registration) === null || _a === void 0
-				? void 0
-				: _a.phoneNumberMobileCountryCode) || '000',
-		mnc:
-			((_b = config.auth.creds.registration) === null || _b === void 0
-				? void 0
-				: _b.phoneNumberMobileNetworkCode) || '000',
-		osVersion: osVersion,
-		manufacturer,
-		device,
-		osBuildNumber: osVersion,
+			WAProto_1.proto.ClientPayload.UserAgent.ReleaseChannel.RELEASE,
+		osVersion: '0.1',
+		device: 'Desktop',
+		osBuildNumber: '0.1',
 		localeLanguageIso6391: 'en',
-		localeCountryIso31661Alpha2: 'US',
-		...phoneId,
+		mnc: '000',
+		mcc: '000',
+		localeCountryIso31661Alpha2: config.countryCode,
 	};
 };
 const PLATFORM_MAP = {
-	'Mac OS': Proto_1.proto.ClientPayload.WebInfo.WebSubPlatform.DARWIN,
-	Windows: Proto_1.proto.ClientPayload.WebInfo.WebSubPlatform.WIN32,
+	'Mac OS': WAProto_1.proto.ClientPayload.WebInfo.WebSubPlatform.DARWIN,
+	Windows: WAProto_1.proto.ClientPayload.WebInfo.WebSubPlatform.WIN32,
 };
 const getWebInfo = config => {
 	let webSubPlatform =
-		Proto_1.proto.ClientPayload.WebInfo.WebSubPlatform.WEB_BROWSER;
+		WAProto_1.proto.ClientPayload.WebInfo.WebSubPlatform.WEB_BROWSER;
 	if (config.syncFullHistory && PLATFORM_MAP[config.browser[0]]) {
 		webSubPlatform = PLATFORM_MAP[config.browser[0]];
 	}
@@ -64,55 +46,30 @@ const getWebInfo = config => {
 };
 const getClientPayload = config => {
 	const payload = {
-		connectType: Proto_1.proto.ClientPayload.ConnectType.WIFI_UNKNOWN,
-		connectReason: Proto_1.proto.ClientPayload.ConnectReason.USER_ACTIVATED,
+		connectType: WAProto_1.proto.ClientPayload.ConnectType.WIFI_UNKNOWN,
+		connectReason: WAProto_1.proto.ClientPayload.ConnectReason.USER_ACTIVATED,
 		userAgent: getUserAgent(config),
 	};
-	if (!config.mobile) {
-		payload.webInfo = getWebInfo(config);
-	}
+	payload.webInfo = getWebInfo(config);
 	return payload;
 };
-const generateMobileNode = config => {
-	if (!config.auth.creds) {
-		throw new boom_1.Boom('No registration data found', { data: config });
-	}
-	const payload = {
-		...getClientPayload(config),
-		sessionId: Math.floor(Math.random() * 999999999 + 1),
-		shortConnect: true,
-		connectAttemptCount: 0,
-		device: 0,
-		dnsSource: {
-			appCached: false,
-			dnsMethod:
-				Proto_1.proto.ClientPayload.DNSSource.DNSResolutionMethod.SYSTEM,
-		},
-		passive: false,
-		pushName: 'test',
-		username: Number(
-			`${config.auth.creds.registration.phoneNumberCountryCode}${config.auth.creds.registration.phoneNumberNationalNumber}`,
-		),
-	};
-	return Proto_1.proto.ClientPayload.fromObject(payload);
-};
-exports.generateMobileNode = generateMobileNode;
 const generateLoginNode = (userJid, config) => {
-	const { user, device } = (0, Binary_1.jidDecode)(userJid);
+	const { user, device } = (0, WABinary_1.jidDecode)(userJid);
 	const payload = {
 		...getClientPayload(config),
-		passive: true,
+		passive: false,
+		pull: true,
 		username: +user,
 		device: device,
 	};
-	return Proto_1.proto.ClientPayload.fromObject(payload);
+	return WAProto_1.proto.ClientPayload.fromObject(payload);
 };
 exports.generateLoginNode = generateLoginNode;
 const getPlatformType = platform => {
 	const platformType = platform.toUpperCase();
 	return (
-		Proto_1.proto.DeviceProps.PlatformType[platformType] ||
-		Proto_1.proto.DeviceProps.PlatformType.DESKTOP
+		WAProto_1.proto.DeviceProps.PlatformType[platformType] ||
+		WAProto_1.proto.DeviceProps.PlatformType.DESKTOP
 	);
 };
 const generateRegistrationNode = (
@@ -129,10 +86,11 @@ const generateRegistrationNode = (
 		platformType: getPlatformType(config.browser[1]),
 		requireFullSync: config.syncFullHistory,
 	};
-	const companionProto = Proto_1.proto.DeviceProps.encode(companion).finish();
+	const companionProto = WAProto_1.proto.DeviceProps.encode(companion).finish();
 	const registerPayload = {
 		...getClientPayload(config),
 		passive: false,
+		pull: false,
 		devicePairingData: {
 			buildHash: appVersionBuf,
 			deviceProps: companionProto,
@@ -144,7 +102,7 @@ const generateRegistrationNode = (
 			eSkeySig: signedPreKey.signature,
 		},
 	};
-	return Proto_1.proto.ClientPayload.fromObject(registerPayload);
+	return WAProto_1.proto.ClientPayload.fromObject(registerPayload);
 };
 exports.generateRegistrationNode = generateRegistrationNode;
 const configureSuccessfulPairing = (
@@ -152,29 +110,30 @@ const configureSuccessfulPairing = (
 	{ advSecretKey, signedIdentityKey, signalIdentities },
 ) => {
 	const msgId = stanza.attrs.id;
-	const pairSuccessNode = (0, Binary_1.getBinaryNodeChild)(
+	const pairSuccessNode = (0, WABinary_1.getBinaryNodeChild)(
 		stanza,
 		'pair-success',
 	);
-	const deviceIdentityNode = (0, Binary_1.getBinaryNodeChild)(
+	const deviceIdentityNode = (0, WABinary_1.getBinaryNodeChild)(
 		pairSuccessNode,
 		'device-identity',
 	);
-	const platformNode = (0, Binary_1.getBinaryNodeChild)(
+	const platformNode = (0, WABinary_1.getBinaryNodeChild)(
 		pairSuccessNode,
 		'platform',
 	);
-	const deviceNode = (0, Binary_1.getBinaryNodeChild)(
+	const deviceNode = (0, WABinary_1.getBinaryNodeChild)(
 		pairSuccessNode,
 		'device',
 	);
-	const businessNode = (0, Binary_1.getBinaryNodeChild)(pairSuccessNode, 'biz');
+	const businessNode = (0, WABinary_1.getBinaryNodeChild)(
+		pairSuccessNode,
+		'biz',
+	);
 	if (!deviceIdentityNode || !deviceNode) {
 		throw new boom_1.Boom(
 			'Missing device-identity or device in pair success node',
-			{
-				data: stanza,
-			},
+			{ data: stanza },
 		);
 	}
 	const bizName =
@@ -182,7 +141,7 @@ const configureSuccessfulPairing = (
 			? void 0
 			: businessNode.attrs.name;
 	const jid = deviceNode.attrs.jid;
-	const { details, hmac } = Proto_1.proto.ADVSignedDeviceIdentityHMAC.decode(
+	const { details, hmac } = WAProto_1.proto.ADVSignedDeviceIdentityHMAC.decode(
 		deviceIdentityNode.content,
 	);
 	// check HMAC matches
@@ -193,7 +152,7 @@ const configureSuccessfulPairing = (
 	if (Buffer.compare(hmac, advSign) !== 0) {
 		throw new boom_1.Boom('Invalid account signature');
 	}
-	const account = Proto_1.proto.ADVSignedDeviceIdentity.decode(details);
+	const account = WAProto_1.proto.ADVSignedDeviceIdentity.decode(details);
 	const {
 		accountSignatureKey,
 		accountSignature,
@@ -223,13 +182,13 @@ const configureSuccessfulPairing = (
 	);
 	const identity = (0, signal_1.createSignalIdentity)(jid, accountSignatureKey);
 	const accountEnc = (0, exports.encodeSignedDeviceIdentity)(account, false);
-	const deviceIdentity = Proto_1.proto.ADVDeviceIdentity.decode(
+	const deviceIdentity = WAProto_1.proto.ADVDeviceIdentity.decode(
 		account.details,
 	);
 	const reply = {
 		tag: 'iq',
 		attrs: {
-			to: Binary_1.S_WHATSAPP_NET,
+			to: WABinary_1.S_WHATSAPP_NET,
 			type: 'result',
 			id: msgId,
 		},
@@ -275,6 +234,6 @@ const encodeSignedDeviceIdentity = (account, includeSignatureKey) => {
 	) {
 		account.accountSignatureKey = null;
 	}
-	return Proto_1.proto.ADVSignedDeviceIdentity.encode(account).finish();
+	return WAProto_1.proto.ADVSignedDeviceIdentity.encode(account).finish();
 };
 exports.encodeSignedDeviceIdentity = encodeSignedDeviceIdentity;

@@ -1,10 +1,10 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.extractGroupMetadata = exports.makeGroupsSocket = void 0;
-const Binary_1 = require('../Binary');
-const Proto_1 = require('../Proto');
+const WAProto_1 = require('../../WAProto');
 const Types_1 = require('../Types');
 const Utils_1 = require('../Utils');
+const WABinary_1 = require('../WABinary');
 const chats_1 = require('./chats');
 const makeGroupsSocket = config => {
 	const sock = (0, chats_1.makeChatsSocket)(config);
@@ -45,9 +45,12 @@ const makeGroupsSocket = config => {
 			],
 		});
 		const data = {};
-		const groupsChild = (0, Binary_1.getBinaryNodeChild)(result, 'groups');
+		const groupsChild = (0, WABinary_1.getBinaryNodeChild)(result, 'groups');
 		if (groupsChild) {
-			const groups = (0, Binary_1.getBinaryNodeChildren)(groupsChild, 'group');
+			const groups = (0, WABinary_1.getBinaryNodeChildren)(
+				groupsChild,
+				'group',
+			);
 			for (const groupNode of groups) {
 				const meta = (0, exports.extractGroupMetadata)({
 					tag: 'result',
@@ -61,7 +64,7 @@ const makeGroupsSocket = config => {
 		return data;
 	};
 	sock.ws.on('CB:ib,,dirty', async node => {
-		const { attrs } = (0, Binary_1.getBinaryNodeChild)(node, 'dirty');
+		const { attrs } = (0, WABinary_1.getBinaryNodeChild)(node, 'dirty');
 		if (attrs.type !== 'groups') {
 			return;
 		}
@@ -113,11 +116,11 @@ const makeGroupsSocket = config => {
 					attrs: {},
 				},
 			]);
-			const node = (0, Binary_1.getBinaryNodeChild)(
+			const node = (0, WABinary_1.getBinaryNodeChild)(
 				result,
 				'membership_approval_requests',
 			);
-			const participants = (0, Binary_1.getBinaryNodeChildren)(
+			const participants = (0, WABinary_1.getBinaryNodeChildren)(
 				node,
 				'membership_approval_request',
 			);
@@ -140,12 +143,12 @@ const makeGroupsSocket = config => {
 					],
 				},
 			]);
-			const node = (0, Binary_1.getBinaryNodeChild)(
+			const node = (0, WABinary_1.getBinaryNodeChild)(
 				result,
 				'membership_requests_action',
 			);
-			const nodeAction = (0, Binary_1.getBinaryNodeChild)(node, action);
-			const participantsAffected = (0, Binary_1.getBinaryNodeChildren)(
+			const nodeAction = (0, WABinary_1.getBinaryNodeChild)(node, action);
+			const participantsAffected = (0, WABinary_1.getBinaryNodeChildren)(
 				nodeAction,
 				'participant',
 			);
@@ -164,8 +167,8 @@ const makeGroupsSocket = config => {
 					})),
 				},
 			]);
-			const node = (0, Binary_1.getBinaryNodeChild)(result, action);
-			const participantsAffected = (0, Binary_1.getBinaryNodeChildren)(
+			const node = (0, WABinary_1.getBinaryNodeChild)(result, action);
+			const participantsAffected = (0, WABinary_1.getBinaryNodeChildren)(
 				node,
 				'participant',
 			);
@@ -202,7 +205,7 @@ const makeGroupsSocket = config => {
 			const result = await groupQuery(jid, 'get', [
 				{ tag: 'invite', attrs: {} },
 			]);
-			const inviteNode = (0, Binary_1.getBinaryNodeChild)(result, 'invite');
+			const inviteNode = (0, WABinary_1.getBinaryNodeChild)(result, 'invite');
 			return inviteNode === null || inviteNode === void 0
 				? void 0
 				: inviteNode.attrs.code;
@@ -211,7 +214,7 @@ const makeGroupsSocket = config => {
 			const result = await groupQuery(jid, 'set', [
 				{ tag: 'invite', attrs: {} },
 			]);
-			const inviteNode = (0, Binary_1.getBinaryNodeChild)(result, 'invite');
+			const inviteNode = (0, WABinary_1.getBinaryNodeChild)(result, 'invite');
 			return inviteNode === null || inviteNode === void 0
 				? void 0
 				: inviteNode.attrs.code;
@@ -220,7 +223,7 @@ const makeGroupsSocket = config => {
 			const results = await groupQuery('@g.us', 'set', [
 				{ tag: 'invite', attrs: { code } },
 			]);
-			const result = (0, Binary_1.getBinaryNodeChild)(results, 'group');
+			const result = (0, WABinary_1.getBinaryNodeChild)(results, 'group');
 			return result === null || result === void 0 ? void 0 : result.attrs.jid;
 		},
 		/**
@@ -263,7 +266,9 @@ const makeGroupsSocket = config => {
 				if (key.id) {
 					// create new invite message that is expired
 					inviteMessage =
-						Proto_1.proto.Message.GroupInviteMessage.fromObject(inviteMessage);
+						WAProto_1.proto.Message.GroupInviteMessage.fromObject(
+							inviteMessage,
+						);
 					inviteMessage.inviteExpiration = 0;
 					inviteMessage.inviteCode = '';
 					ev.emit('messages.update', [
@@ -336,62 +341,63 @@ const makeGroupsSocket = config => {
 exports.makeGroupsSocket = makeGroupsSocket;
 const extractGroupMetadata = result => {
 	var _a, _b;
-	const group = (0, Binary_1.getBinaryNodeChild)(result, 'group');
-	const descChild = (0, Binary_1.getBinaryNodeChild)(group, 'description');
+	const group = (0, WABinary_1.getBinaryNodeChild)(result, 'group');
+	const descChild = (0, WABinary_1.getBinaryNodeChild)(group, 'description');
 	let desc;
 	let descId;
 	if (descChild) {
-		desc = (0, Binary_1.getBinaryNodeChildString)(descChild, 'body');
+		desc = (0, WABinary_1.getBinaryNodeChildString)(descChild, 'body');
 		descId = descChild.attrs.id;
 	}
 	const groupId = group.attrs.id.includes('@')
 		? group.attrs.id
-		: (0, Binary_1.jidEncode)(group.attrs.id, 'g.us');
+		: (0, WABinary_1.jidEncode)(group.attrs.id, 'g.us');
 	const eph =
-		(_a = (0, Binary_1.getBinaryNodeChild)(group, 'ephemeral')) === null ||
+		(_a = (0, WABinary_1.getBinaryNodeChild)(group, 'ephemeral')) === null ||
 		_a === void 0
 			? void 0
 			: _a.attrs.expiration;
 	const memberAddMode =
-		(0, Binary_1.getBinaryNodeChildString)(group, 'member_add_mode') ===
+		(0, WABinary_1.getBinaryNodeChildString)(group, 'member_add_mode') ===
 		'all_member_add';
 	const metadata = {
 		id: groupId,
 		subject: group.attrs.subject,
 		subjectOwner: group.attrs.s_o,
 		subjectTime: +group.attrs.s_t,
-		size: (0, Binary_1.getBinaryNodeChildren)(group, 'participant').length,
+		size: (0, WABinary_1.getBinaryNodeChildren)(group, 'participant').length,
 		creation: +group.attrs.creation,
 		owner: group.attrs.creator
-			? (0, Binary_1.jidNormalizedUser)(group.attrs.creator)
+			? (0, WABinary_1.jidNormalizedUser)(group.attrs.creator)
 			: undefined,
 		desc,
 		descId,
 		linkedParent:
-			((_b = (0, Binary_1.getBinaryNodeChild)(group, 'linked_parent')) ===
+			((_b = (0, WABinary_1.getBinaryNodeChild)(group, 'linked_parent')) ===
 				null || _b === void 0
 				? void 0
 				: _b.attrs.jid) || undefined,
-		restrict: !!(0, Binary_1.getBinaryNodeChild)(group, 'locked'),
-		announce: !!(0, Binary_1.getBinaryNodeChild)(group, 'announcement'),
-		isCommunity: !!(0, Binary_1.getBinaryNodeChild)(group, 'parent'),
-		isCommunityAnnounce: !!(0, Binary_1.getBinaryNodeChild)(
+		restrict: !!(0, WABinary_1.getBinaryNodeChild)(group, 'locked'),
+		announce: !!(0, WABinary_1.getBinaryNodeChild)(group, 'announcement'),
+		isCommunity: !!(0, WABinary_1.getBinaryNodeChild)(group, 'parent'),
+		isCommunityAnnounce: !!(0, WABinary_1.getBinaryNodeChild)(
 			group,
 			'default_sub_group',
 		),
-		joinApprovalMode: !!(0, Binary_1.getBinaryNodeChild)(
+		joinApprovalMode: !!(0, WABinary_1.getBinaryNodeChild)(
 			group,
 			'membership_approval_mode',
 		),
 		memberAddMode,
-		participants: (0, Binary_1.getBinaryNodeChildren)(group, 'participant').map(
-			({ attrs }) => {
-				return {
-					id: attrs.jid,
-					admin: attrs.type || null,
-				};
-			},
-		),
+		participants: (0, WABinary_1.getBinaryNodeChildren)(
+			group,
+			'participant',
+		).map(({ attrs }) => {
+			return {
+				id: attrs.jid,
+				admin: attrs.type || null,
+			};
+		}),
 		ephemeralDuration: eph ? +eph : undefined,
 	};
 	return metadata;

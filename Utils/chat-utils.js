@@ -13,15 +13,15 @@ exports.processSyncAction =
 	exports.newLTHashState =
 		void 0;
 const boom_1 = require('@hapi/boom');
-const Binary_1 = require('../Binary');
-const Proto_1 = require('../Proto');
+const WAProto_1 = require('../../WAProto');
 const LabelAssociation_1 = require('../Types/LabelAssociation');
+const WABinary_1 = require('../WABinary');
 const crypto_1 = require('./crypto');
 const generics_1 = require('./generics');
 const lt_hash_1 = require('./lt-hash');
 const messages_media_1 = require('./messages-media');
-const mutationKeys = keydata => {
-	const expanded = (0, crypto_1.hkdf)(keydata, 160, {
+const mutationKeys = async keydata => {
+	const expanded = await (0, crypto_1.hkdf)(keydata, 160, {
 		info: 'WhatsApp Mutation Keys',
 	});
 	return {
@@ -36,10 +36,10 @@ const generateMac = (operation, data, keyId, key) => {
 	const getKeyData = () => {
 		let r;
 		switch (operation) {
-			case Proto_1.proto.SyncdMutation.SyncdOperation.SET:
+			case WAProto_1.proto.SyncdMutation.SyncdOperation.SET:
 				r = 0x01;
 				break;
-			case Proto_1.proto.SyncdMutation.SyncdOperation.REMOVE:
+			case WAProto_1.proto.SyncdMutation.SyncdOperation.REMOVE:
 				r = 0x02;
 				break;
 		}
@@ -66,7 +66,7 @@ const makeLtHashGenerator = ({ indexValueMap, hash }) => {
 		mix: ({ indexMac, valueMac, operation }) => {
 			const indexMacBase64 = Buffer.from(indexMac).toString('base64');
 			const prevOp = indexValueMap[indexMacBase64];
-			if (operation === Proto_1.proto.SyncdMutation.SyncdOperation.REMOVE) {
+			if (operation === WAProto_1.proto.SyncdMutation.SyncdOperation.REMOVE) {
 				if (!prevOp) {
 					throw new boom_1.Boom('tried remove, but no previous op', {
 						data: { indexMac, valueMac },
@@ -83,9 +83,9 @@ const makeLtHashGenerator = ({ indexValueMap, hash }) => {
 				subBuffs.push(new Uint8Array(prevOp.valueMac).buffer);
 			}
 		},
-		finish: () => {
+		finish: async () => {
 			const hashArrayBuffer = new Uint8Array(hash).buffer;
-			const result = lt_hash_1.LT_HASH_ANTI_TAMPERING.subtractThenAdd(
+			const result = await lt_hash_1.LT_HASH_ANTI_TAMPERING.subtractThenAdd(
 				hashArrayBuffer,
 				addBuffs,
 				subBuffs,
@@ -138,14 +138,14 @@ const encodeSyncdPatch = async (
 	const encKeyId = Buffer.from(myAppStateKeyId, 'base64');
 	state = { ...state, indexValueMap: { ...state.indexValueMap } };
 	const indexBuffer = Buffer.from(JSON.stringify(index));
-	const dataProto = Proto_1.proto.SyncActionData.fromObject({
+	const dataProto = WAProto_1.proto.SyncActionData.fromObject({
 		index: indexBuffer,
 		value: syncAction,
 		padding: new Uint8Array(0),
 		version: apiVersion,
 	});
-	const encoded = Proto_1.proto.SyncActionData.encode(dataProto).finish();
-	const keyValue = mutationKeys(key.keyData);
+	const encoded = WAProto_1.proto.SyncActionData.encode(dataProto).finish();
+	const keyValue = await mutationKeys(key.keyData);
 	const encValue = (0, crypto_1.aesEncrypt)(
 		encoded,
 		keyValue.valueEncryptionKey,
@@ -160,7 +160,7 @@ const encodeSyncdPatch = async (
 	// update LT hash
 	const generator = makeLtHashGenerator(state);
 	generator.mix({ indexMac, valueMac, operation });
-	Object.assign(state, generator.finish());
+	Object.assign(state, await generator.finish());
 	state.version += 1;
 	const snapshotMac = generateSnapshotMac(
 		state.hash,
@@ -215,7 +215,7 @@ const decodeSyncdMutations = async (
 		const operation =
 			'operation' in msgMutation
 				? msgMutation.operation
-				: Proto_1.proto.SyncdMutation.SyncdOperation.SET;
+				: WAProto_1.proto.SyncdMutation.SyncdOperation.SET;
 		const record =
 			'record' in msgMutation && !!msgMutation.record
 				? msgMutation.record
@@ -236,7 +236,7 @@ const decodeSyncdMutations = async (
 			}
 		}
 		const result = (0, crypto_1.aesDecrypt)(encContent, key.valueEncryptionKey);
-		const syncAction = Proto_1.proto.SyncActionData.decode(result);
+		const syncAction = WAProto_1.proto.SyncActionData.decode(result);
 		if (validateMacs) {
 			const hmac = (0, crypto_1.hmacSign)(syncAction.index, key.indexKey);
 			if (Buffer.compare(hmac, record.index.blob) !== 0) {
@@ -251,17 +251,14 @@ const decodeSyncdMutations = async (
 			operation: operation,
 		});
 	}
-	return ltGenerator.finish();
+	return await ltGenerator.finish();
 	async function getKey(keyId) {
 		const base64Key = Buffer.from(keyId).toString('base64');
 		const keyEnc = await getAppStateSyncKey(base64Key);
 		if (!keyEnc) {
 			throw new boom_1.Boom(
 				`failed to find key "${base64Key}" to decode mutation`,
-				{
-					statusCode: 404,
-					data: { msgMutations },
-				},
+				{ statusCode: 404, data: { msgMutations } },
 			);
 		}
 		return mutationKeys(keyEnc.keyData);
@@ -282,13 +279,10 @@ const decodeSyncdPatch = async (
 		if (!mainKeyObj) {
 			throw new boom_1.Boom(
 				`failed to find key "${base64Key}" to decode patch`,
-				{
-					statusCode: 404,
-					data: { msg },
-				},
+				{ statusCode: 404, data: { msg } },
 			);
 		}
-		const mainKey = mutationKeys(mainKeyObj.keyData);
+		const mainKey = await mutationKeys(mainKeyObj.keyData);
 		const mutationmacs = msg.mutations.map(mutation =>
 			mutation.record.value.blob.slice(-32),
 		);
@@ -314,23 +308,23 @@ const decodeSyncdPatch = async (
 };
 exports.decodeSyncdPatch = decodeSyncdPatch;
 const extractSyncdPatches = async (result, options) => {
-	const syncNode = (0, Binary_1.getBinaryNodeChild)(result, 'sync');
-	const collectionNodes = (0, Binary_1.getBinaryNodeChildren)(
+	const syncNode = (0, WABinary_1.getBinaryNodeChild)(result, 'sync');
+	const collectionNodes = (0, WABinary_1.getBinaryNodeChildren)(
 		syncNode,
 		'collection',
 	);
 	const final = {};
 	await Promise.all(
 		collectionNodes.map(async collectionNode => {
-			const patchesNode = (0, Binary_1.getBinaryNodeChild)(
+			const patchesNode = (0, WABinary_1.getBinaryNodeChild)(
 				collectionNode,
 				'patches',
 			);
-			const patches = (0, Binary_1.getBinaryNodeChildren)(
+			const patches = (0, WABinary_1.getBinaryNodeChildren)(
 				patchesNode || collectionNode,
 				'patch',
 			);
-			const snapshotNode = (0, Binary_1.getBinaryNodeChild)(
+			const snapshotNode = (0, WABinary_1.getBinaryNodeChild)(
 				collectionNode,
 				'snapshot',
 			);
@@ -344,18 +338,18 @@ const extractSyncdPatches = async (result, options) => {
 						Object.values(snapshotNode.content),
 					);
 				}
-				const blobRef = Proto_1.proto.ExternalBlobReference.decode(
+				const blobRef = WAProto_1.proto.ExternalBlobReference.decode(
 					snapshotNode.content,
 				);
 				const data = await (0, exports.downloadExternalBlob)(blobRef, options);
-				snapshot = Proto_1.proto.SyncdSnapshot.decode(data);
+				snapshot = WAProto_1.proto.SyncdSnapshot.decode(data);
 			}
 			for (let { content } of patches) {
 				if (content) {
 					if (!Buffer.isBuffer(content)) {
 						content = Buffer.from(Object.values(content));
 					}
-					const syncd = Proto_1.proto.SyncdPatch.decode(content);
+					const syncd = WAProto_1.proto.SyncdPatch.decode(content);
 					if (!syncd.version) {
 						syncd.version = { version: +collectionNode.attrs.version + 1 };
 					}
@@ -372,9 +366,7 @@ const downloadExternalBlob = async (blob, options) => {
 	const stream = await (0, messages_media_1.downloadContentFromMessage)(
 		blob,
 		'md-app-state',
-		{
-			options,
-		},
+		{ options },
 	);
 	const bufferArray = [];
 	for await (const chunk of stream) {
@@ -385,7 +377,7 @@ const downloadExternalBlob = async (blob, options) => {
 exports.downloadExternalBlob = downloadExternalBlob;
 const downloadExternalPatch = async (blob, options) => {
 	const buffer = await (0, exports.downloadExternalBlob)(blob, options);
-	const syncData = Proto_1.proto.SyncdMutations.decode(buffer);
+	const syncData = WAProto_1.proto.SyncdMutations.decode(buffer);
 	return syncData;
 };
 exports.downloadExternalPatch = downloadExternalPatch;
@@ -428,7 +420,7 @@ const decodeSyncdSnapshot = async (
 				`failed to find key "${base64Key}" to decode mutation`,
 			);
 		}
-		const result = mutationKeys(keyEnc.keyData);
+		const result = await mutationKeys(keyEnc.keyData);
 		const computedSnapshotMac = generateSnapshotMac(
 			newState.hash,
 			newState.version,
@@ -463,8 +455,7 @@ const decodePatches = async (
 		indexValueMap: { ...initial.indexValueMap },
 	};
 	const mutationMap = {};
-	for (let i = 0; i < syncds.length; i++) {
-		const syncd = syncds[i];
+	for (const syncd of syncds) {
 		const { version, keyId, snapshotMac } = syncd;
 		if (syncd.externalMutations) {
 			logger === null || logger === void 0
@@ -516,7 +507,7 @@ const decodePatches = async (
 					`failed to find key "${base64Key}" to decode mutation`,
 				);
 			}
-			const result = mutationKeys(keyEnc.keyData);
+			const result = await mutationKeys(keyEnc.keyData);
 			const computedSnapshotMac = generateSnapshotMac(
 				newState.hash,
 				newState.version,
@@ -536,7 +527,7 @@ const decodePatches = async (
 };
 exports.decodePatches = decodePatches;
 const chatModificationToAppPatch = (mod, jid) => {
-	const OP = Proto_1.proto.SyncdMutation.SyncdOperation;
+	const OP = WAProto_1.proto.SyncdMutation.SyncdOperation;
 	const getMessageRange = lastMessages => {
 		let messageRange;
 		if (Array.isArray(lastMessages)) {
@@ -565,7 +556,7 @@ const chatModificationToAppPatch = (mod, jid) => {
 								});
 							}
 							if (
-								(0, Binary_1.isJidGroup)(m.key.remoteJid) &&
+								(0, WABinary_1.isJidGroup)(m.key.remoteJid) &&
 								!m.key.fromMe &&
 								!m.key.participant
 							) {
@@ -580,14 +571,11 @@ const chatModificationToAppPatch = (mod, jid) => {
 							) {
 								throw new boom_1.Boom(
 									'Missing timestamp in last message list',
-									{
-										statusCode: 400,
-										data: m,
-									},
+									{ statusCode: 400, data: m },
 								);
 							}
 							if (m.key.participant) {
-								m.key.participant = (0, Binary_1.jidNormalizedUser)(
+								m.key.participant = (0, WABinary_1.jidNormalizedUser)(
 									m.key.participant,
 								);
 							}
@@ -640,24 +628,35 @@ const chatModificationToAppPatch = (mod, jid) => {
 			apiVersion: 3,
 			operation: OP.SET,
 		};
-	} else if ('clear' in mod) {
-		if (mod.clear === 'all') {
-			throw new boom_1.Boom('not supported');
-		} else {
-			const key = mod.clear.messages[0];
-			patch = {
-				syncAction: {
-					deleteMessageForMeAction: {
-						deleteMedia: false,
-						messageTimestamp: key.timestamp,
-					},
+	} else if ('deleteForMe' in mod) {
+		const { timestamp, key, deleteMedia } = mod.deleteForMe;
+		patch = {
+			syncAction: {
+				deleteMessageForMeAction: {
+					deleteMedia,
+					messageTimestamp: timestamp,
 				},
-				index: ['deleteMessageForMe', jid, key.id, key.fromMe ? '1' : '0', '0'],
-				type: 'regular_high',
-				apiVersion: 3,
-				operation: OP.SET,
-			};
-		}
+			},
+			index: ['deleteMessageForMe', jid, key.id, key.fromMe ? '1' : '0', '0'],
+			type: 'regular_high',
+			apiVersion: 3,
+			operation: OP.SET,
+		};
+	} else if ('clear' in mod) {
+		patch = {
+			syncAction: {
+				clearChatAction: {}, // add message range later
+			},
+			index: [
+				'clearChat',
+				jid,
+				'1' /*the option here is 0 when keep starred messages is enabled*/,
+				'0',
+			],
+			type: 'regular_high',
+			apiVersion: 6,
+			operation: OP.SET,
+		};
 	} else if ('pin' in mod) {
 		patch = {
 			syncAction: {

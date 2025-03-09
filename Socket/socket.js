@@ -5,12 +5,12 @@ const boom_1 = require('@hapi/boom');
 const crypto_1 = require('crypto');
 const url_1 = require('url');
 const util_1 = require('util');
+const WAProto_1 = require('../../WAProto');
 const Base_1 = require('../Base');
-const Binary_1 = require('../Binary');
-const Client_1 = require('../Client');
-const Proto_1 = require('../Proto');
 const Types_1 = require('../Types');
 const Utils_1 = require('../Utils');
+const WABinary_1 = require('../WABinary');
+const Client_1 = require('./Client');
 /**
  * Connects to WA servers and performs:
  * - simple queries (no retry mechanism, wait for connection establishment)
@@ -20,6 +20,7 @@ const Utils_1 = require('../Utils');
 const makeSocket = config => {
 	var _a, _b;
 	const {
+		waWebSocketUrl,
 		connectTimeoutMs,
 		logger,
 		keepAliveIntervalMs,
@@ -31,15 +32,16 @@ const makeSocket = config => {
 		qrTimeout,
 		makeSignalRepository,
 	} = config;
-	let url = new url_1.URL('wss://web.whatsapp.com/ws/chat');
-	config.mobile = config.mobile || url.protocol === 'tcp:';
-	if (config.mobile && url.protocol !== 'tcp:') {
-		url = new url_1.URL(
-			`tcp://${Base_1.MOBILE_ENDPOINT}:${Base_1.MOBILE_PORT}`,
-		);
+	const url =
+		typeof waWebSocketUrl === 'string'
+			? new url_1.URL(waWebSocketUrl)
+			: waWebSocketUrl;
+	if (config.mobile || url.protocol === 'tcp:') {
+		throw new boom_1.Boom('Mobile API is not supported anymore', {
+			statusCode: Types_1.DisconnectReason.loggedOut,
+		});
 	}
 	if (
-		!config.mobile &&
 		url.protocol === 'wss' &&
 		((_a =
 			authState === null || authState === void 0 ? void 0 : authState.creds) ===
@@ -52,11 +54,7 @@ const makeSocket = config => {
 			authState.creds.routingInfo.toString('base64url'),
 		);
 	}
-	const ws = config.socket
-		? config.socket
-		: config.mobile
-			? new Client_1.MobileSocketClient(url)
-			: new Client_1.WebSocketClient(url);
+	const ws = new Client_1.WebSocketClient(url, config);
 	ws.connect();
 	const ev = (0, Utils_1.makeEventBuffer)(logger);
 	/** ephemeral key pair used to encrypt/decrypt communication. Unique for each connection */
@@ -64,10 +62,7 @@ const makeSocket = config => {
 	/** WA noise protocol wrapper */
 	const noise = (0, Utils_1.makeNoiseHandler)({
 		keyPair: ephemeralKeyPair,
-		NOISE_HEADER: config.mobile
-			? Base_1.MOBILE_NOISE_HEADER
-			: Base_1.NOISE_WA_HEADER,
-		mobile: config.mobile,
+		NOISE_HEADER: Base_1.NOISE_WA_HEADER,
 		logger,
 		routingInfo:
 			(_b =
@@ -117,11 +112,11 @@ const makeSocket = config => {
 	const sendNode = frame => {
 		if (logger.level === 'trace') {
 			logger.trace({
-				xml: (0, Binary_1.binaryNodeToString)(frame),
+				xml: (0, WABinary_1.binaryNodeToString)(frame),
 				msg: 'xml send',
 			});
 		}
-		const buff = (0, Binary_1.encodeBinaryNode)(frame);
+		const buff = (0, WABinary_1.encodeBinaryNode)(frame);
 		return sendRawMessage(buff);
 	};
 	/** log & process any unexpected errors */
@@ -195,7 +190,7 @@ const makeSocket = config => {
 		await sendNode(node);
 		const result = await wait;
 		if ('tag' in result) {
-			(0, Binary_1.assertNodeErrorFree)(result);
+			(0, WABinary_1.assertNodeErrorFree)(result);
 		}
 		return result;
 	};
@@ -204,17 +199,15 @@ const makeSocket = config => {
 		let helloMsg = {
 			clientHello: { ephemeral: ephemeralKeyPair.public },
 		};
-		helloMsg = Proto_1.proto.HandshakeMessage.fromObject(helloMsg);
+		helloMsg = WAProto_1.proto.HandshakeMessage.fromObject(helloMsg);
 		logger.info({ browser, helloMsg }, 'connected to WA');
-		const init = Proto_1.proto.HandshakeMessage.encode(helloMsg).finish();
+		const init = WAProto_1.proto.HandshakeMessage.encode(helloMsg).finish();
 		const result = await awaitNextMessage(init);
-		const handshake = Proto_1.proto.HandshakeMessage.decode(result);
+		const handshake = WAProto_1.proto.HandshakeMessage.decode(result);
 		logger.trace({ handshake }, 'handshake recv from WA');
-		const keyEnc = noise.processHandshake(handshake, creds.noiseKey);
+		const keyEnc = await noise.processHandshake(handshake, creds.noiseKey);
 		let node;
-		if (config.mobile) {
-			node = (0, Utils_1.generateMobileNode)(config);
-		} else if (!creds.me) {
+		if (!creds.me) {
 			node = (0, Utils_1.generateRegistrationNode)(creds, config);
 			logger.info({ node }, 'not logged in, attempting registration...');
 		} else {
@@ -222,10 +215,10 @@ const makeSocket = config => {
 			logger.info({ node }, 'logging in...');
 		}
 		const payloadEnc = noise.encrypt(
-			Proto_1.proto.ClientPayload.encode(node).finish(),
+			WAProto_1.proto.ClientPayload.encode(node).finish(),
 		);
 		await sendRawMessage(
-			Proto_1.proto.HandshakeMessage.encode({
+			WAProto_1.proto.HandshakeMessage.encode({
 				clientFinish: {
 					static: keyEnc,
 					payload: payloadEnc,
@@ -242,11 +235,11 @@ const makeSocket = config => {
 				id: generateMessageTag(),
 				xmlns: 'encrypt',
 				type: 'get',
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 			},
 			content: [{ tag: 'count', attrs: {} }],
 		});
-		const countChild = (0, Binary_1.getBinaryNodeChild)(result, 'count');
+		const countChild = (0, WABinary_1.getBinaryNodeChild)(result, 'count');
 		return +countChild.attrs.value;
 	};
 	/** generates and uploads a set of pre-keys to the server */
@@ -281,7 +274,7 @@ const makeSocket = config => {
 				const msgId = frame.attrs.id;
 				if (logger.level === 'trace') {
 					logger.trace({
-						xml: (0, Binary_1.binaryNodeToString)(frame),
+						xml: (0, WABinary_1.binaryNodeToString)(frame),
 						msg: 'recv xml',
 					});
 				}
@@ -296,7 +289,7 @@ const makeSocket = config => {
 						? void 0
 						: _a.tag
 					: '';
-				Object.keys(l1).forEach(key => {
+				for (const key of Object.keys(l1)) {
 					anyTriggered =
 						ws.emit(
 							`${Base_1.DEF_CALLBACK_PREFIX}${l0},${key}:${l1[key]},${l2}`,
@@ -310,7 +303,7 @@ const makeSocket = config => {
 					anyTriggered =
 						ws.emit(`${Base_1.DEF_CALLBACK_PREFIX}${l0},${key}`, frame) ||
 						anyTriggered;
-				});
+				}
 				anyTriggered =
 					ws.emit(`${Base_1.DEF_CALLBACK_PREFIX}${l0},,${l2}`, frame) ||
 					anyTriggered;
@@ -403,7 +396,7 @@ const makeSocket = config => {
 					tag: 'iq',
 					attrs: {
 						id: generateMessageTag(),
-						to: Binary_1.S_WHATSAPP_NET,
+						to: WABinary_1.S_WHATSAPP_NET,
 						type: 'get',
 						xmlns: 'w:p',
 					},
@@ -420,7 +413,7 @@ const makeSocket = config => {
 		query({
 			tag: 'iq',
 			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				xmlns: 'passive',
 				type: 'set',
 			},
@@ -435,7 +428,7 @@ const makeSocket = config => {
 			await sendNode({
 				tag: 'iq',
 				attrs: {
-					to: Binary_1.S_WHATSAPP_NET,
+					to: WABinary_1.S_WHATSAPP_NET,
 					type: 'set',
 					id: generateMessageTag(),
 					xmlns: 'md',
@@ -462,14 +455,14 @@ const makeSocket = config => {
 			(0, crypto_1.randomBytes)(5),
 		);
 		authState.creds.me = {
-			id: (0, Binary_1.jidEncode)(phoneNumber, 's.whatsapp.net'),
+			id: (0, WABinary_1.jidEncode)(phoneNumber, 's.whatsapp.net'),
 			name: '~',
 		};
 		ev.emit('creds.update', authState.creds);
 		await sendNode({
 			tag: 'iq',
 			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'set',
 				id: generateMessageTag(),
 				xmlns: 'md',
@@ -502,7 +495,7 @@ const makeSocket = config => {
 						{
 							tag: 'companion_platform_display',
 							attrs: {},
-							content: `${browser[1]} => (${browser[0]})`,
+							content: `${browser[1]} (${browser[0]})`,
 						},
 						{
 							tag: 'link_code_pairing_nonce',
@@ -533,7 +526,7 @@ const makeSocket = config => {
 		return query({
 			tag: 'iq',
 			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				id: generateMessageTag(),
 				xmlns: 'w:stats',
 			},
@@ -576,17 +569,20 @@ const makeSocket = config => {
 		const iq = {
 			tag: 'iq',
 			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'result',
 				id: stanza.attrs.id,
 			},
 		};
 		await sendNode(iq);
-		const pairDeviceNode = (0, Binary_1.getBinaryNodeChild)(
+		const pairDeviceNode = (0, WABinary_1.getBinaryNodeChild)(
 			stanza,
 			'pair-device',
 		);
-		const refNodes = (0, Binary_1.getBinaryNodeChildren)(pairDeviceNode, 'ref');
+		const refNodes = (0, WABinary_1.getBinaryNodeChildren)(
+			pairDeviceNode,
+			'ref',
+		);
 		const noiseKeyB64 = Buffer.from(creds.noiseKey.public).toString('base64');
 		const identityKeyB64 = Buffer.from(creds.signedIdentityKey.public).toString(
 			'base64',
@@ -670,12 +666,20 @@ const makeSocket = config => {
 			}),
 		);
 	});
+	ws.on('CB:ib,,offline_preview', node => {
+		logger.info('offline preview received', JSON.stringify(node));
+		sendNode({
+			tag: 'ib',
+			attrs: {},
+			content: [{ tag: 'offline_batch', attrs: { count: '100' } }],
+		});
+	});
 	ws.on('CB:ib,,edge_routing', node => {
-		const edgeRoutingNode = (0, Binary_1.getBinaryNodeChild)(
+		const edgeRoutingNode = (0, WABinary_1.getBinaryNodeChild)(
 			node,
 			'edge_routing',
 		);
-		const routingInfo = (0, Binary_1.getBinaryNodeChild)(
+		const routingInfo = (0, WABinary_1.getBinaryNodeChild)(
 			edgeRoutingNode,
 			'routing_info',
 		);
@@ -709,7 +713,7 @@ const makeSocket = config => {
 	});
 	// called when all offline notifs are handled
 	ws.on('CB:ib,,offline', node => {
-		const child = (0, Binary_1.getBinaryNodeChild)(node, 'offline');
+		const child = (0, WABinary_1.getBinaryNodeChild)(node, 'offline');
 		const offlineNotifs = +(
 			(child === null || child === void 0 ? void 0 : child.attrs.count) || 0
 		);
@@ -780,10 +784,7 @@ function mapWebSocketError(handler) {
 		handler(
 			new boom_1.Boom(
 				`WebSocket Error (${error === null || error === void 0 ? void 0 : error.message})`,
-				{
-					statusCode: (0, Utils_1.getCodeFromWSError)(error),
-					data: error,
-				},
+				{ statusCode: (0, Utils_1.getCodeFromWSError)(error), data: error },
 			),
 		);
 	};

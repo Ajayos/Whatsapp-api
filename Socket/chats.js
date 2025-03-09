@@ -6,16 +6,17 @@ var __importDefault =
 	};
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.makeChatsSocket = void 0;
+const node_cache_1 = __importDefault(require('@cacheable/node-cache'));
 const boom_1 = require('@hapi/boom');
-const node_cache_1 = __importDefault(require('node-cache'));
+const WAProto_1 = require('../../WAProto');
 const Base_1 = require('../Base');
-const Binary_1 = require('../Binary');
-const Proto_1 = require('../Proto');
 const Types_1 = require('../Types');
 const Utils_1 = require('../Utils');
 const make_mutex_1 = require('../Utils/make-mutex');
 const process_message_1 = __importDefault(require('../Utils/process-message'));
-const socket_1 = require('./socket');
+const WABinary_1 = require('../WABinary');
+const WAUSync_1 = require('../WAUSync');
+const usync_1 = require('./usync');
 const MAX_SYNC_ATTEMPTS = 2;
 const makeChatsSocket = config => {
 	const {
@@ -26,7 +27,7 @@ const makeChatsSocket = config => {
 		shouldIgnoreJid,
 		shouldSyncHistoryMessage,
 	} = config;
-	const sock = (0, socket_1.makeSocket)(config);
+	const sock = (0, usync_1.makeUSyncSocket)(config);
 	const {
 		ev,
 		ws,
@@ -63,12 +64,12 @@ const makeChatsSocket = config => {
 				tag: 'iq',
 				attrs: {
 					xmlns: 'privacy',
-					to: Binary_1.S_WHATSAPP_NET,
+					to: WABinary_1.S_WHATSAPP_NET,
 					type: 'get',
 				},
 				content: [{ tag: 'privacy', attrs: {} }],
 			});
-			privacySettings = (0, Binary_1.reduceBinaryNodeToDictionary)(
+			privacySettings = (0, WABinary_1.reduceBinaryNodeToDictionary)(
 				content === null || content === void 0 ? void 0 : content[0],
 				'category',
 			);
@@ -81,7 +82,7 @@ const makeChatsSocket = config => {
 			tag: 'iq',
 			attrs: {
 				xmlns: 'privacy',
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'set',
 			},
 			content: [
@@ -97,6 +98,9 @@ const makeChatsSocket = config => {
 				},
 			],
 		});
+	};
+	const updateMessagesPrivacy = async value => {
+		await privacyQuery('messages', value);
 	};
 	const updateCallPrivacy = async value => {
 		await privacyQuery('calladd', value);
@@ -124,7 +128,7 @@ const makeChatsSocket = config => {
 			tag: 'iq',
 			attrs: {
 				xmlns: 'disappearing_mode',
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'set',
 			},
 			content: [
@@ -137,117 +141,60 @@ const makeChatsSocket = config => {
 			],
 		});
 	};
-	/** helper function to run a generic IQ query */
-	const interactiveQuery = async (userNodes, queryNode) => {
-		const result = await query({
-			tag: 'iq',
-			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
-				type: 'get',
-				xmlns: 'usync',
-			},
-			content: [
-				{
-					tag: 'usync',
-					attrs: {
-						sid: generateMessageTag(),
-						mode: 'query',
-						last: 'true',
-						index: '0',
-						context: 'interactive',
-					},
-					content: [
-						{
-							tag: 'query',
-							attrs: {},
-							content: [queryNode],
-						},
-						{
-							tag: 'list',
-							attrs: {},
-							content: userNodes,
-						},
-					],
-				},
-			],
-		});
-		const usyncNode = (0, Binary_1.getBinaryNodeChild)(result, 'usync');
-		const listNode = (0, Binary_1.getBinaryNodeChild)(usyncNode, 'list');
-		const users = (0, Binary_1.getBinaryNodeChildren)(listNode, 'user');
-		return users;
-	};
 	const onWhatsApp = async (...jids) => {
-		const query = { tag: 'contact', attrs: {} };
-		const list = jids.map(jid => {
-			// insures only 1 + is there
-			const content = `+${jid.replace('+', '')}`;
-			return {
-				tag: 'user',
-				attrs: {},
-				content: [
-					{
-						tag: 'contact',
-						attrs: {},
-						content,
-					},
-				],
-			};
-		});
-		const results = await interactiveQuery(list, query);
-		return results
-			.map(user => {
-				const contact = (0, Binary_1.getBinaryNodeChild)(user, 'contact');
-				return {
-					exists:
-						(contact === null || contact === void 0
-							? void 0
-							: contact.attrs.type) === 'in',
-					jid: user.attrs.jid,
-				};
-			})
-			.filter(item => item.exists);
+		const usyncQuery = new WAUSync_1.USyncQuery().withContactProtocol();
+		for (const jid of jids) {
+			const phone = `+${jid.replace('+', '').split('@')[0].split(':')[0]}`;
+			usyncQuery.withUser(new WAUSync_1.USyncUser().withPhone(phone));
+		}
+		const results = await sock.executeUSyncQuery(usyncQuery);
+		if (results) {
+			return results.list
+				.filter(a => !!a.contact)
+				.map(({ contact, id }) => ({ jid: id, exists: contact }));
+		}
 	};
-	const fetchStatus = async jid => {
-		const [result] = await interactiveQuery([{ tag: 'user', attrs: { jid } }], {
-			tag: 'status',
-			attrs: {},
-		});
+	const fetchStatus = async (...jids) => {
+		const usyncQuery = new WAUSync_1.USyncQuery().withStatusProtocol();
+		for (const jid of jids) {
+			usyncQuery.withUser(new WAUSync_1.USyncUser().withId(jid));
+		}
+		const result = await sock.executeUSyncQuery(usyncQuery);
 		if (result) {
-			const status = (0, Binary_1.getBinaryNodeChild)(result, 'status');
-			return {
-				status:
-					status === null || status === void 0
-						? void 0
-						: status.content.toString(),
-				setAt: new Date(
-					+(
-						(status === null || status === void 0 ? void 0 : status.attrs.t) ||
-						0
-					) * 1000,
-				),
-			};
+			return result.list;
+		}
+	};
+	const fetchDisappearingDuration = async (...jids) => {
+		const usyncQuery =
+			new WAUSync_1.USyncQuery().withDisappearingModeProtocol();
+		for (const jid of jids) {
+			usyncQuery.withUser(new WAUSync_1.USyncUser().withId(jid));
+		}
+		const result = await sock.executeUSyncQuery(usyncQuery);
+		if (result) {
+			return result.list;
 		}
 	};
 	/** update the profile picture for yourself or a group */
 	const updateProfilePicture = async (jid, content) => {
-		let targetJid = '';
+		let targetJid;
 		if (!jid) {
 			throw new boom_1.Boom(
 				'Illegal no-jid profile update. Please specify either your ID or the ID of the chat you wish to update',
 			);
 		}
 		if (
-			(0, Binary_1.jidNormalizedUser)(jid) !==
-			(0, Binary_1.jidNormalizedUser)(authState.creds.me.id)
+			(0, WABinary_1.jidNormalizedUser)(jid) !==
+			(0, WABinary_1.jidNormalizedUser)(authState.creds.me.id)
 		) {
-			targetJid = jid; // in case it is someone other than us
+			targetJid = (0, WABinary_1.jidNormalizedUser)(jid); // in case it is someone other than us
 		}
 		const { img } = await (0, Utils_1.generateProfilePicture)(content);
 		await query({
 			tag: 'iq',
 			attrs: {
 				target: targetJid,
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'set',
 				xmlns: 'w:profile:picture',
 			},
@@ -262,23 +209,23 @@ const makeChatsSocket = config => {
 	};
 	/** remove the profile picture for yourself or a group */
 	const removeProfilePicture = async jid => {
-		let targetJid = '';
+		let targetJid;
 		if (!jid) {
 			throw new boom_1.Boom(
 				'Illegal no-jid profile update. Please specify either your ID or the ID of the chat you wish to update',
 			);
 		}
 		if (
-			(0, Binary_1.jidNormalizedUser)(jid) !==
-			(0, Binary_1.jidNormalizedUser)(authState.creds.me.id)
+			(0, WABinary_1.jidNormalizedUser)(jid) !==
+			(0, WABinary_1.jidNormalizedUser)(authState.creds.me.id)
 		) {
-			targetJid = jid; // in case it is someone other than us
+			targetJid = (0, WABinary_1.jidNormalizedUser)(jid); // in case it is someone other than us
 		}
 		await query({
 			tag: 'iq',
 			attrs: {
 				target: targetJid,
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'set',
 				xmlns: 'w:profile:picture',
 			},
@@ -289,7 +236,7 @@ const makeChatsSocket = config => {
 		await query({
 			tag: 'iq',
 			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'set',
 				xmlns: 'status',
 			},
@@ -310,12 +257,12 @@ const makeChatsSocket = config => {
 			tag: 'iq',
 			attrs: {
 				xmlns: 'blocklist',
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'get',
 			},
 		});
-		const listNode = (0, Binary_1.getBinaryNodeChild)(result, 'list');
-		return (0, Binary_1.getBinaryNodeChildren)(listNode, 'item').map(
+		const listNode = (0, WABinary_1.getBinaryNodeChild)(result, 'list');
+		return (0, WABinary_1.getBinaryNodeChildren)(listNode, 'item').map(
 			n => n.attrs.jid,
 		);
 	};
@@ -324,7 +271,7 @@ const makeChatsSocket = config => {
 			tag: 'iq',
 			attrs: {
 				xmlns: 'blocklist',
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'set',
 			},
 			content: [
@@ -360,29 +307,29 @@ const makeChatsSocket = config => {
 				},
 			],
 		});
-		const profileNode = (0, Binary_1.getBinaryNodeChild)(
+		const profileNode = (0, WABinary_1.getBinaryNodeChild)(
 			results,
 			'business_profile',
 		);
-		const profiles = (0, Binary_1.getBinaryNodeChild)(profileNode, 'profile');
+		const profiles = (0, WABinary_1.getBinaryNodeChild)(profileNode, 'profile');
 		if (profiles) {
-			const address = (0, Binary_1.getBinaryNodeChild)(profiles, 'address');
-			const description = (0, Binary_1.getBinaryNodeChild)(
+			const address = (0, WABinary_1.getBinaryNodeChild)(profiles, 'address');
+			const description = (0, WABinary_1.getBinaryNodeChild)(
 				profiles,
 				'description',
 			);
-			const website = (0, Binary_1.getBinaryNodeChild)(profiles, 'website');
-			const email = (0, Binary_1.getBinaryNodeChild)(profiles, 'email');
-			const category = (0, Binary_1.getBinaryNodeChild)(
-				(0, Binary_1.getBinaryNodeChild)(profiles, 'categories'),
+			const website = (0, WABinary_1.getBinaryNodeChild)(profiles, 'website');
+			const email = (0, WABinary_1.getBinaryNodeChild)(profiles, 'email');
+			const category = (0, WABinary_1.getBinaryNodeChild)(
+				(0, WABinary_1.getBinaryNodeChild)(profiles, 'categories'),
 				'category',
 			);
-			const businessHours = (0, Binary_1.getBinaryNodeChild)(
+			const businessHours = (0, WABinary_1.getBinaryNodeChild)(
 				profiles,
 				'business_hours',
 			);
 			const businessHoursConfig = businessHours
-				? (0, Binary_1.getBinaryNodeChildren)(
+				? (0, WABinary_1.getBinaryNodeChildren)(
 						businessHours,
 						'business_hours_config',
 					)
@@ -443,7 +390,7 @@ const makeChatsSocket = config => {
 		await sendNode({
 			tag: 'iq',
 			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'set',
 				xmlns: 'urn:xmpp:whatsapp:dirty',
 				id: generateMessageTag(),
@@ -518,7 +465,7 @@ const makeChatsSocket = config => {
 					const result = await query({
 						tag: 'iq',
 						attrs: {
-							to: Binary_1.S_WHATSAPP_NET,
+							to: WABinary_1.S_WHATSAPP_NET,
 							xmlns: 'w:sync:app:state',
 							type: 'set',
 						},
@@ -622,13 +569,13 @@ const makeChatsSocket = config => {
 	 */
 	const profilePictureUrl = async (jid, type = 'preview', timeoutMs) => {
 		var _a;
-		jid = (0, Binary_1.jidNormalizedUser)(jid);
+		jid = (0, WABinary_1.jidNormalizedUser)(jid);
 		const result = await query(
 			{
 				tag: 'iq',
 				attrs: {
 					target: jid,
-					to: Binary_1.S_WHATSAPP_NET,
+					to: WABinary_1.S_WHATSAPP_NET,
 					type: 'get',
 					xmlns: 'w:profile:picture',
 				},
@@ -636,7 +583,7 @@ const makeChatsSocket = config => {
 			},
 			timeoutMs,
 		);
-		const child = (0, Binary_1.getBinaryNodeChild)(result, 'picture');
+		const child = (0, WABinary_1.getBinaryNodeChild)(result, 'picture');
 		return (_a = child === null || child === void 0 ? void 0 : child.attrs) ===
 			null || _a === void 0
 			? void 0
@@ -760,7 +707,7 @@ const makeChatsSocket = config => {
 				const node = {
 					tag: 'iq',
 					attrs: {
-						to: Binary_1.S_WHATSAPP_NET,
+						to: WABinary_1.S_WHATSAPP_NET,
 						type: 'set',
 						xmlns: 'w:sync:app:state',
 					},
@@ -780,7 +727,8 @@ const makeChatsSocket = config => {
 										{
 											tag: 'patch',
 											attrs: {},
-											content: Proto_1.proto.SyncdPatch.encode(patch).finish(),
+											content:
+												WAProto_1.proto.SyncdPatch.encode(patch).finish(),
 										},
 									],
 								},
@@ -821,7 +769,7 @@ const makeChatsSocket = config => {
 		const resultNode = await query({
 			tag: 'iq',
 			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				xmlns: 'w',
 				type: 'get',
 			},
@@ -841,24 +789,21 @@ const makeChatsSocket = config => {
 				},
 			],
 		});
-		const propsNode = (0, Binary_1.getBinaryNodeChild)(resultNode, 'props');
+		const propsNode = (0, WABinary_1.getBinaryNodeChild)(resultNode, 'props');
 		let props = {};
 		if (propsNode) {
-			// @ts-ignore
-			(_b =
-				authState === null || authState === void 0
-					? void 0
-					: authState.creds) === null || _b === void 0
-				? void 0
-				: (_b.lastPropHash =
-						(_c =
-							propsNode === null || propsNode === void 0
-								? void 0
-								: propsNode.attrs) === null || _c === void 0
+			if ((_b = propsNode.attrs) === null || _b === void 0 ? void 0 : _b.hash) {
+				// on some clients, the hash is returning as undefined
+				authState.creds.lastPropHash =
+					(_c =
+						propsNode === null || propsNode === void 0
 							? void 0
-							: _c.hash);
-			ev.emit('creds.update', authState.creds);
-			props = (0, Binary_1.reduceBinaryNodeToDictionary)(propsNode, 'prop');
+							: propsNode.attrs) === null || _c === void 0
+						? void 0
+						: _c.hash;
+				ev.emit('creds.update', authState.creds);
+			}
+			props = (0, WABinary_1.reduceBinaryNodeToDictionary)(propsNode, 'prop');
 		}
 		logger.debug('fetched props');
 		return props;
@@ -967,14 +912,10 @@ const makeChatsSocket = config => {
 			let jid = msg.key.fromMe
 				? authState.creds.me.id
 				: msg.key.participant || msg.key.remoteJid;
-			jid = (0, Binary_1.jidNormalizedUser)(jid);
+			jid = (0, WABinary_1.jidNormalizedUser)(jid);
 			if (!msg.key.fromMe) {
 				ev.emit('contacts.update', [
-					{
-						id: jid,
-						notify: msg.pushName,
-						verifiedName: msg.verifiedBizName,
-					},
+					{ id: jid, notify: msg.pushName, verifiedName: msg.verifiedBizName },
 				]);
 			}
 			// update our pushname too
@@ -1046,7 +987,7 @@ const makeChatsSocket = config => {
 	ws.on('CB:presence', handlePresenceUpdate);
 	ws.on('CB:chatstate', handlePresenceUpdate);
 	ws.on('CB:ib,,dirty', async node => {
-		const { attrs } = (0, Binary_1.getBinaryNodeChild)(node, 'dirty');
+		const { attrs } = (0, WABinary_1.getBinaryNodeChild)(node, 'dirty');
 		const type = attrs.type;
 		switch (type) {
 			case 'account_sync':
@@ -1079,19 +1020,17 @@ const makeChatsSocket = config => {
 				markOnlineOnConnect ? 'available' : 'unavailable',
 			).catch(error => onUnexpectedError(error, 'presence update requests'));
 		}
-		if (receivedPendingNotifications) {
-			// if we don't have the app state key
+		if (
+			receivedPendingNotifications && // if we don't have the app state key
 			// we keep buffering events until we finally have
 			// the key and can sync the messages
-			if (
-				!((_a = authState.creds) === null || _a === void 0
-					? void 0
-					: _a.myAppStateKeyId) &&
-				!config.mobile
-			) {
-				ev.buffer();
-				needToFlushWithAppStateSync = true;
-			}
+			// todo scrutinize
+			!((_a = authState.creds) === null || _a === void 0
+				? void 0
+				: _a.myAppStateKeyId)
+		) {
+			ev.buffer();
+			needToFlushWithAppStateSync = true;
 		}
 	});
 	return {
@@ -1106,12 +1045,14 @@ const makeChatsSocket = config => {
 		onWhatsApp,
 		fetchBlocklist,
 		fetchStatus,
+		fetchDisappearingDuration,
 		updateProfilePicture,
 		removeProfilePicture,
 		updateProfileStatus,
 		updateProfileName,
 		updateBlockStatus,
 		updateCallPrivacy,
+		updateMessagesPrivacy,
 		updateLastSeenPrivacy,
 		updateOnlinePrivacy,
 		updateProfilePicturePrivacy,

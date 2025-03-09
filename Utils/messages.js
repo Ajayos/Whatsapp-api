@@ -29,10 +29,10 @@ const boom_1 = require('@hapi/boom');
 const axios_1 = __importDefault(require('axios'));
 const crypto_1 = require('crypto');
 const fs_1 = require('fs');
+const WAProto_1 = require('../../WAProto');
 const Base_1 = require('../Base');
-const Binary_1 = require('../Binary');
-const Proto_1 = require('../Proto');
 const Types_1 = require('../Types');
+const WABinary_1 = require('../WABinary');
 const crypto_2 = require('./crypto');
 const generics_1 = require('./generics');
 const messages_media_1 = require('./messages-media');
@@ -210,15 +210,6 @@ const prepareWAMessageMedia = async (message, options) => {
 						? void 0
 						: logger.debug('processed waveform');
 				}
-				if (requiresWaveformProcessing) {
-					uploadData.waveform = await (0, messages_media_1.getAudioWaveform)(
-						bodyPath,
-						logger,
-					);
-					logger === null || logger === void 0
-						? void 0
-						: logger.debug('processed waveform');
-				}
 				if (requiresAudioBackground) {
 					uploadData.backgroundArgb = await assertColor(
 						options.backgroundColor,
@@ -237,10 +228,17 @@ const prepareWAMessageMedia = async (message, options) => {
 		encWriteStream.destroy();
 		// remove tmp files
 		if (didSaveToTmpPath && bodyPath) {
-			await fs_1.promises.unlink(bodyPath);
-			logger === null || logger === void 0
-				? void 0
-				: logger.debug('removed tmp files');
+			try {
+				await fs_1.promises.access(bodyPath);
+				await fs_1.promises.unlink(bodyPath);
+				logger === null || logger === void 0
+					? void 0
+					: logger.debug('removed tmp file');
+			} catch (error) {
+				logger === null || logger === void 0
+					? void 0
+					: logger.warn('failed to remove tmp file');
+			}
 		}
 	});
 	const obj = Types_1.WAProto.Message.fromObject({
@@ -301,8 +299,8 @@ const generateForwardMessageContent = (message, forceForward) => {
 	}
 	// hacky copy
 	content = (0, exports.normalizeMessageContent)(content);
-	content = Proto_1.proto.Message.decode(
-		Proto_1.proto.Message.encode(content).finish(),
+	content = WAProto_1.proto.Message.decode(
+		WAProto_1.proto.Message.encode(content).finish(),
 	);
 	let key = Object.keys(content)[0];
 	let score =
@@ -338,7 +336,6 @@ const generateWAMessageContent = async (message, options) => {
 			);
 		}
 		if (urlInfo) {
-			extContent.canonicalUrl = urlInfo['canonical-url'];
 			extContent.matchedText = urlInfo['matched-text'];
 			extContent.jpegThumbnail = urlInfo.jpegThumbnail;
 			extContent.description = urlInfo.description;
@@ -451,7 +448,8 @@ const generateWAMessageContent = async (message, options) => {
 				m.buttonsResponseMessage = {
 					selectedButtonId: message.buttonReply.id,
 					selectedDisplayText: message.buttonReply.displayText,
-					type: Proto_1.proto.Message.ButtonsResponseMessage.Type.DISPLAY_TEXT,
+					type: WAProto_1.proto.Message.ButtonsResponseMessage.Type
+						.DISPLAY_TEXT,
 				};
 				break;
 		}
@@ -514,7 +512,7 @@ const generateWAMessageContent = async (message, options) => {
 		}
 	} else if ('sharePhoneNumber' in message) {
 		m.protocolMessage = {
-			type: Proto_1.proto.Message.ProtocolMessage.Type.SHARE_PHONE_NUMBER,
+			type: WAProto_1.proto.Message.ProtocolMessage.Type.SHARE_PHONE_NUMBER,
 		};
 	} else if ('requestPhoneNumber' in message) {
 		m.requestPhoneNumberMessage = {};
@@ -567,7 +565,7 @@ const generateWAMessageFromContent = (jid, message, options) => {
 		let quotedMsg = (0, exports.normalizeMessageContent)(quoted.message);
 		const msgType = (0, exports.getContentType)(quotedMsg);
 		// strip any redundant properties
-		quotedMsg = Proto_1.proto.Message.fromObject({
+		quotedMsg = WAProto_1.proto.Message.fromObject({
 			[msgType]: quotedMsg[msgType],
 		});
 		const quotedContent = quotedMsg[msgType];
@@ -579,7 +577,7 @@ const generateWAMessageFromContent = (jid, message, options) => {
 			delete quotedContent.contextInfo;
 		}
 		const contextInfo = innerMessage[key].contextInfo || {};
-		contextInfo.participant = (0, Binary_1.jidNormalizedUser)(participant);
+		contextInfo.participant = (0, WABinary_1.jidNormalizedUser)(participant);
 		contextInfo.stanzaId = quoted.key.id;
 		contextInfo.quotedMessage = quotedMsg;
 		// if a participant is quoted, then it must be a group
@@ -618,7 +616,8 @@ const generateWAMessageFromContent = (jid, message, options) => {
 		messageTimestamp: timestamp,
 		messageStubParameters: [],
 		participant:
-			(0, Binary_1.isJidGroup)(jid) || (0, Binary_1.isJidStatusBroadcast)(jid)
+			(0, WABinary_1.isJidGroup)(jid) ||
+			(0, WABinary_1.isJidStatusBroadcast)(jid)
 				? userJid
 				: undefined,
 		status: Types_1.WAMessageStatus.PENDING,
@@ -686,10 +685,10 @@ const normalizeMessageContent = content => {
 				: message.documentWithCaptionMessage) ||
 			(message === null || message === void 0
 				? void 0
-				: message.viewOnceMessageV2Extension) ||
+				: message.viewOnceMessageV2) ||
 			(message === null || message === void 0
 				? void 0
-				: message.viewOnceMessageV2) ||
+				: message.viewOnceMessageV2Extension) ||
 			(message === null || message === void 0 ? void 0 : message.editedMessage)
 		);
 	}
@@ -791,7 +790,7 @@ const getDevice = id =>
 			? 'web'
 			: /^(.{21}|.{32})$/.test(id)
 				? 'android'
-				: /^.{18}$/.test(id)
+				: /^(3F|.{18}$)/.test(id)
 					? 'desktop'
 					: 'unknown';
 exports.getDevice = getDevice;
@@ -925,26 +924,21 @@ const REUPLOAD_REQUIRED_STATUS = [410, 404];
 const downloadMediaMessage = async (message, type, options, ctx) => {
 	const result = await downloadMsg().catch(async error => {
 		var _a;
-		if (ctx) {
-			if (axios_1.default.isAxiosError(error)) {
-				// check if the message requires a reupload
-				if (
-					REUPLOAD_REQUIRED_STATUS.includes(
-						(_a = error.response) === null || _a === void 0
-							? void 0
-							: _a.status,
-					)
-				) {
-					ctx.logger.info(
-						{ key: message.key },
-						'sending reupload media request...',
-					);
-					// request reupload
-					message = await ctx.reuploadRequest(message);
-					const result = await downloadMsg();
-					return result;
-				}
-			}
+		if (
+			ctx &&
+			axios_1.default.isAxiosError(error) && // check if the message requires a reupload
+			REUPLOAD_REQUIRED_STATUS.includes(
+				(_a = error.response) === null || _a === void 0 ? void 0 : _a.status,
+			)
+		) {
+			ctx.logger.info(
+				{ key: message.key },
+				'sending reupload media request...',
+			);
+			// request reupload
+			message = await ctx.reuploadRequest(message);
+			const result = await downloadMsg();
+			return result;
 		}
 		throw error;
 	});

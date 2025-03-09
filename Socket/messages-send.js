@@ -6,13 +6,14 @@ var __importDefault =
 	};
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.makeMessagesSocket = void 0;
+const node_cache_1 = __importDefault(require('@cacheable/node-cache'));
 const boom_1 = require('@hapi/boom');
-const node_cache_1 = __importDefault(require('node-cache'));
+const WAProto_1 = require('../../WAProto');
 const Base_1 = require('../Base');
-const Binary_1 = require('../Binary');
-const Proto_1 = require('../Proto');
 const Utils_1 = require('../Utils');
 const link_preview_1 = require('../Utils/link-preview');
+const WABinary_1 = require('../WABinary');
+const WAUSync_1 = require('../WAUSync');
 const groups_1 = require('./groups');
 const makeMessagesSocket = config => {
 	const {
@@ -32,7 +33,6 @@ const makeMessagesSocket = config => {
 		upsertMessage,
 		query,
 		fetchPrivacySettings,
-		generateMessageTag,
 		sendNode,
 		groupMetadata,
 		groupToggleEphemeral,
@@ -57,21 +57,22 @@ const makeMessagesSocket = config => {
 					attrs: {
 						type: 'set',
 						xmlns: 'w:m',
-						to: Binary_1.S_WHATSAPP_NET,
+						to: WABinary_1.S_WHATSAPP_NET,
 					},
 					content: [{ tag: 'media_conn', attrs: {} }],
 				});
-				const mediaConnNode = (0, Binary_1.getBinaryNodeChild)(
+				const mediaConnNode = (0, WABinary_1.getBinaryNodeChild)(
 					result,
 					'media_conn',
 				);
 				const node = {
-					hosts: (0, Binary_1.getBinaryNodeChildren)(mediaConnNode, 'host').map(
-						({ attrs }) => ({
-							hostname: attrs.hostname,
-							maxContentLengthBytes: +attrs.maxContentLengthBytes,
-						}),
-					),
+					hosts: (0, WABinary_1.getBinaryNodeChildren)(
+						mediaConnNode,
+						'host',
+					).map(({ attrs }) => ({
+						hostname: attrs.hostname,
+						maxContentLengthBytes: +attrs.maxContentLengthBytes,
+					})),
 					auth: mediaConnNode.attrs.auth,
 					ttl: +mediaConnNode.attrs.ttl,
 					fetchDate: new Date(),
@@ -97,7 +98,7 @@ const makeMessagesSocket = config => {
 		if (isReadReceipt) {
 			node.attrs.t = (0, Utils_1.unixTimestampSeconds)().toString();
 		}
-		if (type === 'sender' && (0, Binary_1.isJidUser)(jid)) {
+		if (type === 'sender' && (0, WABinary_1.isJidUser)(jid)) {
 			node.attrs.recipient = jid;
 			node.attrs.to = participant;
 		} else {
@@ -150,72 +151,51 @@ const makeMessagesSocket = config => {
 		if (!useCache) {
 			logger.debug('not using cache for devices');
 		}
-		const users = [];
+		const toFetch = [];
 		jids = Array.from(new Set(jids));
 		for (let jid of jids) {
 			const user =
-				(_a = (0, Binary_1.jidDecode)(jid)) === null || _a === void 0
+				(_a = (0, WABinary_1.jidDecode)(jid)) === null || _a === void 0
 					? void 0
 					: _a.user;
-			jid = (0, Binary_1.jidNormalizedUser)(jid);
-			const devices = userDevicesCache.get(user);
-			if (devices && useCache) {
-				deviceResults.push(...devices);
-				logger.trace({ user }, 'using cache for devices');
+			jid = (0, WABinary_1.jidNormalizedUser)(jid);
+			if (useCache) {
+				const devices = userDevicesCache.get(user);
+				if (devices) {
+					deviceResults.push(...devices);
+					logger.trace({ user }, 'using cache for devices');
+				} else {
+					toFetch.push(jid);
+				}
 			} else {
-				users.push({ tag: 'user', attrs: { jid } });
+				toFetch.push(jid);
 			}
 		}
-		if (!users.length) {
+		if (!toFetch.length) {
 			return deviceResults;
 		}
-		const iq = {
-			tag: 'iq',
-			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
-				type: 'get',
-				xmlns: 'usync',
-			},
-			content: [
-				{
-					tag: 'usync',
-					attrs: {
-						sid: generateMessageTag(),
-						mode: 'query',
-						last: 'true',
-						index: '0',
-						context: 'message',
-					},
-					content: [
-						{
-							tag: 'query',
-							attrs: {},
-							content: [
-								{
-									tag: 'devices',
-									attrs: { version: '2' },
-								},
-							],
-						},
-						{ tag: 'list', attrs: {}, content: users },
-					],
-				},
-			],
-		};
-		const result = await query(iq);
-		const extracted = (0, Utils_1.extractDeviceJids)(
-			result,
-			authState.creds.me.id,
-			ignoreZeroDevices,
-		);
-		const deviceMap = {};
-		for (const item of extracted) {
-			deviceMap[item.user] = deviceMap[item.user] || [];
-			deviceMap[item.user].push(item);
-			deviceResults.push(item);
+		const query = new WAUSync_1.USyncQuery()
+			.withContext('message')
+			.withDeviceProtocol();
+		for (const jid of toFetch) {
+			query.withUser(new WAUSync_1.USyncUser().withId(jid));
 		}
-		for (const key in deviceMap) {
-			userDevicesCache.set(key, deviceMap[key]);
+		const result = await sock.executeUSyncQuery(query);
+		if (result) {
+			const extracted = (0, Utils_1.extractDeviceJids)(
+				result === null || result === void 0 ? void 0 : result.list,
+				authState.creds.me.id,
+				ignoreZeroDevices,
+			);
+			const deviceMap = {};
+			for (const item of extracted) {
+				deviceMap[item.user] = deviceMap[item.user] || [];
+				deviceMap[item.user].push(item);
+				deviceResults.push(item);
+			}
+			for (const key in deviceMap) {
+				userDevicesCache.set(key, deviceMap[key]);
+			}
 		}
 		return deviceResults;
 	};
@@ -243,7 +223,7 @@ const makeMessagesSocket = config => {
 				attrs: {
 					xmlns: 'encrypt',
 					type: 'get',
-					to: Binary_1.S_WHATSAPP_NET,
+					to: WABinary_1.S_WHATSAPP_NET,
 				},
 				content: [
 					{
@@ -272,11 +252,11 @@ const makeMessagesSocket = config => {
 		const protocolMessage = {
 			protocolMessage: {
 				peerDataOperationRequestMessage: pdoMessage,
-				type: Proto_1.proto.Message.ProtocolMessage.Type
+				type: WAProto_1.proto.Message.ProtocolMessage.Type
 					.PEER_DATA_OPERATION_REQUEST_MESSAGE,
 			},
 		};
-		const meJid = (0, Binary_1.jidNormalizedUser)(authState.creds.me.id);
+		const meJid = (0, WABinary_1.jidNormalizedUser)(authState.creds.me.id);
 		const msgId = await relayMessage(meJid, protocolMessage, {
 			additionalAttributes: {
 				category: 'peer',
@@ -335,7 +315,7 @@ const makeMessagesSocket = config => {
 		var _a;
 		const meId = authState.creds.me.id;
 		let shouldIncludeDeviceIdentity = false;
-		const { user, server } = (0, Binary_1.jidDecode)(jid);
+		const { user, server } = (0, WABinary_1.jidDecode)(jid);
 		const statusJid = 'status@broadcast';
 		const isGroup = server === 'g.us';
 		const isStatus = jid === statusJid;
@@ -349,7 +329,7 @@ const makeMessagesSocket = config => {
 		useCachedGroupMetadata = useCachedGroupMetadata !== false && !isStatus;
 		const participants = [];
 		const destinationJid = !isStatus
-			? (0, Binary_1.jidEncode)(
+			? (0, WABinary_1.jidEncode)(
 					user,
 					isLid ? 'lid' : isGroup ? 'g.us' : 's.whatsapp.net',
 				)
@@ -373,7 +353,7 @@ const makeMessagesSocket = config => {
 					device_fanout: 'false',
 				};
 			}
-			const { user, device } = (0, Binary_1.jidDecode)(participant.jid);
+			const { user, device } = (0, WABinary_1.jidDecode)(participant.jid);
 			devices.push({ user, device });
 		}
 		await authState.keys.transaction(async () => {
@@ -440,7 +420,7 @@ const makeMessagesSocket = config => {
 				const patched = await patchMessageBeforeSending(
 					message,
 					devices.map(d =>
-						(0, Binary_1.jidEncode)(
+						(0, WABinary_1.jidEncode)(
 							d.user,
 							isLid ? 'lid' : 's.whatsapp.net',
 							d.device,
@@ -457,7 +437,7 @@ const makeMessagesSocket = config => {
 				const senderKeyJids = [];
 				// ensure a connection is established with every device
 				for (const { user, device } of devices) {
-					const jid = (0, Binary_1.jidEncode)(
+					const jid = (0, WABinary_1.jidEncode)(
 						user,
 						isLid ? 'lid' : 's.whatsapp.net',
 						device,
@@ -497,23 +477,17 @@ const makeMessagesSocket = config => {
 					'sender-key-memory': { [jid]: senderKeyMap },
 				});
 			} else {
-				const { user: meUser, device: meDevice } = (0, Binary_1.jidDecode)(
-					meId,
-				);
+				const { user: meUser } = (0, WABinary_1.jidDecode)(meId);
 				if (!participant) {
 					devices.push({ user });
-					// do not send message to self if the device is 0 (mobile)
+					if (user !== meUser) {
+						devices.push({ user: meUser });
+					}
 					if (
-						!(
-							(additionalAttributes === null || additionalAttributes === void 0
-								? void 0
-								: additionalAttributes['category']) === 'peer' &&
-							user === meUser
-						)
+						(additionalAttributes === null || additionalAttributes === void 0
+							? void 0
+							: additionalAttributes['category']) !== 'peer'
 					) {
-						if (meDevice !== undefined && meDevice !== 0) {
-							devices.push({ user: meUser });
-						}
 						const additionalDevices = await getUSyncDevices(
 							[meId, jid],
 							!!useUserDevicesCache,
@@ -527,7 +501,7 @@ const makeMessagesSocket = config => {
 				const otherJids = [];
 				for (const { user, device } of devices) {
 					const isMe = user === meUser;
-					const jid = (0, Binary_1.jidEncode)(
+					const jid = (0, WABinary_1.jidEncode)(
 						isMe && isLid
 							? ((_c =
 									(_b = authState.creds) === null || _b === void 0
@@ -586,7 +560,7 @@ const makeMessagesSocket = config => {
 				tag: 'message',
 				attrs: {
 					id: msgId,
-					type: 'text',
+					type: getMessageType(message),
 					...(additionalAttributes || {}),
 				},
 				content: binaryNodeContent,
@@ -595,10 +569,10 @@ const makeMessagesSocket = config => {
 			// ensure the message is only sent to that person
 			// if a retry receipt is sent to everyone -- it'll fail decryption for everyone else who received the msg
 			if (participant) {
-				if ((0, Binary_1.isJidGroup)(destinationJid)) {
+				if ((0, WABinary_1.isJidGroup)(destinationJid)) {
 					stanza.attrs.to = destinationJid;
 					stanza.attrs.participant = participant.jid;
-				} else if ((0, Binary_1.areJidsSameUser)(participant.jid, meId)) {
+				} else if ((0, WABinary_1.areJidsSameUser)(participant.jid, meId)) {
 					stanza.attrs.to = participant.jid;
 					stanza.attrs.recipient = destinationJid;
 				} else {
@@ -628,6 +602,16 @@ const makeMessagesSocket = config => {
 			await sendNode(stanza);
 		});
 		return msgId;
+	};
+	const getMessageType = message => {
+		if (
+			message.pollCreationMessage ||
+			message.pollCreationMessageV2 ||
+			message.pollCreationMessageV3
+		) {
+			return 'poll';
+		}
+		return 'text';
 	};
 	const getMediaType = message => {
 		if (message.imageMessage) {
@@ -667,7 +651,7 @@ const makeMessagesSocket = config => {
 		const result = await query({
 			tag: 'iq',
 			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'set',
 				xmlns: 'privacy',
 			},
@@ -678,7 +662,7 @@ const makeMessagesSocket = config => {
 					content: jids.map(jid => ({
 						tag: 'token',
 						attrs: {
-							jid: (0, Binary_1.jidNormalizedUser)(jid),
+							jid: (0, WABinary_1.jidNormalizedUser)(jid),
 							t,
 							type: 'trusted_contact',
 						},
@@ -714,7 +698,7 @@ const makeMessagesSocket = config => {
 			const content = (0, Utils_1.assertMediaContent)(message.message);
 			const mediaKey = content.mediaKey;
 			const meId = authState.creds.me.id;
-			const node = (0, Utils_1.encryptMediaRetryRequest)(
+			const node = await (0, Utils_1.encryptMediaRetryRequest)(
 				message.key,
 				mediaKey,
 				meId,
@@ -722,24 +706,24 @@ const makeMessagesSocket = config => {
 			let error = undefined;
 			await Promise.all([
 				sendNode(node),
-				waitForMsgMediaUpdate(update => {
+				waitForMsgMediaUpdate(async update => {
 					const result = update.find(c => c.key.id === message.key.id);
 					if (result) {
 						if (result.error) {
 							error = result.error;
 						} else {
 							try {
-								const media = (0, Utils_1.decryptMediaRetryData)(
+								const media = await (0, Utils_1.decryptMediaRetryData)(
 									result.media,
 									mediaKey,
 									result.key.id,
 								);
 								if (
 									media.result !==
-									Proto_1.proto.MediaRetryNotification.ResultType.SUCCESS
+									WAProto_1.proto.MediaRetryNotification.ResultType.SUCCESS
 								) {
 									const resultStr =
-										Proto_1.proto.MediaRetryNotification.ResultType[
+										WAProto_1.proto.MediaRetryNotification.ResultType[
 											media.result
 										];
 									throw new boom_1.Boom(
@@ -783,7 +767,7 @@ const makeMessagesSocket = config => {
 				typeof content === 'object' &&
 				'disappearingMessagesInChat' in content &&
 				typeof content['disappearingMessagesInChat'] !== 'undefined' &&
-				(0, Binary_1.isJidGroup)(jid)
+				(0, WABinary_1.isJidGroup)(jid)
 			) {
 				const { disappearingMessagesInChat } = content;
 				const value =
@@ -822,12 +806,14 @@ const makeMessagesSocket = config => {
 				const isDeleteMsg = 'delete' in content && !!content.delete;
 				const isEditMsg = 'edit' in content && !!content.edit;
 				const isPinMsg = 'pin' in content && !!content.pin;
+				const isPollMessage = 'poll' in content && !!content.poll;
 				const additionalAttributes = {};
+				const additionalNodes = [];
 				// required for delete
 				if (isDeleteMsg) {
 					// if the chat is a group, and I am not the author, then delete the message as an admin
 					if (
-						(0, Binary_1.isJidGroup)(
+						(0, WABinary_1.isJidGroup)(
 							(_b = content.delete) === null || _b === void 0
 								? void 0
 								: _b.remoteJid,
@@ -844,6 +830,13 @@ const makeMessagesSocket = config => {
 					additionalAttributes.edit = '1';
 				} else if (isPinMsg) {
 					additionalAttributes.edit = '2';
+				} else if (isPollMessage) {
+					additionalNodes.push({
+						tag: 'meta',
+						attrs: {
+							polltype: 'creation',
+						},
+					});
 				}
 				if ('cachedGroupMetadata' in options) {
 					console.warn(
@@ -855,6 +848,7 @@ const makeMessagesSocket = config => {
 					useCachedGroupMetadata: options.useCachedGroupMetadata,
 					additionalAttributes,
 					statusJidList: options.statusJidList,
+					additionalNodes,
 				});
 				if (config.emitOwnEvents) {
 					process.nextTick(() => {

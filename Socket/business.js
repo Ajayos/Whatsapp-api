@@ -1,9 +1,9 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.makeBusinessSocket = void 0;
-const Binary_1 = require('../Binary');
-const generic_utils_1 = require('../Binary/generic-utils');
 const business_1 = require('../Utils/business');
+const WABinary_1 = require('../WABinary');
+const generic_utils_1 = require('../WABinary/generic-utils');
 const messages_recv_1 = require('./messages-recv');
 const makeBusinessSocket = config => {
 	const sock = (0, messages_recv_1.makeMessagesRecvSocket)(config);
@@ -13,7 +13,7 @@ const makeBusinessSocket = config => {
 		jid =
 			jid ||
 			((_a = authState.creds.me) === null || _a === void 0 ? void 0 : _a.id);
-		jid = (0, Binary_1.jidNormalizedUser)(jid);
+		jid = (0, WABinary_1.jidNormalizedUser)(jid);
 		const queryParamNodes = [
 			{
 				tag: 'limit',
@@ -41,7 +41,7 @@ const makeBusinessSocket = config => {
 		const result = await query({
 			tag: 'iq',
 			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'get',
 				xmlns: 'w:biz:catalog',
 			},
@@ -63,11 +63,11 @@ const makeBusinessSocket = config => {
 		jid =
 			jid ||
 			((_a = authState.creds.me) === null || _a === void 0 ? void 0 : _a.id);
-		jid = (0, Binary_1.jidNormalizedUser)(jid);
+		jid = (0, WABinary_1.jidNormalizedUser)(jid);
 		const result = await query({
 			tag: 'iq',
 			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'get',
 				xmlns: 'w:biz:catalog',
 				smax_id: '35',
@@ -109,7 +109,7 @@ const makeBusinessSocket = config => {
 		const result = await query({
 			tag: 'iq',
 			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'get',
 				xmlns: 'fb:thrift_iq',
 				smax_id: '5',
@@ -158,7 +158,7 @@ const makeBusinessSocket = config => {
 		const result = await query({
 			tag: 'iq',
 			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'set',
 				xmlns: 'w:biz:catalog',
 			},
@@ -203,7 +203,7 @@ const makeBusinessSocket = config => {
 		const result = await query({
 			tag: 'iq',
 			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'set',
 				xmlns: 'w:biz:catalog',
 			},
@@ -241,7 +241,7 @@ const makeBusinessSocket = config => {
 		const result = await query({
 			tag: 'iq',
 			attrs: {
-				to: Binary_1.S_WHATSAPP_NET,
+				to: WABinary_1.S_WHATSAPP_NET,
 				type: 'set',
 				xmlns: 'w:biz:catalog',
 			},

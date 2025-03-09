@@ -61,7 +61,11 @@ const encodeBinaryNodeInner = ({ tag, attrs, content }, opts, buffer) => {
 			buffer.push((value >> (curShift * 8)) & 0xff);
 		}
 	};
-	const pushBytes = bytes => bytes.forEach(b => buffer.push(b));
+	const pushBytes = bytes => {
+		for (const b of bytes) {
+			buffer.push(b);
+		}
+	};
 	const pushInt16 = value => {
 		pushBytes([(value >> 8) & 0xff, value & 0xff]);
 	};
@@ -160,8 +164,7 @@ const encodeBinaryNodeInner = ({ tag, attrs, content }, opts, buffer) => {
 		if (str.length > TAGS.PACKED_MAX) {
 			return false;
 		}
-		for (let i = 0; i < str.length; i++) {
-			const char = str[i];
+		for (const char of str) {
 			const isInNibbleRange = char >= '0' && char <= '9';
 			if (!isInNibbleRange && char !== '-' && char !== '.') {
 				return false;
@@ -173,14 +176,9 @@ const encodeBinaryNodeInner = ({ tag, attrs, content }, opts, buffer) => {
 		if (str.length > TAGS.PACKED_MAX) {
 			return false;
 		}
-		for (let i = 0; i < str.length; i++) {
-			const char = str[i];
+		for (const char of str) {
 			const isInNibbleRange = char >= '0' && char <= '9';
-			if (
-				!isInNibbleRange &&
-				!(char >= 'A' && char <= 'F') &&
-				!(char >= 'a' && char <= 'f')
-			) {
+			if (!isInNibbleRange && !(char >= 'A' && char <= 'F')) {
 				return false;
 			}
 		}

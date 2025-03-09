@@ -1,9 +1,4 @@
 'use strict';
-var __importDefault =
-	(this && this.__importDefault) ||
-	function (mod) {
-		return mod && mod.__esModule ? mod : { default: mod };
-	};
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.bytesToCrockford =
 	exports.trimUndefined =
@@ -13,12 +8,11 @@ exports.bytesToCrockford =
 	exports.getErrorCodeFromStreamError =
 	exports.getStatusFromReceiptType =
 	exports.generateMdTagPrefix =
-	exports.fetchLatestWaWebVersion =
 	exports.printQRIfNecessaryListener =
 	exports.bindWaitForConnectionUpdate =
 	exports.bindWaitForEvent =
-	exports.generateMessageIDV2 =
 	exports.generateMessageID =
+	exports.generateMessageIDV2 =
 	exports.promiseTimeout =
 	exports.delayCancellable =
 	exports.delay =
@@ -36,13 +30,11 @@ exports.bytesToCrockford =
 	exports.Browsers =
 		void 0;
 const boom_1 = require('@hapi/boom');
-const axios_1 = __importDefault(require('axios'));
 const crypto_1 = require('crypto');
 const os_1 = require('os');
-const Proto_1 = require('../Proto');
-const baileysVersion = [2, 2413, 51];
-const Binary_1 = require('../Binary');
+const WAProto_1 = require('../../WAProto');
 const Types_1 = require('../Types');
+const WABinary_1 = require('../WABinary');
 const PLATFORM_MAP = {
 	aix: 'AIX',
 	darwin: 'Mac OS',
@@ -55,7 +47,6 @@ const PLATFORM_MAP = {
 exports.Browsers = {
 	ubuntu: browser => ['Ubuntu', browser, '22.04.4'],
 	macOS: browser => ['Mac OS', browser, '14.4.1'],
-	baileys: browser => ['Baileys', browser, '4.0.0'],
 	windows: browser => ['Windows', browser, '10.0.22631'],
 	aurora: () => ['AURORA', 'Firefox', '14.4.1'],
 	keerthana: () => ['KEERTHANA', 'Firefox', '14.4.1'],
@@ -68,11 +59,12 @@ exports.Browsers = {
 };
 const getPlatformId = browser => {
 	const platformType =
-		Proto_1.proto.DeviceProps.PlatformType[browser.toUpperCase()];
+		WAProto_1.proto.DeviceProps.PlatformType[browser.toUpperCase()];
 	return platformType ? platformType.toString().charCodeAt(0).toString() : '49'; //chrome
 };
 exports.getPlatformId = getPlatformId;
 exports.BufferJSON = {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	replacer: (k, value) => {
 		if (
 			Buffer.isBuffer(value) ||
@@ -88,6 +80,7 @@ exports.BufferJSON = {
 		}
 		return value;
 	},
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	reviver: (_, value) => {
 		if (
 			typeof value === 'object' &&
@@ -131,7 +124,7 @@ const unpadRandomMax16 = e => {
 exports.unpadRandomMax16 = unpadRandomMax16;
 const encodeWAMessage = message =>
 	(0, exports.writeRandomPadMax16)(
-		Proto_1.proto.Message.encode(message).finish(),
+		WAProto_1.proto.Message.encode(message).finish(),
 	);
 exports.encodeWAMessage = encodeWAMessage;
 const generateRegistrationId = () => {
@@ -149,7 +142,11 @@ const encodeBigEndian = (e, t = 4) => {
 };
 exports.encodeBigEndian = encodeBigEndian;
 const toNumber = t =>
-	typeof t === 'object' && t ? ('toNumber' in t ? t.toNumber() : t.low) : t;
+	typeof t === 'object' && t
+		? 'toNumber' in t
+			? t.toNumber()
+			: t.low
+		: t || 0;
 exports.toNumber = toNumber;
 /** unix timestamp of a date in seconds */
 const unixTimestampSeconds = (date = new Date()) =>
@@ -225,17 +222,13 @@ async function promiseTimeout(ms, promise) {
 	return p;
 }
 exports.promiseTimeout = promiseTimeout;
-// generate a random ID to attach to a message
-const generateMessageID = () =>
-	'3EB0' + (0, crypto_1.randomBytes)(18).toString('hex').toUpperCase();
-exports.generateMessageID = generateMessageID;
 // inspired from whatsmeow code
 // https://github.com/tulir/whatsmeow/blob/64bc969fbe78d31ae0dd443b8d4c80a5d026d07a/send.go#L42
 const generateMessageIDV2 = userId => {
 	const data = Buffer.alloc(8 + 20 + 16);
 	data.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 1000)));
 	if (userId) {
-		const id = (0, Binary_1.jidDecode)(userId);
+		const id = (0, WABinary_1.jidDecode)(userId);
 		if (id === null || id === void 0 ? void 0 : id.user) {
 			data.write(id.user, 8);
 			data.write('@c.us', 8 + id.user.length);
@@ -247,6 +240,10 @@ const generateMessageIDV2 = userId => {
 	return '3EB0' + hash.toString('hex').toUpperCase().substring(0, 18);
 };
 exports.generateMessageIDV2 = generateMessageIDV2;
+// generate a random ID to attach to a message
+const generateMessageID = () =>
+	'3EB0' + (0, crypto_1.randomBytes)(18).toString('hex').toUpperCase();
+exports.generateMessageID = generateMessageID;
 function bindWaitForEvent(ev, event) {
 	return async (check, timeoutMs) => {
 		let listener;
@@ -265,8 +262,8 @@ function bindWaitForEvent(ev, event) {
 				}
 			};
 			ev.on('connection.update', closeListener);
-			listener = update => {
-				if (check(update)) {
+			listener = async update => {
+				if (await check(update)) {
 					resolve();
 				}
 			};
@@ -294,33 +291,6 @@ const printQRIfNecessaryListener = (ev, logger) => {
 	});
 };
 exports.printQRIfNecessaryListener = printQRIfNecessaryListener;
-/**
- * A utility that fetches the latest web version of whatsapp.
- * Use to ensure your WA connection is always on the latest version
- */
-const fetchLatestWaWebVersion = async options => {
-	try {
-		const result = await axios_1.default.get(
-			'https://web.whatsapp.com/check-update?version=1&platform=web',
-			{
-				...options,
-				responseType: 'json',
-			},
-		);
-		const version = result.data.currentVersion.split('.');
-		return {
-			version: [+version[0], +version[1], +version[2]],
-			isLatest: true,
-		};
-	} catch (error) {
-		return {
-			version: baileysVersion,
-			isLatest: false,
-			error,
-		};
-	}
-};
-exports.fetchLatestWaWebVersion = fetchLatestWaWebVersion;
 /** unique message tag prefix for MD clients */
 const generateMdTagPrefix = () => {
 	const bytes = (0, crypto_1.randomBytes)(4);
@@ -328,9 +298,10 @@ const generateMdTagPrefix = () => {
 };
 exports.generateMdTagPrefix = generateMdTagPrefix;
 const STATUS_MAP = {
-	played: Proto_1.proto.WebMessageInfo.Status.PLAYED,
-	read: Proto_1.proto.WebMessageInfo.Status.READ,
-	'read-self': Proto_1.proto.WebMessageInfo.Status.READ,
+	sender: WAProto_1.proto.WebMessageInfo.Status.SERVER_ACK,
+	played: WAProto_1.proto.WebMessageInfo.Status.PLAYED,
+	read: WAProto_1.proto.WebMessageInfo.Status.READ,
+	'read-self': WAProto_1.proto.WebMessageInfo.Status.READ,
 };
 /**
  * Given a type of receipt, returns what the new status of the message should be
@@ -339,7 +310,7 @@ const STATUS_MAP = {
 const getStatusFromReceiptType = type => {
 	const status = STATUS_MAP[type];
 	if (typeof type === 'undefined') {
-		return Proto_1.proto.WebMessageInfo.Status.DELIVERY_ACK;
+		return WAProto_1.proto.WebMessageInfo.Status.DELIVERY_ACK;
 	}
 	return status;
 };
@@ -352,7 +323,7 @@ const CODE_MAP = {
  * @param reason the string reason given, eg. "conflict"
  */
 const getErrorCodeFromStreamError = node => {
-	const [reasonNode] = (0, Binary_1.getAllBinaryNodeChildren)(node);
+	const [reasonNode] = (0, WABinary_1.getAllBinaryNodeChildren)(node);
 	let reason =
 		(reasonNode === null || reasonNode === void 0 ? void 0 : reasonNode.tag) ||
 		'unknown';
@@ -415,6 +386,7 @@ const getCodeFromWSError = error => {
 			statusCode = code;
 		}
 	} else if (
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		((_b = error === null || error === void 0 ? void 0 : error.code) === null ||
 		_b === void 0
 			? void 0
@@ -438,6 +410,7 @@ const isWABusinessPlatform = platform => {
 	return platform === 'smbi' || platform === 'smba';
 };
 exports.isWABusinessPlatform = isWABusinessPlatform;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function trimUndefined(obj) {
 	for (const key in obj) {
 		if (typeof obj[key] === 'undefined') {
@@ -452,8 +425,8 @@ function bytesToCrockford(buffer) {
 	let value = 0;
 	let bitCount = 0;
 	const crockford = [];
-	for (let i = 0; i < buffer.length; i++) {
-		value = (value << 8) | (buffer[i] & 0xff);
+	for (const element of buffer) {
+		value = (value << 8) | (element & 0xff);
 		bitCount += 8;
 		while (bitCount >= 5) {
 			crockford.push(

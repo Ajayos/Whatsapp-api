@@ -1297,11 +1297,11 @@ exports.SINGLE_BYTE_TOKENS = [
 	'media-eze1-1.cdn.whatsapp.net',
 ];
 exports.TOKEN_MAP = {};
-for (let i = 0; i < exports.SINGLE_BYTE_TOKENS.length; i++) {
-	exports.TOKEN_MAP[exports.SINGLE_BYTE_TOKENS[i]] = { index: i };
+for (const [i, SINGLE_BYTE_TOKEN] of exports.SINGLE_BYTE_TOKENS.entries()) {
+	exports.TOKEN_MAP[SINGLE_BYTE_TOKEN] = { index: i };
 }
-for (let i = 0; i < exports.DOUBLE_BYTE_TOKENS.length; i++) {
-	for (let j = 0; j < exports.DOUBLE_BYTE_TOKENS[i].length; j++) {
-		exports.TOKEN_MAP[exports.DOUBLE_BYTE_TOKENS[i][j]] = { dict: i, index: j };
+for (const [i, DOUBLE_BYTE_TOKEN] of exports.DOUBLE_BYTE_TOKENS.entries()) {
+	for (const [j, element] of DOUBLE_BYTE_TOKEN.entries()) {
+		exports.TOKEN_MAP[element] = { dict: i, index: j };
 	}
 }

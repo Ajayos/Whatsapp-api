@@ -7,8 +7,9 @@ var __importDefault =
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.WebSocketClient = void 0;
 const ws_1 = __importDefault(require('ws'));
-const abstract_socket_client_1 = require('./abstract-socket-client');
-class WebSocketClient extends abstract_socket_client_1.AbstractSocketClient {
+const Base_1 = require('../../Base');
+const types_1 = require('./types');
+class WebSocketClient extends types_1.AbstractSocketClient {
 	constructor() {
 		super(...arguments);
 		this.socket = null;
@@ -48,16 +49,19 @@ class WebSocketClient extends abstract_socket_client_1.AbstractSocketClient {
 		);
 	}
 	async connect() {
-		var _a;
+		var _a, _b;
 		if (this.socket) {
 			return;
 		}
 		this.socket = new ws_1.default(this.url, {
-			origin: 'https://web.whatsapp.com',
-			headers: {},
-			handshakeTimeout: 20000,
-			timeout: 20000,
-			agent: undefined,
+			origin: Base_1.DEFAULT_ORIGIN,
+			headers:
+				(_a = this.config.options) === null || _a === void 0
+					? void 0
+					: _a.headers,
+			handshakeTimeout: this.config.connectTimeoutMs,
+			timeout: this.config.connectTimeoutMs,
+			agent: this.config.agent,
 		});
 		this.socket.setMaxListeners(0);
 		const events = [
@@ -71,9 +75,9 @@ class WebSocketClient extends abstract_socket_client_1.AbstractSocketClient {
 			'unexpected-response',
 		];
 		for (const event of events) {
-			(_a = this.socket) === null || _a === void 0
+			(_b = this.socket) === null || _b === void 0
 				? void 0
-				: _a.on(event, (...args) => this.emit(event, ...args));
+				: _b.on(event, (...args) => this.emit(event, ...args));
 		}
 	}
 	async close() {
