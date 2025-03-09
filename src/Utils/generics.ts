@@ -2,18 +2,17 @@ import { Boom } from '@hapi/boom';
 import axios, { AxiosRequestConfig } from 'axios';
 import { createHash, randomBytes } from 'crypto';
 import { platform, release } from 'os';
-import { Logger } from 'pino';
-import { proto } from '../Proto';
-const baileysVersion = [2, 2413, 51];
-import { BinaryNode, getAllBinaryNodeChildren, jidDecode } from '../Binary';
+import { proto } from '../../WAProto';
 import {
 	BaileysEventEmitter,
 	BaileysEventMap,
 	BrowsersMap,
+	ConnectionState,
 	DisconnectReason,
 	WACallUpdateType,
 } from '../Types';
-type WAVersion = [number, number, number];
+import { BinaryNode, getAllBinaryNodeChildren, jidDecode } from '../WABinary';
+import { ILogger } from './logger';
 
 const PLATFORM_MAP = {
 	aix: 'AIX',
@@ -28,7 +27,6 @@ const PLATFORM_MAP = {
 export const Browsers: BrowsersMap = {
 	ubuntu: browser => ['Ubuntu', browser, '22.04.4'],
 	macOS: browser => ['Mac OS', browser, '14.4.1'],
-	baileys: browser => ['Baileys', browser, '4.0.0'],
 	windows: browser => ['Windows', browser, '10.0.22631'],
 	aurora: () => ['AURORA', 'Firefox', '14.4.1'],
 	keerthana: () => ['KEERTHANA', 'Firefox', '14.4.1'],
@@ -46,6 +44,7 @@ export const getPlatformId = (browser: string) => {
 };
 
 export const BufferJSON = {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	replacer: (k, value: any) => {
 		if (
 			Buffer.isBuffer(value) ||
@@ -60,6 +59,8 @@ export const BufferJSON = {
 
 		return value;
 	},
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	reviver: (_, value: any) => {
 		if (
 			typeof value === 'object' &&
@@ -127,8 +128,8 @@ export const toNumber = (t: Long | number | null | undefined): number =>
 	typeof t === 'object' && t
 		? 'toNumber' in t
 			? t.toNumber()
-			: (t as any).low
-		: t;
+			: (t as Long).low
+		: t || 0;
 
 /** unix timestamp of a date in seconds */
 export const unixTimestampSeconds = (date: Date = new Date()) =>
@@ -209,10 +210,6 @@ export async function promiseTimeout<T>(
 	return p as Promise<T>;
 }
 
-// generate a random ID to attach to a message
-export const generateMessageID = () =>
-	'3EB0' + randomBytes(18).toString('hex').toUpperCase();
-
 // inspired from whatsmeow code
 // https://github.com/tulir/whatsmeow/blob/64bc969fbe78d31ae0dd443b8d4c80a5d026d07a/send.go#L42
 export const generateMessageIDV2 = (userId?: string): string => {
@@ -234,16 +231,20 @@ export const generateMessageIDV2 = (userId?: string): string => {
 	return '3EB0' + hash.toString('hex').toUpperCase().substring(0, 18);
 };
 
+// generate a random ID to attach to a message
+export const generateMessageID = () =>
+	'3EB0' + randomBytes(18).toString('hex').toUpperCase();
+
 export function bindWaitForEvent<T extends keyof BaileysEventMap>(
 	ev: BaileysEventEmitter,
 	event: T,
 ) {
 	return async (
-		check: (u: BaileysEventMap[T]) => boolean | undefined,
+		check: (u: BaileysEventMap[T]) => Promise<boolean | undefined>,
 		timeoutMs?: number,
 	) => {
 		let listener: (item: BaileysEventMap[T]) => void;
-		let closeListener: any;
+		let closeListener: (state: Partial<ConnectionState>) => void;
 		await promiseTimeout<void>(timeoutMs, (resolve, reject) => {
 			closeListener = ({ connection, lastDisconnect }) => {
 				if (connection === 'close') {
@@ -257,8 +258,8 @@ export function bindWaitForEvent<T extends keyof BaileysEventMap>(
 			};
 
 			ev.on('connection.update', closeListener);
-			listener = update => {
-				if (check(update)) {
+			listener = async update => {
+				if (await check(update)) {
 					resolve();
 				}
 			};
@@ -276,7 +277,7 @@ export const bindWaitForConnectionUpdate = (ev: BaileysEventEmitter) =>
 
 export const printQRIfNecessaryListener = (
 	ev: BaileysEventEmitter,
-	logger: Logger,
+	logger: ILogger,
 ) => {
 	ev.on('connection.update', async ({ qr }) => {
 		if (qr) {
@@ -290,35 +291,6 @@ export const printQRIfNecessaryListener = (
 	});
 };
 
-/**
- * A utility that fetches the latest web version of whatsapp.
- * Use to ensure your WA connection is always on the latest version
- */
-export const fetchLatestWaWebVersion = async (
-	options: AxiosRequestConfig<any>,
-) => {
-	try {
-		const result = await axios.get(
-			'https://web.whatsapp.com/check-update?version=1&platform=web',
-			{
-				...options,
-				responseType: 'json',
-			},
-		);
-		const version = result.data.currentVersion.split('.');
-		return {
-			version: [+version[0], +version[1], +version[2]] as WAVersion,
-			isLatest: true,
-		};
-	} catch (error) {
-		return {
-			version: baileysVersion as WAVersion,
-			isLatest: false,
-			error,
-		};
-	}
-};
-
 /** unique message tag prefix for MD clients */
 export const generateMdTagPrefix = () => {
 	const bytes = randomBytes(4);
@@ -326,6 +298,7 @@ export const generateMdTagPrefix = () => {
 };
 
 const STATUS_MAP: { [_: string]: proto.WebMessageInfo.Status } = {
+	sender: proto.WebMessageInfo.Status.SERVER_ACK,
 	played: proto.WebMessageInfo.Status.PLAYED,
 	read: proto.WebMessageInfo.Status.READ,
 	'read-self': proto.WebMessageInfo.Status.READ,
@@ -410,6 +383,7 @@ export const getCodeFromWSError = (error: Error) => {
 			statusCode = code;
 		}
 	} else if (
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(error as any)?.code?.startsWith('E') ||
 		error?.message?.includes('timed out')
 	) {
@@ -428,7 +402,8 @@ export const isWABusinessPlatform = (platform: string) => {
 	return platform === 'smbi' || platform === 'smba';
 };
 
-export function trimUndefined(obj: any) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function trimUndefined(obj: { [_: string]: any }) {
 	for (const key in obj) {
 		if (typeof obj[key] === 'undefined') {
 			delete obj[key];
@@ -445,8 +420,8 @@ export function bytesToCrockford(buffer: Buffer): string {
 	let bitCount = 0;
 	const crockford: string[] = [];
 
-	for (let i = 0; i < buffer.length; i++) {
-		value = (value << 8) | (buffer[i] & 0xff);
+	for (const element of buffer) {
+		value = (value << 8) | (element & 0xff);
 		bitCount += 8;
 
 		while (bitCount >= 5) {

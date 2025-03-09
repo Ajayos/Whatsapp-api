@@ -5636,14 +5636,8 @@ export const WEB_EVENTS: Event[] = [
 			macFatalNumberOverrideMismatch: [32, 'boolean'],
 			macFatalNumberRemoveMismatch: [33, 'boolean'],
 			macFatalPatchVersionMismatch: [22, 'boolean'],
-			macFatalPreviousPatchNewLthashToCurrentPatchCurrentLthash: [
-				34,
-				'boolean',
-			],
-			macFatalSenderCurrentLthashToLocalCalculatedCurrentLthashMismatch: [
-				35,
-				'boolean',
-			],
+			macFatalPreviousPatchNewLthashToCurrentPatchCurrentLthash: [34, 'boolean'],
+			macFatalSenderCurrentLthashToLocalCalculatedCurrentLthashMismatch: [35, 'boolean'],
 			mailboxAgeDays: [13, 'integer'],
 			mdFatalErrorCode: [
 				1,
@@ -14795,487 +14789,596 @@ export const WEB_EVENTS: Event[] = [
 		wamChannel: 'regular',
 		privateStatsIdInt: -1,
 	},
-];
+]
 
 export const WEB_GLOBALS: Global[] = [
 	{
-		name: 'abKey2',
-		id: 4473,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'abKey2',
+		'id': 4473,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'appBuild',
-		id: 1657,
-		type: {
-			DEBUG: 1,
-			ALPHA: 2,
-			BETA: 3,
-			RELEASE: 4,
+		'name': 'appBuild',
+		'id': 1657,
+		'type': {
+			'DEBUG': 1,
+			'ALPHA': 2,
+			'BETA': 3,
+			'RELEASE': 4
 		},
-		channels: ['regular', 'private'],
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'appIsBetaRelease',
-		id: 21,
-		type: 'boolean',
-		validator: 'boolean',
-		channels: ['regular', 'private'],
+		'name': 'appIsBetaRelease',
+		'id': 21,
+		'type': 'boolean',
+		'validator': 'boolean',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'appVersion',
-		id: 17,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular', 'private'],
+		'name': 'appVersion',
+		'id': 17,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'browser',
-		id: 779,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'browser',
+		'id': 779,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'browserVersion',
-		id: 295,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'browserVersion',
+		'id': 295,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'datacenter',
-		id: 2795,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'datacenter',
+		'id': 2795,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'deviceClassification',
-		id: 14507,
-		type: {
-			MOBILE: 0,
-			TABLET: 1,
-			WEARABLES: 2,
-			VR: 3,
-			DESKTOP: 4,
-			FOLDABLE: 5,
-			AR_GLASS: 6,
-			UNDEFINED: 100,
+		'name': 'deviceClassification',
+		'id': 14507,
+		'type': {
+			'MOBILE': 0,
+			'TABLET': 1,
+			'WEARABLES': 2,
+			'VR': 3,
+			'DESKTOP': 4,
+			'FOLDABLE': 5,
+			'AR_GLASS': 6,
+			'UNDEFINED': 100
 		},
-		channels: ['regular'],
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'deviceName',
-		id: 13,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular', 'private'],
+		'name': 'deviceName',
+		'id': 13,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'deviceVersion',
-		id: 4505,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'deviceVersion',
+		'id': 4505,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'expoKey',
-		id: 5029,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular', 'private'],
+		'name': 'expoKey',
+		'id': 5029,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'mcc',
-		id: 5,
-		type: 'integer',
-		channels: ['regular', 'private'],
+		'name': 'mcc',
+		'id': 5,
+		'type': 'integer',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'memClass',
-		id: 655,
-		type: 'integer',
-		channels: ['regular', 'private'],
+		'name': 'memClass',
+		'id': 655,
+		'type': 'integer',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'mnc',
-		id: 3,
-		type: 'integer',
-		channels: ['regular', 'private'],
+		'name': 'mnc',
+		'id': 3,
+		'type': 'integer',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'networkIsWifi',
-		id: 23,
-		type: 'boolean',
-		validator: 'boolean',
-		channels: ['regular'],
+		'name': 'networkIsWifi',
+		'id': 23,
+		'type': 'boolean',
+		'validator': 'boolean',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'ocVersion',
-		id: 6251,
-		type: 'integer',
-		channels: ['regular', 'private'],
+		'name': 'ocVersion',
+		'id': 6251,
+		'type': 'integer',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'osVersion',
-		id: 15,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular', 'private'],
+		'name': 'osVersion',
+		'id': 15,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'platform',
-		id: 11,
-		type: {
-			IPHONE: 1,
-			ANDROID: 2,
-			BB: 3,
-			BBX: 7,
-			S40: 4,
-			SYMBIAN: 5,
-			WP: 6,
-			WEBCLIENT: 8,
-			OSMETA: 11,
-			ENT: 12,
-			SMBA: 13,
-			KAIOS: 14,
-			SMBI: 15,
-			WINDOWS: 16,
-			WEB: 17,
-			PORTAL: 18,
-			BLOKS: 19,
-			BLUEA: 20,
-			BLUEI: 21,
-			FBLITEA: 22,
-			GREENA: 23,
-			GREENI: 24,
-			IGDA: 25,
-			IGDI: 26,
-			IGLITEA: 27,
-			MLITEA: 28,
-			MSGRA: 29,
-			MSGRI: 30,
-			MSGRP: 31,
-			MSGRW: 32,
-			IGDW: 33,
-			PAGE: 34,
-			MSGRDM: 35,
-			MSGRDW: 36,
-			MSGROM: 37,
-			MSGROC: 38,
-			MSGRM: 43,
-			IGDM: 44,
-			WEARM: 45,
-			CAPI: 46,
-			XR: 47,
-			MACOS: 48,
-			WAMETA_REPL: 49,
-			ARDEV: 50,
-			WEAROS: 51,
-			MSGRVR: 52,
-			BLUEW: 53,
-			IPHONEWAMETATEST: 54,
-			MSGRAR: 57,
-			IPAD: 58,
-			WAVOIP_CLI: 59,
-			MSGRT: 60,
-			IGDT: 61,
-			ANDROIDWAMETATEST: 62,
-			MSGRSG: 63,
-			IGDSG: 64,
-			INTEROP: 65,
-			INTEROP_MSGR: 66,
-			TEST: 9,
-			UNKNOWN: 10,
+		'name': 'platform',
+		'id': 11,
+		'type': {
+			'IPHONE': 1,
+			'ANDROID': 2,
+			'BB': 3,
+			'BBX': 7,
+			'S40': 4,
+			'SYMBIAN': 5,
+			'WP': 6,
+			'WEBCLIENT': 8,
+			'OSMETA': 11,
+			'ENT': 12,
+			'SMBA': 13,
+			'KAIOS': 14,
+			'SMBI': 15,
+			'WINDOWS': 16,
+			'WEB': 17,
+			'PORTAL': 18,
+			'BLOKS': 19,
+			'BLUEA': 20,
+			'BLUEI': 21,
+			'FBLITEA': 22,
+			'GREENA': 23,
+			'GREENI': 24,
+			'IGDA': 25,
+			'IGDI': 26,
+			'IGLITEA': 27,
+			'MLITEA': 28,
+			'MSGRA': 29,
+			'MSGRI': 30,
+			'MSGRP': 31,
+			'MSGRW': 32,
+			'IGDW': 33,
+			'PAGE': 34,
+			'MSGRDM': 35,
+			'MSGRDW': 36,
+			'MSGROM': 37,
+			'MSGROC': 38,
+			'MSGRM': 43,
+			'IGDM': 44,
+			'WEARM': 45,
+			'CAPI': 46,
+			'XR': 47,
+			'MACOS': 48,
+			'WAMETA_REPL': 49,
+			'ARDEV': 50,
+			'WEAROS': 51,
+			'MSGRVR': 52,
+			'BLUEW': 53,
+			'IPHONEWAMETATEST': 54,
+			'MSGRAR': 57,
+			'IPAD': 58,
+			'WAVOIP_CLI': 59,
+			'MSGRT': 60,
+			'IGDT': 61,
+			'ANDROIDWAMETATEST': 62,
+			'MSGRSG': 63,
+			'IGDSG': 64,
+			'INTEROP': 65,
+			'INTEROP_MSGR': 66,
+			'TEST': 9,
+			'UNKNOWN': 10
 		},
-		channels: ['regular', 'private'],
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'psCountryCode',
-		id: 6833,
-		type: 'string',
-		validator: 'string',
-		channels: ['private'],
+		'name': 'psCountryCode',
+		'id': 6833,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'private'
+		]
 	},
 	{
-		name: 'psId',
-		id: 6005,
-		type: 'string',
-		validator: 'string',
-		channels: ['private'],
+		'name': 'psId',
+		'id': 6005,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'private'
+		]
 	},
 	{
-		name: 'serviceImprovementOptOut',
-		id: 13293,
-		type: 'boolean',
-		validator: 'boolean',
-		channels: ['regular', 'private'],
+		'name': 'serviceImprovementOptOut',
+		'id': 13293,
+		'type': 'boolean',
+		'validator': 'boolean',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'streamId',
-		id: 3543,
-		type: 'integer',
-		channels: ['regular', 'private'],
+		'name': 'streamId',
+		'id': 3543,
+		'type': 'integer',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'wametaLoggerTestFilter',
-		id: 15881,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular', 'private'],
+		'name': 'wametaLoggerTestFilter',
+		'id': 15881,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'webcBucket',
-		id: 875,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'webcBucket',
+		'id': 875,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcEnv',
-		id: 633,
-		type: {
-			PROD: 0,
-			INTERN: 1,
-			DEV: 2,
-			E2E: 3,
+		'name': 'webcEnv',
+		'id': 633,
+		'type': {
+			'PROD': 0,
+			'INTERN': 1,
+			'DEV': 2,
+			'E2E': 3
 		},
-		channels: ['regular'],
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcNativeAutolaunch',
-		id: 1009,
-		type: 'boolean',
-		validator: 'boolean',
-		channels: ['regular'],
+		'name': 'webcNativeAutolaunch',
+		'id': 1009,
+		'type': 'boolean',
+		'validator': 'boolean',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcNativeBetaUpdates',
-		id: 1007,
-		type: 'boolean',
-		validator: 'boolean',
-		channels: ['regular'],
+		'name': 'webcNativeBetaUpdates',
+		'id': 1007,
+		'type': 'boolean',
+		'validator': 'boolean',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcPhoneAppVersion',
-		id: 1005,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'webcPhoneAppVersion',
+		'id': 1005,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcPhoneCharging',
-		id: 783,
-		type: 'boolean',
-		validator: 'boolean',
-		channels: ['regular'],
+		'name': 'webcPhoneCharging',
+		'id': 783,
+		'type': 'boolean',
+		'validator': 'boolean',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcPhoneDeviceManufacturer',
-		id: 829,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'webcPhoneDeviceManufacturer',
+		'id': 829,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcPhoneDeviceModel',
-		id: 831,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'webcPhoneDeviceModel',
+		'id': 831,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcPhoneOsBuildNumber',
-		id: 833,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'webcPhoneOsBuildNumber',
+		'id': 833,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcPhoneOsVersion',
-		id: 835,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'webcPhoneOsVersion',
+		'id': 835,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcPhonePlatform',
-		id: 707,
-		type: {
-			IPHONE: 1,
-			ANDROID: 2,
-			BB: 3,
-			BBX: 7,
-			S40: 4,
-			SYMBIAN: 5,
-			WP: 6,
-			WEBCLIENT: 8,
-			OSMETA: 11,
-			ENT: 12,
-			SMBA: 13,
-			KAIOS: 14,
-			SMBI: 15,
-			WINDOWS: 16,
-			WEB: 17,
-			PORTAL: 18,
-			BLOKS: 19,
-			BLUEA: 20,
-			BLUEI: 21,
-			FBLITEA: 22,
-			GREENA: 23,
-			GREENI: 24,
-			IGDA: 25,
-			IGDI: 26,
-			IGLITEA: 27,
-			MLITEA: 28,
-			MSGRA: 29,
-			MSGRI: 30,
-			MSGRP: 31,
-			MSGRW: 32,
-			IGDW: 33,
-			PAGE: 34,
-			MSGRDM: 35,
-			MSGRDW: 36,
-			MSGROM: 37,
-			MSGROC: 38,
-			MSGRM: 43,
-			IGDM: 44,
-			WEARM: 45,
-			CAPI: 46,
-			XR: 47,
-			MACOS: 48,
-			WAMETA_REPL: 49,
-			ARDEV: 50,
-			WEAROS: 51,
-			MSGRVR: 52,
-			BLUEW: 53,
-			IPHONEWAMETATEST: 54,
-			MSGRAR: 57,
-			IPAD: 58,
-			WAVOIP_CLI: 59,
-			MSGRT: 60,
-			IGDT: 61,
-			ANDROIDWAMETATEST: 62,
-			MSGRSG: 63,
-			IGDSG: 64,
-			INTEROP: 65,
-			INTEROP_MSGR: 66,
-			TEST: 9,
-			UNKNOWN: 10,
+		'name': 'webcPhonePlatform',
+		'id': 707,
+		'type': {
+			'IPHONE': 1,
+			'ANDROID': 2,
+			'BB': 3,
+			'BBX': 7,
+			'S40': 4,
+			'SYMBIAN': 5,
+			'WP': 6,
+			'WEBCLIENT': 8,
+			'OSMETA': 11,
+			'ENT': 12,
+			'SMBA': 13,
+			'KAIOS': 14,
+			'SMBI': 15,
+			'WINDOWS': 16,
+			'WEB': 17,
+			'PORTAL': 18,
+			'BLOKS': 19,
+			'BLUEA': 20,
+			'BLUEI': 21,
+			'FBLITEA': 22,
+			'GREENA': 23,
+			'GREENI': 24,
+			'IGDA': 25,
+			'IGDI': 26,
+			'IGLITEA': 27,
+			'MLITEA': 28,
+			'MSGRA': 29,
+			'MSGRI': 30,
+			'MSGRP': 31,
+			'MSGRW': 32,
+			'IGDW': 33,
+			'PAGE': 34,
+			'MSGRDM': 35,
+			'MSGRDW': 36,
+			'MSGROM': 37,
+			'MSGROC': 38,
+			'MSGRM': 43,
+			'IGDM': 44,
+			'WEARM': 45,
+			'CAPI': 46,
+			'XR': 47,
+			'MACOS': 48,
+			'WAMETA_REPL': 49,
+			'ARDEV': 50,
+			'WEAROS': 51,
+			'MSGRVR': 52,
+			'BLUEW': 53,
+			'IPHONEWAMETATEST': 54,
+			'MSGRAR': 57,
+			'IPAD': 58,
+			'WAVOIP_CLI': 59,
+			'MSGRT': 60,
+			'IGDT': 61,
+			'ANDROIDWAMETATEST': 62,
+			'MSGRSG': 63,
+			'IGDSG': 64,
+			'INTEROP': 65,
+			'INTEROP_MSGR': 66,
+			'TEST': 9,
+			'UNKNOWN': 10
 		},
-		channels: ['regular'],
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcTabId',
-		id: 3727,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'webcTabId',
+		'id': 3727,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcWebArch',
-		id: 6605,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'webcWebArch',
+		'id': 6605,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcWebDeviceManufacturer',
-		id: 6599,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'webcWebDeviceManufacturer',
+		'id': 6599,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcWebDeviceModel',
-		id: 6601,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'webcWebDeviceModel',
+		'id': 6601,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcWebOsReleaseNumber',
-		id: 6603,
-		type: 'string',
-		validator: 'string',
-		channels: ['regular'],
+		'name': 'webcWebOsReleaseNumber',
+		'id': 6603,
+		'type': 'string',
+		'validator': 'string',
+		'channels': [
+			'regular'
+		]
 	},
 	{
-		name: 'webcWebPlatform',
-		id: 899,
-		type: {
-			WEB: 1,
-			WIN32: 2,
-			DARWIN: 3,
-			IOS_TABLET: 4,
-			ANDROID_TABLET: 5,
-			WINSTORE: 6,
-			MACSTORE: 7,
-			DARWIN_BETA: 8,
-			WIN32_BETA: 9,
-			PWA: 10,
+		'name': 'webcWebPlatform',
+		'id': 899,
+		'type': {
+			'WEB': 1,
+			'WIN32': 2,
+			'DARWIN': 3,
+			'IOS_TABLET': 4,
+			'ANDROID_TABLET': 5,
+			'WINSTORE': 6,
+			'MACSTORE': 7,
+			'DARWIN_BETA': 8,
+			'WIN32_BETA': 9,
+			'PWA': 10
 		},
-		channels: ['regular', 'private'],
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'yearClass',
-		id: 689,
-		type: 'integer',
-		channels: ['regular', 'private'],
+		'name': 'yearClass',
+		'id': 689,
+		'type': 'integer',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'yearClass2016',
-		id: 2617,
-		type: 'integer',
-		channels: ['regular', 'private'],
+		'name': 'yearClass2016',
+		'id': 2617,
+		'type': 'integer',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'commitTime',
-		id: 47,
-		type: 'integer',
-		channels: ['regular', 'private'],
+		'name': 'commitTime',
+		'id': 47,
+		'type': 'integer',
+		'channels': [
+			'regular',
+			'private'
+		]
 	},
 	{
-		name: 'sequenceNumber',
-		id: 3433,
-		type: 'integer',
-		channels: ['regular', 'private'],
-	},
-];
+		'name': 'sequenceNumber',
+		'id': 3433,
+		'type': 'integer',
+		'channels': [
+			'regular',
+			'private'
+		]
+	}
+]
 
 export const FLAG_BYTE = 8,
 	FLAG_GLOBAL = 0,
 	FLAG_EVENT = 1,
 	FLAG_FIELD = 2,
-	FLAG_EXTENDED = 4;
+	FLAG_EXTENDED = 4
 
 export type Event = {
-	name: string;
-	id: number;
-	props: { [key: string]: [number, string | { [key: string]: number }] };
-	weight: number;
-	wamChannel: string;
-	privateStatsIdInt: number;
-};
+    name: string
+    id: number
+    props: {[key: string]: [number, string | {[key: string]: number}]}
+    weight: number
+    wamChannel: string
+    privateStatsIdInt: number
+}
 
 export type Global = {
-	name: string;
-	id: number;
-	type: string | { [key: string]: number };
-	validator?: string;
-	channels: string[];
-};
+	name: string
+	id: number
+	type: string | {[key: string]: number}
+	validator?: string
+	channels: string[]
+}
 
-type EventByName<T extends Event['name']> = Extract<Event, { name: T }>;
+type EventByName<T extends Event['name']> = Extract<Event, { name: T }>
 
 export type EventInputType = {
 	[key in Event['name']]: {
 		props: {
 			// @ts-ignore
-			[k in keyof EventByName<key>['props']]: any;
-		};
-		globals: { [x: string]: any };
-	};
-} & {};
+			[k in keyof EventByName<key>['props']]: Value
+		}
+		globals: { [x: string]: Value }
+	}
+} & {}
+
+export type Value = number | null | string
