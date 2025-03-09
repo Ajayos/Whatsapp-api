@@ -1,5 +1,5 @@
 import { createCipheriv, createDecipheriv, createHash, createHmac, randomBytes } from 'crypto'
-import * as libsignal from 'libsignal'
+import * as libsignal from '@ajayos/libsignal'
 import { KEY_BUNDLE_TYPE } from '../Base'
 import { KeyPair } from '../Types'
 
